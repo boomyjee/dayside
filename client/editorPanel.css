@@ -1,0 +1,378 @@
+.CodeMirror-dialog {
+  position: relative;
+}
+
+.CodeMirror-dialog > div {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  background: white;
+  border-bottom: 1px solid #eee;
+  z-index: 15;
+  padding: .1em .8em;
+  overflow: hidden;
+  color: #333;
+}
+
+.CodeMirror-dialog input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 20em;
+  color: inherit;
+  font-family: monospace;
+}
+
+.teacss-ui .CodeMirror {
+  line-height: 1em;
+  font-family: monospace;
+}
+
+.teacss-ui .CodeMirror-scroll {
+  overflow: auto;
+  height: 300px;
+  /* This is needed to prevent an IE[67] bug where the scrolled content
+     is visible outside of the scrolling box. */
+  position: relative;
+}
+
+.teacss-ui .CodeMirror-gutter {
+  position: absolute; left: 0; top: 0;
+  z-index: 10;
+  background-color: #f7f7f7;
+  border-right: 1px solid #eee;
+  min-width: 2em;
+  height: 100%;
+}
+.teacss-ui .CodeMirror-gutter-text {
+  color: #aaa;
+  text-align: right;
+  padding: .4em .2em .4em .4em;
+  white-space: pre !important;
+}
+.teacss-ui .CodeMirror-lines {
+  padding: .4em;
+}
+
+.teacss-ui .CodeMirror pre {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  -o-border-radius: 0;
+  border-radius: 0;
+  border-width: 0; margin: 0; padding: 0; background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0; margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.teacss-ui .CodeMirror-wrap pre {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.teacss-ui .CodeMirror-wrap .CodeMirror-scroll {
+  overflow-x: hidden;
+}
+
+.teacss-ui .CodeMirror textarea {
+  outline: none !important;
+}
+
+.teacss-ui .CodeMirror pre.CodeMirror-cursor {
+  z-index: 10;
+  position: absolute;
+  visibility: hidden;
+  border-left: 1px solid black;
+  border-right:none;
+  width:0;
+}
+.teacss-ui .CodeMirror pre.CodeMirror-cursor.CodeMirror-overwrite {}
+.teacss-ui .CodeMirror-focused pre.CodeMirror-cursor {
+  visibility: visible;
+}
+
+.teacss-ui div.CodeMirror-selected { background: #d9d9d9; }
+.teacss-ui .CodeMirror-focused div.CodeMirror-selected { background: #d7d4f0; }
+
+.teacss-ui .CodeMirror-searching {
+  background: #ffa;
+  background: rgba(255, 255, 0, .4);
+}
+
+/* Default theme */
+
+.cm-s-default span.cm-keyword {color: #708;}
+.cm-s-default span.cm-atom {color: #219;}
+.cm-s-default span.cm-number {color: #164;}
+.cm-s-default span.cm-def {color: #00f;}
+.cm-s-default span.cm-variable {color: black;}
+.cm-s-default span.cm-variable-2 {color: #05a;}
+.cm-s-default span.cm-variable-3 {color: #085;}
+.cm-s-default span.cm-property {color: black;}
+.cm-s-default span.cm-operator {color: black;}
+.cm-s-default span.cm-comment {color: #a50;}
+.cm-s-default span.cm-string {color: #a11;}
+.cm-s-default span.cm-string-2 {color: #f50;}
+.cm-s-default span.cm-meta {color: #555;}
+.cm-s-default span.cm-error {color: #f00;}
+.cm-s-default span.cm-qualifier {color: #555;}
+.cm-s-default span.cm-builtin {color: #30a;}
+.cm-s-default span.cm-bracket {color: #cc7;}
+.cm-s-default span.cm-tag {color: #170;}
+.cm-s-default span.cm-attribute {color: #00c;}
+.cm-s-default span.cm-header {color: #a0a;}
+.cm-s-default span.cm-quote {color: #090;}
+.cm-s-default span.cm-hr {color: #999;}
+.cm-s-default span.cm-link {color: #00c;}
+
+span.cm-header, span.cm-strong {font-weight: bold;}
+span.cm-em {font-style: italic;}
+span.cm-emstrong {font-style: italic; font-weight: bold;}
+span.cm-link {text-decoration: underline;}
+
+div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
+div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+
+.cm-s-default span.cm-keyword {color: #708;}
+.cm-s-default span.cm-atom {color: #219;}
+.cm-s-default span.cm-number {color: #164;}
+.cm-s-default span.cm-def {color: #00f;}
+.cm-s-default span.cm-variable {color: black;}
+.cm-s-default span.cm-variable-2 {color: #05a;}
+.cm-s-default span.cm-variable-3 {color: #0a5;}
+.cm-s-default span.cm-property {color: black;}
+.cm-s-default span.cm-operator {color: black;}
+.cm-s-default span.cm-comment {color: #a50;}
+.cm-s-default span.cm-string {color: #a11;}
+.cm-s-default span.cm-meta {color: #555;}
+.cm-s-default span.cm-error {color: #f00;}
+.cm-s-default span.cm-qualifier {color: #555;}
+.cm-s-default span.cm-builtin {color: #30a;}
+.cm-s-default span.cm-bracket {color: #cc7;}
+.cm-s-default span.cm-tag {color: #170;}
+.cm-s-default span.cm-attribute {color: #00c;}
+
+.cm-mixin {
+    color: #00a;
+    font-weight: bold;
+}
+
+.cm-variable {
+    color:#f70;
+}
+
+.cm-selector {
+    font-weight: bold;
+}
+
+.cm-comment_line {
+    color: #aa5500;
+}
+
+.cm-import_start, .cm-append_start, .cm-js_line_start, .cm-js_block_start, .cm-js_block_end, .cm-scope {
+    color: #00a;
+    font-weight: bold;
+}
+
+.cm-import, .cm-append {
+    color: green;
+}
+/*
+ * jsTree default theme 1.0
+ * Supported features: dots/no-dots, icons/no-icons, focused, loading
+ * Supported plugins: ui (hovered, clicked), checkbox, contextmenu, search
+ */
+
+.jstree-default li, 
+.jstree-default ins { background-image:url(lib/jstree/themes/default/d.png); background-repeat:no-repeat; background-color:transparent; }
+.jstree-default li { background-position:-90px 0; background-repeat:repeat-y; }
+.jstree-default li.jstree-last { background:transparent; }
+.jstree-default .jstree-open > ins { background-position:-72px 0; }
+.jstree-default .jstree-closed > ins { background-position:-54px 0; }
+.jstree-default .jstree-leaf > ins { background-position:-36px 0; }
+
+.jstree-default .jstree-hovered { background:#e7f4f9; border:1px solid #d8f0fa; padding:0 2px 0 1px; }
+.jstree-default .jstree-clicked { background:#beebff; border:1px solid #99defd; padding:0 2px 0 1px; }
+.jstree-default a .jstree-icon { background-position:-56px -19px; }
+.jstree-default a.jstree-loading .jstree-icon { background:url(lib/jstree/themes/default/throbber.gif) center center no-repeat !important; }
+
+.jstree-default.jstree-focused > ul, .jstree-default.jstree-focused { background:#ffffff; }
+
+.jstree-default .jstree-no-dots li, 
+.jstree-default .jstree-no-dots .jstree-leaf > ins { background:transparent; }
+.jstree-default .jstree-no-dots .jstree-open > ins { background-position:-18px 0; }
+.jstree-default .jstree-no-dots .jstree-closed > ins { background-position:0 0; }
+
+.jstree-default .jstree-no-icons a .jstree-icon { display:none; }
+
+.jstree-default .jstree-search { font-style:italic; }
+
+.jstree-default .jstree-no-icons .jstree-checkbox { display:inline-block; }
+.jstree-default .jstree-no-checkboxes .jstree-checkbox { display:none !important; }
+.jstree-default .jstree-checked > a > .jstree-checkbox { background-position:-38px -19px; }
+.jstree-default .jstree-unchecked > a > .jstree-checkbox { background-position:-2px -19px; }
+.jstree-default .jstree-undetermined > a > .jstree-checkbox { background-position:-20px -19px; }
+.jstree-default .jstree-checked > a > .jstree-checkbox:hover { background-position:-38px -37px; }
+.jstree-default .jstree-unchecked > a > .jstree-checkbox:hover { background-position:-2px -37px; }
+.jstree-default .jstree-undetermined > a > .jstree-checkbox:hover { background-position:-20px -37px; }
+
+#vakata-dragged.jstree-default ins { background:transparent !important; }
+#vakata-dragged.jstree-default .jstree-ok { background:url(lib/jstree/themes/default/d.png) -2px -53px no-repeat !important; }
+#vakata-dragged.jstree-default .jstree-invalid { background:url(lib/jstree/themes/default/d.png) -18px -53px no-repeat !important; }
+#jstree-marker.jstree-default { background:url(lib/jstree/themes/default/d.png) -41px -57px no-repeat !important; text-indent:-100px; }
+
+.jstree-default a.jstree-search { color:aqua; }
+.jstree-default .jstree-locked a { color:silver; cursor:default; }
+
+#vakata-contextmenu.jstree-default-context, 
+#vakata-contextmenu.jstree-default-context li ul { background:#f0f0f0; border:1px solid #979797; -moz-box-shadow: 1px 1px 2px #999; -webkit-box-shadow: 1px 1px 2px #999; box-shadow: 1px 1px 2px #999; }
+#vakata-contextmenu.jstree-default-context li { }
+#vakata-contextmenu.jstree-default-context a { color:black; }
+#vakata-contextmenu.jstree-default-context a:hover, 
+#vakata-contextmenu.jstree-default-context .vakata-hover > a { padding:0 5px; background:#e8eff7; border:1px solid #aecff7; color:black; -moz-border-radius:2px; -webkit-border-radius:2px; border-radius:2px; }
+#vakata-contextmenu.jstree-default-context li.jstree-contextmenu-disabled a, 
+#vakata-contextmenu.jstree-default-context li.jstree-contextmenu-disabled a:hover { color:silver; background:transparent; border:0; padding:1px 4px; }
+#vakata-contextmenu.jstree-default-context li.vakata-separator { background:white; border-top:1px solid #e0e0e0; margin:0; }
+#vakata-contextmenu.jstree-default-context li ul { margin-left:-4px; }
+
+/* IE6 BEGIN */
+.jstree-default li, 
+.jstree-default ins,
+#vakata-dragged.jstree-default .jstree-invalid, 
+#vakata-dragged.jstree-default .jstree-ok, 
+#jstree-marker.jstree-default { _background-image:url(lib/jstree/themes/default/d.gif); }
+.jstree-default .jstree-open ins { _background-position:-72px 0; }
+.jstree-default .jstree-closed ins { _background-position:-54px 0; }
+.jstree-default .jstree-leaf ins { _background-position:-36px 0; }
+.jstree-default a ins.jstree-icon { _background-position:-56px -19px; }
+#vakata-contextmenu.jstree-default-context ins { _display:none; }
+#vakata-contextmenu.jstree-default-context li { _zoom:1; }
+.jstree-default .jstree-undetermined a .jstree-checkbox { _background-position:-20px -19px; }
+.jstree-default .jstree-checked a .jstree-checkbox { _background-position:-38px -19px; }
+.jstree-default .jstree-unchecked a .jstree-checkbox { _background-position:-2px -19px; }
+/* IE6 END */.teacss-ui .CodeMirror {
+    font-size: 16px;
+    line-height: 20px;
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+.teacss-ui .CodeMirror-scroll {
+    position: absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    height: auto !important;
+    overflow: scroll !important;
+}
+.teacss-ui .CodeMirror .widgets {
+    position: absolute;
+    width:0;
+    top: 7px;
+    right: 3px;
+    bottom: 0;
+}
+.teacss-ui .CodeMirror-gutter {
+    height: auto !important;
+}
+.teacss-ui .CodeMirror .ui-widget {
+    font-size: 12px;
+}
+.teacss-ui .CodeMirror .ui-button-text {
+    padding: 0em 1em;
+}
+.jstree-icon.project {
+    background: url(src/../lib/jstree/icons/project.png) 0 0 !important;
+}
+.jstree-icon.file {
+    background: url(src/../lib/jstree/icons/file.png) 0 0 !important;
+}
+.jstree-icon.exe, .jstree-icon.bat {
+    background: url(src/../lib/jstree/icons/application.png) 0 0 !important;
+}
+.jstree-icon.tea {
+    background: url(src/../lib/jstree/icons/code.png) 0 0 !important;
+}
+.jstree-icon.css {
+    background: url(src/../lib/jstree/icons/css.png) 0 0 !important;
+}
+.jstree-icon.sql {
+    background: url(src/../lib/jstree/icons/db.png) 0 0 !important;
+}
+.jstree-icon.doc, .jstree-icon.docx {
+    background: url(src/../lib/jstree/icons/doc.png) 0 0 !important;
+}
+.jstree-icon.avi, .jstree-icon.mpg, .jstree-icon.mpeg {
+    background: url(src/../lib/jstree/icons/film.png) 0 0 !important;
+}
+.jstree-icon.swf {
+    background: url(src/../lib/jstree/icons/flash.png) 0 0 !important;
+}
+.jstree-icon.html, .jstree-icon.htm {
+    background: url(src/../lib/jstree/icons/html.png) 0 0 !important;
+}
+.jstree-icon.mp3, .jstree-icon.wav {
+    background: url(src/../lib/jstree/icons/music.png) 0 0 !important;
+}
+.jstree-icon.pdf {
+    background: url(src/../lib/jstree/icons/pdf.png) 0 0 !important;
+}
+.jstree-icon.php {
+    background: url(src/../lib/jstree/icons/php.png) 0 0 !important;
+}
+.jstree-icon.jpg, .jstree-icon.png, .jstree-icon.gif {
+    background: url(src/../lib/jstree/icons/picture.png) 0 0 !important;
+}
+.jstree-icon.ppt, .jstree-icon.pptx {
+    background: url(src/../lib/jstree/icons/ppt.png) 0 0 !important;
+}
+.jstree-icon.psd {
+    background: url(src/../lib/jstree/icons/psd.png) 0 0 !important;
+}
+.jstree-icon.rb {
+    background: url(src/../lib/jstree/icons/ruby.png) 0 0 !important;
+}
+.jstree-icon.js {
+    background: url(src/../lib/jstree/icons/script.png) 0 0 !important;
+}
+.jstree-icon.txt, .jstree-icon.haml {
+    background: url(src/../lib/jstree/icons/txt.png) 0 0 !important;
+}
+.jstree-icon.xls, .jstree-icon.xlsx {
+    background: url(src/../lib/jstree/icons/xls.png) 0 0 !important;
+}
+.jstree-icon.zop {
+    background: url(src/../lib/jstree/icons/zip.png) 0 0 !important;
+}
+.teacss-ui .teacss-ui-dialog.align-left .ui-dialog {
+    height: auto !important;
+}
+.teacss-ui .ui-tabs {
+    -moz-box-sizing: border-box;
+    font-size: 12px !important;
+}
+.teacss-ui .ui-tabs-nav li.changed a {
+    color: #000;
+}
+.teacss-ui .ui-tabs-nav li.changed a:after {
+    content: " *";
+}
+.teacss-ui .ui-tabs .ui-tabs-panel {
+    padding: 0;
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+#teacss-layer .adjust-color span {
+    display: inline-block;
+    width: 20px;
+    height: 15px;
+    margin-right: 5px;
+    border: 1px solid #000;
+    vertical-align: middle;
+}

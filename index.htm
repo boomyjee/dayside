@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>editorPanel demo</title>
+        <style>
+            body {
+                background: #333;
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size: 13px;
+                line-height: 18px;
+            }
+        </style>
+            
+        <? if (isset($_GET['dev'])): ?>
+            <script tea="server/assets/index.tea"></script>
+            <script src="/apps/boomyjee/teacss/contexts/lib/teacss.js"></script>
+        <? else: ?>
+            <script src="/apps/boomyjee/teacss-ui/public/lib/teacss-ui.js"></script>
+            <link href="/apps/boomyjee/teacss-ui/public/lib/teacss-ui.css" rel="stylesheet" type="text/css">
+            
+            <script src="client/editorPanel.js"></script>
+            <link href="client/editorPanel.css" rel="stylesheet" type="text/css">
+            <script src="server/assets/shellTab.js"></script>
+            <script src="server/assets/index.js"></script>
+        <? endif ?>
+    </head>
+    <body>
+    </body>
+</html>

@@ -1,0 +1,53 @@
+Script {
+    @append 'lib/codemirror.js';
+    
+    @append 'lib/util/searchcursor.js';
+    @append 'lib/util/search.js';
+    @append 'lib/util/dialog.js';
+    @append 'lib/util/foldcode.js';
+    
+    @append 'mode/css/css.js';
+    @append 'mode/javascript/javascript.js';
+    @append 'mode/php/php.js';
+    @append 'mode/xml/xml.js';
+    @append 'mode/clike/clike.js';
+    @append 'mode/teacss/teacss.js';
+}
+
+@append 'lib/util/dialog.css';
+@append 'lib/codemirror.css';
+@append 'theme/default.css';
+@append 'mode/teacss/teacss.css';
+
+.teacss-ui .CodeMirror {
+    font-size: 16px;
+    line-height: 20px;
+    position: absolute;
+    top:0;left:0;right:0;bottom:0;
+}
+
+.teacss-ui .CodeMirror-scroll {
+    position: absolute;
+    top:0;left:0;right:0;bottom:0;
+    height: auto !important;
+    overflow: scroll !important;
+}
+
+.teacss-ui .CodeMirror .widgets {
+    position: absolute;
+    width:0; top: 7px; right: 3px;
+    bottom: 0;
+}
+
+
+.teacss-ui .CodeMirror-gutter {
+    height: auto !important;
+}
+
+.teacss-ui .CodeMirror .ui-widget {
+    font-size: 12px;
+}
+
+.teacss-ui .CodeMirror .ui-button-text {
+    padding: 0em 1em;
+}
