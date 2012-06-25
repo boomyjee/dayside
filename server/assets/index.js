@@ -9,7 +9,7 @@ teacss.jQuery(function ($){
     }
 
     var editor = new teacss.ui.editorPanel({
-        jupload: root + "/server/jupload/jupload.jar"
+        jupload: root + "/server/assets/jupload/jupload.jar"
     });
     
     editor.filePanel.bind("contextMenu", function (own,data){

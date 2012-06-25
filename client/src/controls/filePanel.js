@@ -150,7 +150,7 @@ teacss.ui.filePanel = (function($){
                                                         '    <param name="formdata" value="uploadForm" />',
                                                         '    <param name="afterUploadURL" value="javascript:window.afterJUpload()" />',
                                                         '    <param name="showLogWindow" value="false" />',
-                                                        '    <param name="debugLevel" value="0" />',
+                                                        '    <param name="debugLevel" value="100" />',
                                                         '    Java 1.5 or higher plugin required.',
                                                         '</APPLET>',
                                                     '</div>'

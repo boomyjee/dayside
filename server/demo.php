@@ -9,7 +9,7 @@ class DemoApi extends FileApi {
         $salt = "boo";
         
         if (isset($_POST['password']))
-            setcookie('editor_auth',$test = md5($_POST['password'].$salt));
+            setcookie('editor_auth',$test = md5($_POST['password'].$salt),0,'/');
         else
             $test = $_COOKIE['editor_auth'];
         
