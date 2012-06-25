@@ -3373,6 +3373,58 @@ CodeMirror.newFoldFunction = function(rangeFinder, markText) {
   };
 };
 ;
+// Utility function that allows modes to be combined. The mode given
+// as the base argument takes care of most of the normal mode
+// functionality, but a second (typically simple) mode is used, which
+// can override the style of text. Both modes get to parse all of the
+// text, but when both assign a non-null style to a piece of code, the
+// overlay wins, unless the combine argument was true, in which case
+// the styles are combined.
+
+CodeMirror.overlayParser = function(base, overlay, combine) {
+  return {
+    startState: function() {
+      return {
+        base: CodeMirror.startState(base),
+        overlay: CodeMirror.startState(overlay),
+        basePos: 0, baseCur: null,
+        overlayPos: 0, overlayCur: null
+      };
+    },
+    copyState: function(state) {
+      return {
+        base: CodeMirror.copyState(base, state.base),
+        overlay: CodeMirror.copyState(overlay, state.overlay),
+        basePos: state.basePos, baseCur: null,
+        overlayPos: state.overlayPos, overlayCur: null
+      };
+    },
+
+    token: function(stream, state) {
+      if (stream.start == state.basePos) {
+        state.baseCur = base.token(stream, state.base);
+        state.basePos = stream.pos;
+      }
+      if (stream.start == state.overlayPos) {
+        stream.pos = stream.start;
+        state.overlayCur = overlay.token(stream, state.overlay);
+        state.overlayPos = stream.pos;
+      }
+      stream.pos = Math.min(state.basePos, state.overlayPos);
+      if (stream.eol()) state.basePos = state.overlayPos = 0;
+
+      if (state.overlayCur == null) return state.baseCur;
+      if (state.baseCur != null && combine) return state.baseCur + " " + state.overlayCur;
+      else return state.overlayCur;
+    },
+    
+    indent: function(state, textAfter) {
+      return base.indent(state.base, textAfter);
+    },
+    electricChars: base.electricChars
+  };
+};
+;
 CodeMirror.defineMode("css", function(config) {
   var indentUnit = config.indentUnit, type;
   function ret(style, tp) {type = tp; return style;}
@@ -4727,6 +4779,30 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
 
 
 CodeMirror.defineMIME("text/tea", "teacss");;
+CodeMirror.defineMode("liquid", function(config, parserConfig) {
+  var liquidOverlay = {
+    token: function(stream, state) {
+
+      // Variables.
+      if (stream.match("{{")) {
+        while ((ch = stream.next()) != null)
+          if (ch == "}" && stream.next() == "}") break;
+        return "liquid-variable";
+      }
+      
+      // Tags.
+      if(stream.match("{%")) {
+        while ((ch = stream.next()) != null)
+          if (ch == "%" && stream.next() == "}") break;
+        return "liquid-tag";
+      }
+      
+      while (stream.next() != null && !stream.match("{{", false) && !stream.match("{%", false)) {}
+      return null;
+    }
+  };
+  return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), liquidOverlay);
+});;
 /*
  * jsTree 1.0-rc3
  * http://jstree.com/
@@ -9682,6 +9758,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='php') mode = 'php';
             if (ext=='js')  mode = 'javascript';
             if (ext=='haml') mode = 'css';
+            if (ext=='liquid') mode = 'liquid';
             if (ext=='htm' || ext=='html') mode = 'php';
             
             this.editor = CodeMirror(this.element[0],{
