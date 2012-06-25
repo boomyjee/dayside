@@ -120,6 +120,7 @@ abstract class FileApi {
         if (!$path || !is_dir($path)) { echo "ERROR: Invalid upload path"; die(); }
         
         $path = $path."/".$_REQUEST['relpathinfo0'];
+        $path = str_replace("\\","/",$path);
         if (!file_exists($path)) {
             if (!mkdir($path,0755,true)) {
                 echo "ERROR: could not create upload directory\n";
