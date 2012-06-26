@@ -9730,7 +9730,7 @@ teacss.ui.codeTab = (function($){
                 var ext = parts[parts.length-1];
                 if (ext=='png' || ext=='jpg' || ext=='jpeg' || ext=='gif') {
                     this.element.html("");
-                    this.element.append($("<img>").attr("src",'/apps/'+FileApi.root+file));
+                    this.element.append($("<img>").attr("src",file));
                 } else {
                     var data = FileApi.file(file);
                     this.Class.fileData[file] = {text:data,changed:false};
