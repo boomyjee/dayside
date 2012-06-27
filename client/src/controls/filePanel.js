@@ -13,7 +13,7 @@ teacss.ui.filePanel = (function($){
                 $.vakata.css.add_sheet = add_sheet;
             }
             
-            this.tree = $("<div>").css({position:'absolute',left:0,right:0,top:0,bottom:0}).appendTo(this.element);
+            this.tree = $("<div>").css({position:'absolute',left:0,right:0,top:0,bottom:0,overflow:'auto'}).appendTo(this.element);
             this.tree
                 .bind("dblclick.jstree", function (e, data) {
                     var link = $(e.target).closest("a");
