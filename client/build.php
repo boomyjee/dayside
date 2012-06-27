@@ -10,7 +10,7 @@
     <head>
         <title>editorPanel build</title>
         <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-        <script src="/apps/boomyjee/teacss/contexts/lib/teacss.js"></script>
+        <script src="/apps/boomyjee/teacss/public/lib/teacss.js"></script>
     </head>
     <body>
         Build page for "editorPanel" project<br>

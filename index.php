@@ -12,8 +12,9 @@
             
         <? if (isset($_GET['dev'])): ?>
             <script tea="server/assets/index.tea"></script>
-            <script src="server/assets/teacss.js"></script>
+            <script src="server/assets/teacss/teacss.js"></script>
         <? else: ?>
+            <script src="server/assets/teacss/teacss.js"></script>
             <script src="server/assets/teacss/teacss-ui.js"></script>
             <link href="server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
             

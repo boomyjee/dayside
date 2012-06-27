@@ -4576,15 +4576,21 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         }
         if (found > -1) {this.pos = found; return true;}
     }
+        
+    function test_teacss() {
+        if (!teacss.LexerStack) throw "You should include teacss (teacss CM mode)";
+    }
     
     return {
         startState: function() {
+            test_teacss();
             var state = new teacss.LexerStack();
             state.push("scope",{scope:"css"});
             return state;
         },
         
         copyState: function(from) {
+            test_teacss();
             var copy = new teacss.LexerStack();
             for (var i=0;i<from.states.length;i++) {
                 var state_from = from.states[i];
@@ -4607,6 +4613,7 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         },
         
         token: function(stream, stack) {
+            test_teacss();
             switch (stack.state) {
                 case "scope":
                     if (stream.match("}")) { 
