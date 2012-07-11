@@ -20,13 +20,13 @@ class DemoApi extends FileApi {
     
     function _pathFromUrl($url) {
         $url = explode('/',$url,4);
-        $url = "/".$url[3];
+        $url = @$url[3] ? "/".$url[3] : "";
         
         $base = substr($_SERVER['REQUEST_URI'],0,strlen($_SERVER['REQUEST_URI'])-strlen($_SERVER['QUERY_STRING']));
         $base = preg_replace('/(\/)?('.basename(__FILE__).')?\??$/i','',$base);
         $base = implode('/',explode('/',$base,-2));
         
-        if (strpos($url,$base)===0) {
+        if ($base=="" || strpos($url,$base)===0) {
             $rel = substr($url,strlen($base));
             $path = realpath(__DIR__."/../..").$rel;
             return $path;

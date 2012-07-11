@@ -69,7 +69,7 @@ teacss.ui.editorPanel = (function($){
             if (styles.length==0) {
                 styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
             }
-            styles.html(".CodeMirror {font-size: "+value.fontSize+"px !important;}");
+            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; line-height:"+(value.fontSize)+"px !important;}");
             for (var t in ui.codeTab.tabs) {
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
