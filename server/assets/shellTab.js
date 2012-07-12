@@ -40,13 +40,12 @@ var ShellTab = (function($){
             if (!command) return;
             if (command=="clear") {
                 this.outPanel.html("");
-                return;
             } else {
                 var res = FileApi.request('shell',{path:this.path,command:command},true);
-                this.pathPanel.html(this.rel+">");
                 this.outPanel.append(this.rel+"> "+command+"\n");
                 this.outPanel.append(res.text);
             }
+            this.pathPanel.html(this.rel+">");
             this.outScroll.animate({ scrollTop: this.outScroll.prop("scrollHeight") }, 1000);
         }
     });
