@@ -21,6 +21,7 @@ teacss.ui.editorPanel = (function($){
                     var tab = ui.codeTab.find(file);
                     if (!tab) {
                         tab = ui.codeTab({file:file,closable:true});
+                        tab.editorPanel = me;
                         me.tabsForFiles.addTab(tab);
                     } else {
                         if ($("#"+tab.options.id).length==0) {

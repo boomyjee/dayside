@@ -107,7 +107,7 @@ teacss.ui.codeTab = (function($){
                 this.Class.fileData[this.options.file] = {text:data,changed:false}
                 tab.removeClass("changed");
             }
-            this.textUpdate();
+            this.editorPanel.trigger("codeChanged",this);
         },
         saveFile: function() {
             var me = this;
@@ -130,23 +130,6 @@ teacss.ui.codeTab = (function($){
         },
 
         controls: {},
-        
-        textUpdate: function () {
-            var file = this.options.file;
-            var text = this.editor.getValue();
-            try {
-                var old_parsed = teacss.parsed[file];
-                if (!old_parsed) return;
-                teacss.parsed[file] = teacss.parse(text,file);
-                teacss.parsed[file].func = eval(teacss.parsed[file].js);
-                editor.update();
-            } catch (e) {
-                console.debug(e);
-                teacss.parsed[file] = old_parsed;
-                editor.update();
-            }
-        },
-        
         updateControls: function() {
             return;
             var me = this;

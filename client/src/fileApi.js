@@ -1,4 +1,4 @@
-var FileApi = window.FileApi || function () {
+var FileApi = window.FileApi = window.FileApi || function () {
     var FileApi = {};
     
     FileApi.ajax_url = '/api';

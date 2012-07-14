@@ -1,0 +1,66 @@
+@import "client/editorPanel.js";
+@append "client/editorPanel.css";
+
+@{
+    teacss.functions.dayside = teacss.functions.dayside || (function(){
+        var dir = teacss.path.clean(tea.dir).replace(/\/$/,'');
+        var dayside = function (root) {
+            if (teacss.functions.dayside.editor) return;
+            teacss.jQuery(function ($){
+                root = root || dir;
+                FileApi.root = root.substring(0,root.lastIndexOf('/'));
+                FileApi.ajax_url = dir + "/server/demo.php";
+                FileApi.auth_error = function (type,data,json) {
+                    var password = prompt('Enter password');
+                    return FileApi.request(type,$.extend(data||{},{password:password}),json);
+                }
+                var editor = teacss.functions.dayside.editor = new teacss.ui.editorPanel({
+                    jupload: dir + "/server/assets/jupload/jupload.jar"
+                });
+                
+                var previewTab = new teacss.ui.tab({caption:"Preview"});
+                previewTab.element.css({background:"transparent"});
+                
+                editor.tabs2.addTab(previewTab);
+                
+                function updatePreview() {
+                    var top = 62; // magic numbers ((
+                    var left = editor.splitter.getValue() + editor.splitter.element.width();
+                
+                    $("html").css({
+                        'margin-left': left,
+                        'margin-top': top
+                    });
+                }
+                updatePreview();
+                editor.splitter.change(updatePreview);
+                editor.element.css({position:'fixed'});
+                
+                editor.element.append(
+                    $("<div>").css({
+                        position: 'absolute',
+                        top: -62, left: 0, right: 0, height: 62, 'z-index': -1,
+                        background: '#333'
+                    })
+                );
+                
+                editor.bind("codeChanged",function(e,tab){
+                    var file = tab.options.file;
+                    var text = tab.editor.getValue();
+                    try {
+                        var old_parsed = teacss.parsed[file];
+                        if (!old_parsed) return;
+                        teacss.parsed[file] = teacss.parse(text,file);
+                        teacss.parsed[file].func = eval(teacss.parsed[file].js);
+                        teacss.update();
+                    } catch (e) {
+                        console.debug(e);
+                        teacss.parsed[file] = old_parsed;
+                        teacss.update();
+                    }
+                })
+            });        
+        }
+        return dayside;
+    })();
+}

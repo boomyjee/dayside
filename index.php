@@ -20,7 +20,6 @@
             
             <script src="client/editorPanel.js"></script>
             <link href="client/editorPanel.css" rel="stylesheet" type="text/css">
-            <script src="server/assets/shellTab.js"></script>
             <script src="server/assets/index.js"></script>
         <? endif ?>
     </head>

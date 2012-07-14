@@ -9666,6 +9666,7 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
             }
         });
         
+        this.element.css({background:"transparent",padding:0});
         this.element.on("click","span.ui-icon-close", function(){
             var href = $(this).prev().attr("href");
             var tab = me.element.find(href).data("tab");
@@ -9708,7 +9709,8 @@ teacss.ui.tab = teacss.ui.Panel.extend({},{
         this._super(options);
         this.element.css({
             position: 'absolute', display: 'block',
-            top: 0, bottom: 0, right: 0, left: 0, margin: 0
+            top: 0, bottom: 0, right: 0, left: 0, margin: 0,
+            background: "#fff"
         });
     }
 });;
@@ -9821,7 +9823,7 @@ teacss.ui.codeTab = (function($){
                 this.Class.fileData[this.options.file] = {text:data,changed:false}
                 tab.removeClass("changed");
             }
-            this.textUpdate();
+            this.editorPanel.trigger("codeChanged",this);
         },
         saveFile: function() {
             var me = this;
@@ -9844,23 +9846,6 @@ teacss.ui.codeTab = (function($){
         },
 
         controls: {},
-        
-        textUpdate: function () {
-            var file = this.options.file;
-            var text = this.editor.getValue();
-            try {
-                var old_parsed = teacss.parsed[file];
-                if (!old_parsed) return;
-                teacss.parsed[file] = teacss.parse(text,file);
-                teacss.parsed[file].func = eval(teacss.parsed[file].js);
-                editor.update();
-            } catch (e) {
-                console.debug(e);
-                teacss.parsed[file] = old_parsed;
-                editor.update();
-            }
-        },
-        
         updateControls: function() {
             return;
             var me = this;
@@ -10588,6 +10573,7 @@ teacss.ui.editorPanel = (function($){
                     var tab = ui.codeTab.find(file);
                     if (!tab) {
                         tab = ui.codeTab({file:file,closable:true});
+                        tab.editorPanel = me;
                         me.tabsForFiles.addTab(tab);
                     } else {
                         if ($("#"+tab.options.id).length==0) {
@@ -10636,7 +10622,7 @@ teacss.ui.editorPanel = (function($){
             if (styles.length==0) {
                 styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
             }
-            styles.html(".CodeMirror {font-size: "+value.fontSize+"px !important;}");
+            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; line-height:"+(value.fontSize)+"px !important;}");
             for (var t in ui.codeTab.tabs) {
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
@@ -10662,7 +10648,7 @@ teacss.ui.editorPanel = (function($){
         }
     });
 })(teacss.jQuery);;
-var FileApi = window.FileApi || function () {
+var FileApi = window.FileApi = window.FileApi || function () {
     var FileApi = {};
     
     FileApi.ajax_url = '/api';

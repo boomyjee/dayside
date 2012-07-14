@@ -20,6 +20,7 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
             }
         });
         
+        this.element.css({background:"transparent",padding:0});
         this.element.on("click","span.ui-icon-close", function(){
             var href = $(this).prev().attr("href");
             var tab = me.element.find(href).data("tab");

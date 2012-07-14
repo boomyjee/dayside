@@ -28,38 +28,11 @@ class DemoApi extends FileApi {
         
         if ($base=="" || strpos($url,$base)===0) {
             $rel = substr($url,strlen($base));
+            
             $path = realpath(__DIR__."/../..").$rel;
             return $path;
         }
         return false;
-    }
-    
-    function exec($cmd, $input='',$cwd) {
-        $proc=proc_open($cmd, 
-            array(0=>array('pipe', 'r'), 1=>array('pipe', 'w'), 2=>array('pipe', 'w')), $pipes,$cwd); 
-        fwrite($pipes[0], $input);fclose($pipes[0]); 
-        $stdout=stream_get_contents($pipes[1]);fclose($pipes[1]); 
-        $stderr=stream_get_contents($pipes[2]);fclose($pipes[2]); 
-        $rtn=proc_close($proc); 
-        $out = array('stdout'=>$stdout, 'stderr'=>$stderr, 'return'=>$rtn); 
-        $text = "";
-        if ($out['stdout']) $text .= $out['stdout']."\n";
-        if ($out['stderr']) $text .= $out['stderr']."\n";
-        return $text;
-    }     
-
-    function shell() {
-        $command = trim(@$_REQUEST['command']);
-        $path = $this->_pathFromUrl(@$_REQUEST['path']);
-        
-        if (!$path || !is_dir($path)) { echo "Invalid path"; die(); }
-        if (!$command) {
-            $text = "";
-        } else {
-            $text = htmlentities($this->exec($command,'',$path));
-        }
-        $res = array('text'=>$text);
-        echo json_encode($res);     
     }
 }
 
