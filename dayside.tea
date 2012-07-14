@@ -1,3 +1,6 @@
+@import "server/assets/teacss/teacss-ui.js";
+@append "server/assets/teacss/teacss-ui.css";
+
 @import "client/editorPanel.js";
 @append "client/editorPanel.css";
 
@@ -63,4 +66,6 @@
         }
         return dayside;
     })();
+    
+    setTimeout(dayside,1);
 }
