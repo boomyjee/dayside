@@ -82,16 +82,14 @@ teacss.ui.codeTab = (function($){
                     return false;
                 },
                 onUpdate: function (editor) {
-                    if (mode=='teacss') {
-                        me.updateControls();
-                    }
+                    me.editorPanel.trigger("editorChanged",me);
                 }
             });
             
             teacss.jQuery(function(){
                 setTimeout(function(){
                     me.editor.refresh();
-                    me.updateControls();
+                    me.editorPanel.trigger("editorChanged",me);
                 },100)
             })
         },

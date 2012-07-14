@@ -9798,16 +9798,14 @@ teacss.ui.codeTab = (function($){
                     return false;
                 },
                 onUpdate: function (editor) {
-                    if (mode=='teacss') {
-                        me.updateControls();
-                    }
+                    me.editorPanel.trigger("editorChanged",me);
                 }
             });
             
             teacss.jQuery(function(){
                 setTimeout(function(){
                     me.editor.refresh();
-                    me.updateControls();
+                    me.editorPanel.trigger("editorChanged",me);
                 },100)
             })
         },
@@ -10592,7 +10590,7 @@ teacss.ui.editorPanel = (function($){
                 $.jStorage.set("editorPanel_splitterPos",this.value);
             });
             this.splitter.setValue($.jStorage.get("editorPanel_splitterPos",600));
-            this._super($.extend({items:[this.tabs,this.tabs2,this.splitter]},options||{}));
+            this._super($.extend({items:[this.tabs,this.tabs2,this.splitter],margin:0},options||{}));
            
             this.element.css({position:'absolute',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
             this.element.appendTo("body").addClass("teacss-ui");

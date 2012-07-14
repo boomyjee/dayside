@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>editorPanel demo</title>
+        <title>DaysIDE</title>
         <style>
             body {
                 background: #333;

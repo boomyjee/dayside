@@ -61,7 +61,11 @@
                         teacss.parsed[file] = old_parsed;
                         teacss.update();
                     }
-                })
+                });
+                
+                editor.bind("editorChanged",function(e,tab){
+                    console.debug("changed");
+                });
             });        
         }
         return dayside;
