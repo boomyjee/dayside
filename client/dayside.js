@@ -4566,6 +4566,27 @@ CodeMirror.defineMode("clike", function(config, parserConfig) {
 }());
 ;
 CodeMirror.defineMode("teacss", function(config, parserConfig) {
+    
+    var LexerStack = (function(){
+        function LexerStack() {
+            this.states = [];
+            this.data = this.state = false;
+        }
+        LexerStack.prototype = {
+            push: function (state,data) {
+                data = data || {};
+                this.states.push({state:this.state=state,data:this.data=data});
+            },
+            pop: function () {
+                if (this.states.length<=1) return false;
+                this.states.pop();
+                this.data  = this.states[this.states.length-1].data; 
+                this.state = this.states[this.states.length-1].state;
+                return true;
+            }
+        }
+        return LexerStack;
+    })();    
 
     var jsMode = CodeMirror.getMode(config, "javascript");
     CodeMirror.StringStream.prototype.skipToMultiple = function(list) {
@@ -4577,21 +4598,15 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         if (found > -1) {this.pos = found; return true;}
     }
         
-    function test_teacss() {
-        if (!teacss.LexerStack) throw "You should include teacss (teacss CM mode)";
-    }
-    
     return {
         startState: function() {
-            test_teacss();
-            var state = new teacss.LexerStack();
+            var state = new LexerStack();
             state.push("scope",{scope:"css"});
             return state;
         },
         
         copyState: function(from) {
-            test_teacss();
-            var copy = new teacss.LexerStack();
+            var copy = new LexerStack();
             for (var i=0;i<from.states.length;i++) {
                 var state_from = from.states[i];
                 var state_copy = {};
@@ -4613,7 +4628,6 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         },
         
         token: function(stream, stack) {
-            test_teacss();
             switch (stack.state) {
                 case "scope":
                     if (stream.match("}")) { 
@@ -4643,6 +4657,7 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
             
                     if (stack.data.braces==0) {
                         if (!stack.pop()) return "pop_error"; 
+                        stream.match(/^(\s)*?\}/);
                         return "js_block_end"; 
                     }
                     return jsMode.token(stream, stack.data.jsState);
@@ -10129,159 +10144,7 @@ teacss.ui.filePanel = (function($){
         }
     });
 })(teacss.jQuery);;
-teacss.ui.select = (function($){
-    return teacss.ui.Control.extend({},{
-        init: function (options) {
-            var me = this;
-            this._super(options||{});
-            this.element = $("<select>");
-            this.element.change(function(){
-                me.value = $(this).val();
-                me.trigger("change");
-            });
-            this.setOptions(this.options.options || {});
-        },
-        setOptions: function (list) {
-            var found = false;
-            this.element.html("");
-            for (var key in list) {
-                this.element.append($("<option>").html(key).val(list[key]));
-                if (list[key]==this.value) found = true;
-            }
-            if (!found) {
-                this.value = false;
-                for (var key in list) {
-                    this.setValue(list[key]);
-                    break;
-                }
-            }
-            this.element.val(this.value);
-        },
-        setValue: function (val) {
-            this._super(val);
-            this.element.val(val);
-        }
-    });
-})(teacss.jQuery);
-
-teacss.ui.previewPanel = (function($){
-    return teacss.ui.Panel.extend({},{
-        init : function (options) {
-            var me = this;
-            this._super(options||{});
-            
-            this.header = $("<div>").appendTo(this.element).html("Template: ")
-                .css({position:'absolute',left:0,right:0,top:0,padding:"8px 8px 0px 8px",background:'#eee'});
-            
-            this.viewSelect = new teacss.ui.select();
-            this.viewSelect.element.appendTo(this.header);
-            this.viewSelect.change(function(){ 
-                me.value = this.getValue();
-                editor.update(); 
-            });
-            
-            this.exportButton = new teacss.ui.button({label:"Export",click:$.proxy(this.export,this)});
-            this.exportButton.element.appendTo(this.header).css({float:'right','font-size':12,margin:0});
-                
-            this.view = $("<div>").appendTo(this.element)
-                .css({position:'absolute',left:0,right:0,top:42,bottom:3});
-            
-            this.iframe = $("<iframe src='/blank.htm'>").appendTo(this.view)
-                .css({width:'100%',height:'100%'});
-            
-            this.value = false;
-            this.current = false;
-        },
-        export: function () {
-            editor.export();
-        },
-        update: function (css) {
-            if (!teacss.tea.Template) return;
-            
-            var list = teacss.tea.Template.templates,options = {};
-            options["no template"] = false;
-            for (var key in list) {
-                var fixtures = list[key].fixtures;
-                var count = 0;
-                for (var fix in fixtures) count++;
-                if (count) {
-                    for (var fix in fixtures) {
-                        if (fix=="default")
-                            options[key] = key+":"+fix;
-                        else
-                            options[key+" ("+fix+")"] = key+":"+fix;
-                    }
-                } else {
-                    options[key] = key;
-                }
-            }
-            this.viewSelect.setOptions(options);
-            this.viewSelect.setValue(this.value);
-            
-            var current = this.value;
-            if (current) {
-                var parts = current.split(":",2);
-                var tpl = parts[0];
-            }
-            
-            if (!current || !list[tpl])
-                this.iframe.contents().find("html").html("");
-            else {
-                if (parts.length<2) {
-                    var html = list[tpl].liquid.render({});
-                } else {
-                    var fix = parts[1];
-                    var html = list[tpl].liquid.render(list[tpl].fixtures[fix]);
-                }
-                
-                this.iframe.contents().find("html").html(html);
-                
-                if (html.indexOf(teacss.tea.Template.styleMark)!=-1)
-                    teacss.tea.Style.insert(this.iframe[0].contentWindow.document);
-                
-                var r = new RegExp(teacss.tea.Template.scriptMark.replace("name","(.*?)"),"g");
-                var scripts = [];
-                var s;
-                while (s = r.exec(html)) scripts.push(s[1]);
-                if (scripts.length) {
-                    teacss.tea.Script.insert(this.iframe[0].contentWindow.document,scripts);
-                }
-            }
-        },
-        update2: function () {
-            var me = this;
-            teacss.process(this.makefile,function(){
-                me.previewPanel.update();
-            },this.previewPanel.iframe[0].contentWindow.document);
-        },
-        export2: function () {
-            var base = this.makefile.replace("/dev/index.tea","");
-            var stylePath = base + "/view/assets/default.css";
-            var scriptPath = base + "/view/assets";
-          
-            teacss.build(this.makefile,{
-                scriptPath: base + "/view/assets",
-                stylePath: base + "/view/assets",
-                imagesPath: base + "/view/assets/images",
-                
-                templatePath: base + "/view",
-                templateScriptPath: "view/assets",
-                templateStylePath: "view/assets",
-                
-                callback: function (files) {
-                    var message = 'Export successfull:\n\n';
-                    for (var name in files) {
-                        FileApi.save(name,files[name]);
-                        message += name + "\n";
-                    }
-                    console.debug(files);
-                    alert(message);
-                }
-            });
-        }
-        
-    });
-})(teacss.jQuery);;
+false;
 teacss.ui.splitter = teacss.ui.Splitter = (function($){
     return teacss.ui.Control.extend("teacss.ui.Splitter",{},{
         init : function (options) {
@@ -10454,8 +10317,8 @@ teacss.ui.editorPanel = (function($){
             });
             this.splitter.setValue($.jStorage.get("editorPanel_splitterPos",600));
             this._super($.extend({items:[this.tabs,this.tabs2,this.splitter],margin:0},options||{}));
-           
-            this.element.css({position:'absolute',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
+            
+            this.element.css({position:'fixed',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
             this.element.appendTo("body").addClass("teacss-ui");
     
             
@@ -10470,6 +10333,15 @@ teacss.ui.editorPanel = (function($){
                 .css({position:'absolute',left:3,top:-25,'font-size':'12px'})
                 .appendTo(this.element);
             this.optionsCombo.element.find(".ui-button-text").css({padding:"0.15em 1em 0.15em 2.1em"});
+            
+            // top panel
+            this.element.append(
+                $("<div>").css({
+                    position: 'absolute',
+                    top: -62, left: 0, right: 0, height: 62, 'z-index': -1,
+                    background: '#333'
+                })
+            );
    
             this.updateOptions();
         },
@@ -10592,4 +10464,58 @@ var FileApi = window.FileApi = window.FileApi || function () {
     }
         
     return FileApi;
-}();
+}();;
+window.dayside = window.dayside || (function(){
+    
+    var dir = "/dayside";
+    var $ = teacss.jQuery;
+    $("script").each(function(){
+        var src = $(this).attr("src");
+        if (!src) return;
+        var res;
+        if (res = src.match(/^(.*?)client\/src\/app\.js$/)) dir = res[1];
+        if (res = src.match(/^(.*?)client\/dayside\.js$/)) dir = res[1];
+    });
+    
+    if (typeof(tea)!="undefined") {
+        if (tea.path) {
+            if (res = tea.path.match(/^(.*?)client\/src\/app\.js$/)) dir = res[1];
+            if (res = tea.path.match(/^(.*?)client\/dayside\.js$/)) dir = res[1];
+        }
+    }
+    
+    var link = document.createElement("a");
+    link.href = dir; 
+    dir = link.href.replace(/\/$/,'');
+    
+    var dayside = function (options) {
+        if (dayside.editor) return;
+        var defaults = {
+            root: dir.substring(0,dir.lastIndexOf('/')),
+            ajax_url: dir + "/server/demo.php",
+            jupload_url: dir + "/server/assets/jupload/jupload.jar",
+            auth_error: function (type,data,json) {
+                var password = prompt('Enter password');
+                return FileApi.request(type,$.extend(data||{},{password:password}),json);
+            },
+            preview: true
+        }
+        dayside.options = options = $.extend(defaults,options);
+        
+        teacss.jQuery(function ($){
+            FileApi.root = options.root;
+            FileApi.ajax_url = options.ajax_url;
+            FileApi.auth_error = options.auth_error;
+            
+            var editor = window.dayside.editor = new teacss.ui.editorPanel({
+                jupload: options.jupload_url
+            });
+            
+            for (var i=0;i<dayside.plugins.length;i++)
+                dayside.plugins[i].call(dayside);
+        });        
+    }
+    dayside.plugins = [];
+    dayside.url = dir;
+    return dayside;
+})();

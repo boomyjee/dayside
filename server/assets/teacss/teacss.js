@@ -9,10 +9,52 @@ var teacss = teacss || (function(){
         // parsed cache
         parsed:{},
         // sheets registered on start
-        sheets:{},
-        // aliases for mixins
-        aliases:{}
+        sheets:{}
     };
+
+    // Path utils
+    teacss.path = {
+        isAbsoluteOrData : function(path) {
+            return /^(.:\/|data:|http:\/\/|https:\/\/|\/)/.test(path)
+        },
+        absolute: function (src) {
+            var a = document.createElement('a');
+            a.href = src;
+            return a.href;            
+        },
+        clean : function (part) {
+            part = part.replace(/\\/g,"/");
+            part = part.split("/");
+            for (var p=0;p<part.length;p++) {
+                if (part[p]=='..' && part[p-1]) {
+                    part.splice(p-1,2);
+                    p = p - 2;
+                }
+                if (part[p]==".") {
+                    part.splice(p,1);
+                    p = p - 1;
+                }
+            }
+            return part = part.join("/");
+        },
+        dir : function (path) {
+            var dir = path.replace(/\\/g,"/").split('/');dir.pop();dir = dir.join("/")+'/';
+            return dir;
+        },
+        relative : function (path,from) {
+            var pathParts = path.split("/");
+            var fromParts = from.split("/");
+
+            var once = false;
+            while (pathParts.length && fromParts.length && pathParts[0]==fromParts[0]) {
+                pathParts.splice(0,1);
+                fromParts.splice(0,1);
+                once = true;
+            }
+            if (!once || fromParts.length>2) return path;
+            return new Array(fromParts.length).join("../") + pathParts.join("/");
+        }
+    }    
     
     // LazyLoad library
     LazyLoad_f=function(k){function p(b,a){var g=k.createElement(b),c;for(c in a)a.hasOwnProperty(c)&&g.setAttribute(c,a[c]);return g}function l(b){var a=m[b],c,f;if(a)c=a.callback,f=a.urls,f.shift(),h=0,f.length||(c&&c.call(a.context,a.obj),m[b]=null,n[b].length&&j(b))}function w(){var b=navigator.userAgent;c={async:k.createElement("script").async===!0};(c.webkit=/AppleWebKit\//.test(b))||(c.ie=/MSIE/.test(b))||(c.opera=/Opera/.test(b))||(c.gecko=/Gecko\//.test(b))||(c.unknown=!0)}function j(b,a,g,f,h){var j=
@@ -126,7 +168,7 @@ var teacss = teacss || (function(){
                 return output;
             }
             
-            function string_format(s) { return '"'+s.replace(/(["\\])/g,'\\$1').replace(/\n(\s*)/g,'\\n"+\n$1"')+'"'; }
+            function string_format(s) { return '"'+s.replace(/(["\\])/g,'\\$1').replace(/\r?\n(\s*)/g,'\\n"+\n$1"')+'"'; }
 
             var selector_string = "";
             if (this.format=="string") {
@@ -355,6 +397,7 @@ var teacss = teacss || (function(){
             }
             teacss.tea.Style.rules.push(this);
         },
+        aliases: {},
         rule: function (key,val) {
             if (val && val.constructor && val.call && val.apply) {
                 if (key && key[0]=='@') return this.namespace(key,val);
@@ -365,8 +408,8 @@ var teacss = teacss || (function(){
                 var s = (val!==undefined) ? key+':'+val : key;
                 
                 if (key.substring(0,7)=="@append") return this.append(s);
-                if (val && teacss.aliases[key]) {
-                    window[teacss.aliases[key]](trim(val.substring(1)));
+                if (val && this.aliases[key]) {
+                    window[this.aliases[key]](trim(val.substring(1)));
                     return;
                 }
                 
@@ -506,16 +549,19 @@ var teacss = teacss || (function(){
 
         function processFile(path,callback) {
             teacss.parseFile(path,function(parsed){
-                if (!parsed) callback();
-                if (parsed.imports.length==0) callback();
-                var loaded = 0;
-                var loaded_cb = function () {
-                    loaded++;
-                    if (loaded==parsed.imports.length) callback();
+                if (!parsed) 
+                    callback();
+                else {
+                    if (parsed.imports.length==0) callback();
+                    var loaded = 0;
+                    var loaded_cb = function () {
+                        loaded++;
+                        if (loaded==parsed.imports.length) callback();
+                    }
+                    for (var i=0;i<parsed.imports.length;i++) {
+                        processFile(parsed.imports[i],loaded_cb);
+                    }     
                 }
-                for (var i=0;i<parsed.imports.length;i++) {
-                    processFile(parsed.imports[i],loaded_cb);
-                }                    
             });
         }
         
@@ -546,7 +592,7 @@ var teacss = teacss || (function(){
         for (var i = 0; i < links.length; i++) {
             var tea = links[i].getAttribute('tea');
             if (tea) {
-                sheets.push({src:tea});
+                sheets.push({src:teacss.path.absolute(tea)});
             }
         }
         return sheets;
@@ -827,7 +873,7 @@ var teacss = teacss || (function(){
                         break;
                         
                     case "import":
-                        output += "/* @import" + ast.data + " */";
+                        output += "/* " + ast.data + " */";
                         output += ' tea.import("'+ast.fullPath+'");';
                         break;
                         
@@ -895,6 +941,7 @@ var teacss = teacss || (function(){
             var token = tokens[t];
             switch (token.name) {
                 // AS IS tokens, one token - one ast node with the same name
+                case "nop":
                 case "js_line":
                 case "blank":
                 case "comment":
@@ -910,7 +957,7 @@ var teacss = teacss || (function(){
                     else
                         sub = s.split(" ")[0];
                     sub = teacss.getFullPath(sub,path);
-                    ast.push(token.name,token.data).fullPath = sub;
+                    ast.push(token.name,"@import"+token.data).fullPath = sub;
                     break;         
                     
                 // new rule node with empty selector
@@ -937,13 +984,14 @@ var teacss = teacss || (function(){
                                tokens[t+1].name=="js_inline" || 
                                tokens[t+1].name=="js_inline_block") 
                         { 
-                            ast.selector_tokens.push(tokens[t+1]); t++;
-                            ast.selector += tokens[t+1].data;
-                            pos += tokens[t+1].data.length;
+                            t++;
+                            ast.selector_tokens.push(tokens[t]);
+                            ast.selector += tokens[t].data;
+                            pos += tokens[t].data.length;
                         }
                     ast.data = ast.selector;
                     var is_block = ast.is_block = (tokens[t+1] && tokens[t+1].name=="scope_start");
-                    if (ast.is_block) t++;
+                    if (ast.is_block) { t++; pos += tokens[t].data.length; }
                     
                     // selector switches to a new scope
                     var scope = ast.selector.split(" ",1)[0];
@@ -985,7 +1033,11 @@ var teacss = teacss || (function(){
                     ast = ast.parent; break;
                 
                 // js block syntax
-                case "js_block_start": ast = ast.push("js_block"); break;
+                case "js_block_start": 
+                    ast = ast.push("js_block"); 
+                    ast.is_block = true;
+                    ast.data = "@";
+                    break;
                 case "js_code": ast.push(token.name,token.data); break;
                 case "js_block_end": ast = ast.parent; break;                    
             }
@@ -1005,7 +1057,7 @@ var teacss = teacss || (function(){
             js: false,
             errors: [],
             imports: imports,
-            ast: ast
+            ast: root_ast
         }
     }
     return teacss;
@@ -1439,43 +1491,7 @@ teacss.image = teacss.functions.image = teacss.image || (function(){
     return constructor;
 })();;
 teacss.build = (function () {
-    var path = {
-        isAbsoluteOrData : function(part) {
-            return /^(.:\/|data:|http:\/\/|https:\/\/|\/)/.test(part)
-        },
-        clean : function (part) {
-            part = part.replace(/\\/g,"/");
-            part = part.split("/");
-            for (var p=0;p<part.length;p++) {
-                if (part[p]=='..' && part[p-1]) {
-                    part.splice(p-1,2);
-                    p = p - 2;
-                }
-                if (part[p]==".") {
-                    part.splice(p,1);
-                    p = p - 1;
-                }
-            }
-            return part = part.join("/");
-        },
-        dir : function (path) {
-            var dir = path.replace(/\\/g,"/").split('/');dir.pop();dir = dir.join("/")+'/';
-            return dir;
-        },
-        relative : function (path,from) {
-            var pathParts = path.split("/");
-            var fromParts = from.split("/");
-
-            var once = false;
-            while (pathParts.length && fromParts.length && pathParts[0]==fromParts[0]) {
-                pathParts.splice(0,1);
-                fromParts.splice(0,1);
-                once = true;
-            }
-            if (!once || fromParts.length>2) return path;
-            return new Array(fromParts.length).join("../") + pathParts.join("/");
-        }
-    }
+    var path = teacss.path;
         
     /**
      * Builds tea file into js|css|images object
@@ -1581,6 +1597,7 @@ teacss.build = (function () {
         if (!teacss.buildCallback) return;
         
         var div = document.createElement('div');
+        div.id = "teacss-build-panel";
         div.style.position = 'fixed';
         div.style.right = '3px';
         div.style.top = '3px';
@@ -1590,8 +1607,8 @@ teacss.build = (function () {
         var html = "";
         html += '<div style="border:1px solid #555;padding:5px;margin:0;background:#333;color:#fff;">';
         for (var s=0;s<teacss.sheets.length;s++) {
-            html += 'Build <a style="cursor:pointer;color:#ffa;" onclick="teacss.build.run('+s+')">' 
-                + escape(teacss.sheets[s].src) + '</a><br>'
+            html += 'Build <a style="cursor:pointer;color:#ffa;padding:0;margin:0;background:transparent;border:none;" onclick="teacss.build.run('+s+')"><pre style="display:inline;padding:0;margin:0;background:transparent;border:none;">' 
+                + teacss.sheets[s].src + '</pre></a><br>'
         }
         html += '</div>';
         
@@ -2218,7 +2235,7 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
         var canvas = this;
         var tea = teacss.tea;
         var selector = tea.Style.current.getSelector();
-        var id = selector.replace(/[^A-Za-z_-]/g,"_")+"_canvas";
+        var id = selector.replace(/[^A-Za-z_0-9-]/g,"_")+"_canvas";
         
         Canvas.defaultElement.width = canvas.width;
         Canvas.defaultElement.height = canvas.height;
@@ -2246,7 +2263,7 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
             tea.rule('background-image','-moz-element(#'+id+')');
             doc.mozSetImageElement(id,element);
         } else {
-            tea.rule("background-image','-webkit-canvas("+id+")");
+            tea.rule('background-image','-webkit-canvas('+id+')');
             context = doc.getCSSCanvasContext("2d",id,canvas.width,canvas.height);
             context.drawImage(element,0,0);
         }

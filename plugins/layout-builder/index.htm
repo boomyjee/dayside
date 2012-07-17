@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Layout-builder plugin test</title>
+
+        <script src="../../server/assets/teacss/teacss.js"></script>
+        
+        <script src="../../../teacss-docs/build/scopes/lib/liquid.js"></script>
+        <script src="../../../teacss-docs/build/scopes/lib/liquid-inheritance.js"></script>
+        <script src="../../../teacss-docs/build/scopes/template.js"></script>
+        
+        <script src="../../server/assets/teacss/teacss-ui.js"></script>
+        <link href="../../server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
+            
+        <script src="../../client/dayside.js"></script>
+        <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
+        
+        <script src="layout-builder.js"></script>
+        <script>
+            dayside({
+                root: teacss.path.absolute(".")
+            })
+        </script>
+    </head>
+    <body>
+        Welcome to DaysIDE
+    </body>
+</html>

@@ -1,4 +1,25 @@
 CodeMirror.defineMode("teacss", function(config, parserConfig) {
+    
+    var LexerStack = (function(){
+        function LexerStack() {
+            this.states = [];
+            this.data = this.state = false;
+        }
+        LexerStack.prototype = {
+            push: function (state,data) {
+                data = data || {};
+                this.states.push({state:this.state=state,data:this.data=data});
+            },
+            pop: function () {
+                if (this.states.length<=1) return false;
+                this.states.pop();
+                this.data  = this.states[this.states.length-1].data; 
+                this.state = this.states[this.states.length-1].state;
+                return true;
+            }
+        }
+        return LexerStack;
+    })();    
 
     var jsMode = CodeMirror.getMode(config, "javascript");
     CodeMirror.StringStream.prototype.skipToMultiple = function(list) {
@@ -10,21 +31,15 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         if (found > -1) {this.pos = found; return true;}
     }
         
-    function test_teacss() {
-        if (!teacss.LexerStack) throw "You should include teacss (teacss CM mode)";
-    }
-    
     return {
         startState: function() {
-            test_teacss();
-            var state = new teacss.LexerStack();
+            var state = new LexerStack();
             state.push("scope",{scope:"css"});
             return state;
         },
         
         copyState: function(from) {
-            test_teacss();
-            var copy = new teacss.LexerStack();
+            var copy = new LexerStack();
             for (var i=0;i<from.states.length;i++) {
                 var state_from = from.states[i];
                 var state_copy = {};
@@ -46,7 +61,6 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         },
         
         token: function(stream, stack) {
-            test_teacss();
             switch (stack.state) {
                 case "scope":
                     if (stream.match("}")) { 
@@ -76,6 +90,7 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
             
                     if (stack.data.braces==0) {
                         if (!stack.pop()) return "pop_error"; 
+                        stream.match(/^(\s)*?\}/);
                         return "js_block_end"; 
                     }
                     return jsMode.token(stream, stack.data.jsState);

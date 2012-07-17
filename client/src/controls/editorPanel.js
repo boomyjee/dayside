@@ -41,8 +41,8 @@ teacss.ui.editorPanel = (function($){
             });
             this.splitter.setValue($.jStorage.get("editorPanel_splitterPos",600));
             this._super($.extend({items:[this.tabs,this.tabs2,this.splitter],margin:0},options||{}));
-           
-            this.element.css({position:'absolute',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
+            
+            this.element.css({position:'fixed',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
             this.element.appendTo("body").addClass("teacss-ui");
     
             
@@ -57,6 +57,15 @@ teacss.ui.editorPanel = (function($){
                 .css({position:'absolute',left:3,top:-25,'font-size':'12px'})
                 .appendTo(this.element);
             this.optionsCombo.element.find(".ui-button-text").css({padding:"0.15em 1em 0.15em 2.1em"});
+            
+            // top panel
+            this.element.append(
+                $("<div>").css({
+                    position: 'absolute',
+                    top: -62, left: 0, right: 0, height: 62, 'z-index': -1,
+                    background: '#333'
+                })
+            );
    
             this.updateOptions();
         },

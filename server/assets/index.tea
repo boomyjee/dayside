@@ -1,6 +1,10 @@
-@append "/apps/boomyjee/teacss-ui/public/lib/teacss-ui.js";
-@append "/apps/boomyjee/teacss-ui/public/lib/teacss-ui.css";
+@import "teacss/teacss-ui.js";
+@append "teacss/teacss-ui.css";
 
 @import "../../client/makefile.tea";
 
-@append "index.js";
+Script {
+    @append {
+        dayside();
+    }
+}

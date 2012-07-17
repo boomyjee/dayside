@@ -1,7 +1,7 @@
 <?
     if (isset($_POST['js'])) {
-        file_put_contents(__DIR__."/editorPanel.js",@$_POST['js']);
-        file_put_contents(__DIR__."/editorPanel.css",@$_POST['css']);
+        file_put_contents(__DIR__."/dayside.js",@$_POST['js']);
+        file_put_contents(__DIR__."/dayside.css",@$_POST['css']);
         echo 'ok';
         return ;
     }

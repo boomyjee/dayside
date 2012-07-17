@@ -1,0 +1,21 @@
+// some code to test preview feature
+Script {
+    @append {
+        dayside();
+    }
+}
+
+@{
+    tea.Style.ui = tea.Style.ui || {};
+    tea.Style.ui.color = {
+        control: teacss.ui.colorPicker,
+        options: { width: 30,height: 12, margin: 0 }
+    }
+    tea.Style.ui.background = tea.Style.ui.color;
+}
+
+
+body {
+    color: #0076f5;
+    background: #e37b7b;
+}

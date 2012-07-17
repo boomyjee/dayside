@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Preview plugin test</title>
+
+        <script src="../../server/assets/teacss/teacss.js"></script>
+        
+        <script src="../../server/assets/teacss/teacss-ui.js"></script>
+        <link href="../../server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
+            
+        <script src="../../client/dayside.js"></script>
+        <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
+        
+        <script src="preview.js"></script>
+        <script>
+            dayside({
+                root: teacss.path.absolute(".")
+            })
+            teacss.sheets.push({src:teacss.path.absolute("index.tea")});
+            teacss.update();
+        </script>
+    </head>
+    <body>
+        Welcome to DaysIDE
+    </body>
+</html>

@@ -3,7 +3,7 @@
         <title>DaysIDE</title>
         <style>
             body {
-                background: #333;
+                background: #666;
                 font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
                 font-size: 13px;
                 line-height: 18px;
@@ -18,11 +18,12 @@
             <script src="server/assets/teacss/teacss-ui.js"></script>
             <link href="server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
             
-            <script src="client/editorPanel.js"></script>
-            <link href="client/editorPanel.css" rel="stylesheet" type="text/css">
-            <script src="server/assets/index.js"></script>
+            <script src="client/dayside.js"></script>
+            <link href="client/dayside.css" rel="stylesheet" type="text/css">
+            <script>dayside({preview:false})</script>
         <? endif ?>
     </head>
     <body>
+        Welcome to DaysIDE
     </body>
 </html>
