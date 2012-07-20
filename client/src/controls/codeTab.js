@@ -52,6 +52,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='js')  mode = 'javascript';
             if (ext=='haml') mode = 'css';
             if (ext=='liquid') mode = 'liquid';
+            if (ext=='coffee') mode = 'coffeescript';
             if (ext=='htm' || ext=='html') mode = 'php';
             
             this.editor = CodeMirror(this.element[0],{
