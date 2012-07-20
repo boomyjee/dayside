@@ -9610,9 +9610,9 @@ document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}
 				}, this));
 		},
 		defaults : {
-			save_loaded		: "jstree_load",
-			save_opened		: "jstree_open",
-			save_selected	: "jstree_select",
+			save_loaded		: "jstree_load_"+location.href,
+			save_opened		: "jstree_open_"+location.href,
+			save_selected	: "jstree_select_"+location.href,
 			auto_save		: true
 		},
 		_fn : {
@@ -10254,11 +10254,11 @@ teacss.ui.optionsCombo = (function($){
             this.loadValue();
         },
         saveValue: function () {
-            $.jStorage.set("editorPanel_options",this.value);
+            $.jStorage.set("editorPanel_options_"+location.href,this.value);
         },
         loadValue: function () {
             this.setValue(
-                $.jStorage.get("editorPanel_options",{
+                $.jStorage.get("editorPanel_options_"+location.href,{
                     fontSize: 14,
                     editorLayout: 'right'
                 })
@@ -10313,9 +10313,9 @@ teacss.ui.editorPanel = (function($){
             // splitter to make tab panels resizable
             this.splitter = ui.splitter({ panels:[this.tabs,this.tabs2] });
             this.splitter.bind("change",function(){
-                $.jStorage.set("editorPanel_splitterPos",this.value);
+                $.jStorage.set("editorPanel_splitterPos_"+location.href,this.value);
             });
-            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos",600));
+            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos_"+location.href,600));
             this._super($.extend({items:[this.tabs,this.tabs2,this.splitter],margin:0},options||{}));
             
             this.element.css({position:'fixed',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});

@@ -62,11 +62,11 @@ teacss.ui.optionsCombo = (function($){
             this.loadValue();
         },
         saveValue: function () {
-            $.jStorage.set("editorPanel_options",this.value);
+            $.jStorage.set("editorPanel_options_"+location.href,this.value);
         },
         loadValue: function () {
             this.setValue(
-                $.jStorage.get("editorPanel_options",{
+                $.jStorage.get("editorPanel_options_"+location.href,{
                     fontSize: 14,
                     editorLayout: 'right'
                 })

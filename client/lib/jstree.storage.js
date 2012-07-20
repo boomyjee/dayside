@@ -29,9 +29,9 @@
 				}, this));
 		},
 		defaults : {
-			save_loaded		: "jstree_load",
-			save_opened		: "jstree_open",
-			save_selected	: "jstree_select",
+			save_loaded		: "jstree_load_"+location.href,
+			save_opened		: "jstree_open_"+location.href,
+			save_selected	: "jstree_select_"+location.href,
 			auto_save		: true
 		},
 		_fn : {

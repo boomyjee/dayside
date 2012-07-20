@@ -37,9 +37,9 @@ teacss.ui.editorPanel = (function($){
             // splitter to make tab panels resizable
             this.splitter = ui.splitter({ panels:[this.tabs,this.tabs2] });
             this.splitter.bind("change",function(){
-                $.jStorage.set("editorPanel_splitterPos",this.value);
+                $.jStorage.set("editorPanel_splitterPos_"+location.href,this.value);
             });
-            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos",600));
+            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos_"+location.href,600));
             this._super($.extend({items:[this.tabs,this.tabs2,this.splitter],margin:0},options||{}));
             
             this.element.css({position:'fixed',left:0,top:27,right:0,bottom:0,border:'1px solid #ddd','z-index':1});
