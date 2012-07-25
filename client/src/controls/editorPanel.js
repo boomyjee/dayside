@@ -18,17 +18,12 @@ teacss.ui.editorPanel = (function($){
             this.filePanel = ui.filePanel({
                 jupload: options.jupload,
                 onSelect: function (file) {
-                    var tab = ui.codeTab.find(file);
-                    if (!tab) {
-                        tab = ui.codeTab({file:file,closable:true});
-                        tab.editorPanel = me;
-                        me.tabsForFiles.addTab(tab);
-                    } else {
-                        if ($("#"+tab.options.id).length==0) {
-                            me.tabsForFiles.addTab(tab);
-                            tab.editorChange();
-                        }
-                    }
+                    var tab;
+                    tab = ui.codeTab({file:file,closable:true,editorPanel:me});
+                    tab.editorPanel = me;
+                    me.tabsForFiles.addTab(tab);
+                    
+                    me.trigger("codeTabCreated",tab);
                     me.tabsForFiles.selectTab(tab);
                 }
             });

@@ -142,4 +142,25 @@ abstract class FileApi {
         echo "SUCCESS\n";
         return;
     }    
+    
+    function batch() {
+        $res = array();
+        $url = @$_REQUEST['path'];
+        $path = $this->_pathFromUrl($url);
+        
+        if (!$path || !is_dir($path)) { echo "ERROR: Invalid directory path"; die(); }
+        
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($path,\RecursiveDirectoryIterator::SKIP_DOTS),\RecursiveIteratorIterator::CHILD_FIRST);
+        foreach ($iterator as $sub) {
+            $sub_path = $sub->__toString();
+            $sub_url = str_replace($path,$url,$sub_path);
+            if ($sub->isDir()) {
+                $res[$sub_url] = array('directory'=>true);
+            } else {
+                $res[$sub_url] = array('content'=>file_get_contents($sub_path));
+            }
+        }
+        echo json_encode($res);
+    }
 }

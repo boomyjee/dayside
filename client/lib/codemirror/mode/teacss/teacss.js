@@ -126,8 +126,8 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
                         }
                     }
                     
-                    if (stream.match("@{")) { stack.push("js_inline_block"); return "js_inline_block"; }
-                    if (stream.match("@")) { stack.push("js_inline"); return "js_inline"; }
+                    if (stream.match("@{")) { stack.push("js_block",{jsState:jsMode.startState()}); return "js_block_start"; }
+                    if (stream.match("@")) { stack.push("js_inline"); return "js_inline_start"; }
                     
                     if (stack.data.string_single) {
                         if (stream.peek()=="'" && stream.string[stream.pos-1]!='\\') stack.data.string_single = false;

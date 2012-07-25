@@ -16,7 +16,10 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
         this.element.tabs({
             select: function (e,ui) { 
                 var tab = $(ui.panel).data("tab");
-                if (tab && tab.onSelect) tab.onSelect();
+                if (tab) {
+                    tab.trigger("select",tab);
+                	me.trigger("select",tab);
+                }
             }
         });
         
@@ -24,9 +27,22 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
         this.element.on("click","span.ui-icon-close", function(){
             var href = $(this).prev().attr("href");
             var tab = me.element.find(href).data("tab");
-            tab.element.detach();
-            me.element.tabs("remove",$(this).prev().attr("href"));
+            var e = {tab:tab,cancel:false};
+            tab.trigger("close",e);
+            
+            if (!e.cancel) {
+                me.element.tabs("remove",$(this).prev().attr("href"));
+            }
         });
+    },
+    showNavigation: function (flag) {
+        if (!flag) {
+            this.element.find("> .ui-tabs-nav:first").hide();
+            this.element.find("> .ui-tabs-panel").css({top:0});
+        } else {
+            this.element.find("> .ui-tabs-nav:first").show();
+            this.element.find("> .ui-tabs-panel").css({top:''});
+        }
     },
     addTab: function (tab) {
         if (!(tab instanceof teacss.ui.tab)) tab = teacss.ui.tab(tab);
@@ -55,5 +71,10 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
         var sel = this.element.tabs("option","selected");
         var N = this.element.tabs("length");
         if (sel+1<N) this.element.tabs("option","selected",sel+1);
+    },
+    selectedTab: function () {
+        var sel = this.element.tabs("option","selected");
+        if (sel<0) return false;
+        return this.element.find("> div").eq(sel).data("tab");
     }
 });

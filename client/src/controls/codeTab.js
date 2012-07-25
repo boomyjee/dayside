@@ -16,6 +16,16 @@ teacss.ui.codeTab = (function($){
 
             var caption = this.options.file.split("/").pop().split("\\").pop();
             this.options.caption = caption;
+            
+            this.tabs = new teacss.ui.tabPanel({});
+            this.tabs.element
+                .css({position:'absolute',left:0,right:0,top:0,bottom:0})
+                .appendTo(this.element);
+            
+            this.codeTab = new teacss.ui.tab({caption:'Code'});
+            this.tabs.addTab(this.codeTab);
+            
+            this.editorElement = this.codeTab.element;
 
             var file = this.apiPath = this.options.file;
             if (!this.Class.fileData[file]) {
@@ -32,15 +42,24 @@ teacss.ui.codeTab = (function($){
             } else {
                 this.createEditor();
             }
-
             this.Class.tabs[options.file] = this;
+            
+            this.tabs.showNavigation(false);
+            this.trigger("init");
+            
+            this.bind("close",function(o,e){
+                if (this.Class.fileData[file].text!=this.editor.getValue()) {
+                    e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
+                }
+            });
         },
+        
         createEditor: function() {
             var me = this;
             var file = this.apiPath;
             var data = this.Class.fileData[file].text;
 
-            this.element.html("");
+            this.editorElement.html("");
 
             var parts = file.split(".");
             var ext = parts[parts.length-1];
@@ -54,8 +73,9 @@ teacss.ui.codeTab = (function($){
             if (ext=='liquid') mode = 'liquid';
             if (ext=='coffee') mode = 'coffeescript';
             if (ext=='htm' || ext=='html') mode = 'php';
+            if (ext=="md") mode = "gfm";
             
-            this.editor = CodeMirror(this.element[0],{
+            var editorOptions = {
                 value:data,
                 lineNumbers:true,
                 mode: mode,
@@ -65,6 +85,7 @@ teacss.ui.codeTab = (function($){
                 tabMode:"shift",
                 indentUnit:4,
                 matchBrackets: true,
+                extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
                 theme:'default',
                 onKeyEvent: function (editor,e) {
                     var event = $.event.fix(e);
@@ -82,7 +103,13 @@ teacss.ui.codeTab = (function($){
                 onUpdate: function (editor) {
                     me.editorPanel.trigger("editorChanged",me);
                 }
-            });
+            };
+            
+            var data = {options:editorOptions};
+            me.options.editorPanel.trigger("editorOptions",data);
+            editorOptions = data.options;
+            
+            this.editor = CodeMirror(this.editorElement[0],editorOptions);
             
             teacss.jQuery(function(){
                 setTimeout(function(){
@@ -92,25 +119,27 @@ teacss.ui.codeTab = (function($){
             })
         },
         editorChange: function() {
-            var data = this.editor.getValue();
+            var text = this.editor.getValue();
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             
-            if (this.editor.historySize().undo) {
-                this.Class.fileData[this.options.file] = {text:data,changed:true}
-                tab.addClass("changed");
-            } else {
-                this.Class.fileData[this.options.file] = {text:data,changed:false}
+            var changed = (text!=this.Class.fileData[this.options.file].text);
+            this.Class.fileData[this.options.file].changed = changed;
+            
+            if (!changed)
                 tab.removeClass("changed");
-            }
+            else
+                tab.addClass("changed");
             this.editorPanel.trigger("codeChanged",this);
         },
         saveFile: function() {
             var me = this;
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
-            var data = FileApi.save(this.apiPath,me.Class.fileData[this.options.file].text);
+            var text = this.editor.getValue();
+            var data = FileApi.save(this.apiPath,text);
             if (data=="ok") {
+                me.Class.fileData[this.options.file].text = text;
                 me.Class.fileData[this.options.file].changed = false;
                 tab.removeClass("changed");
                 if (me.callback) me.callback();

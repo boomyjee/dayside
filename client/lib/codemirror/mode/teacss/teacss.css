@@ -15,7 +15,7 @@
     color: #aa5500;
 }
 
-.cm-import_start, .cm-append_start, .cm-js_line_start, .cm-js_block_start, .cm-js_block_end, .cm-scope {
+.cm-import_start, .cm-append_start, .cm-js_line_start,  .cm-js_inline_start, .cm-js_block_start, .cm-js_block_end, .cm-scope {
     color: #00a;
     font-weight: bold;
 }

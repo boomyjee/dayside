@@ -1,6 +1,8 @@
+<!doctype html>
 <html>
     <head>
         <title>DaysIDE</title>
+        <meta charset="utf-8">
         <style>
             body {
                 background: #666;
