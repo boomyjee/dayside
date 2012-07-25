@@ -10455,6 +10455,45 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
                 }
             }
         });
+        this.element.find(".ui-tabs-nav:first").sortable({
+            axis: "x",
+            helper: function(e, item) {
+                var h = item;
+                h.width(item.width()+2);
+                return h;
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs(ui.position.left - $(this).position().left),
+                        before = ui.position.left > $(this).position().left;
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
+            },    
+            stop: function (e, ui) {
+                $(this).children().css('width','');
+            },
+            update: function () {
+                var container = $(this); // ul
+                var panel;
+                $(this).children().each(function() {
+                    panel = $($(this).find('a').attr('href'));
+                    panel.insertAfter(container);
+                    container = panel; // div
+                });
+            },
+            containment: 'parent'
+        });
         
         this.element.css({background:"transparent",padding:0});
         this.element.on("click","span.ui-icon-close", function(){
@@ -10468,6 +10507,7 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
             }
         });
     },
+    
     showNavigation: function (flag) {
         if (!flag) {
             this.element.find("> .ui-tabs-nav:first").hide();
