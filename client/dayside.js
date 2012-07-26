@@ -10564,17 +10564,6 @@ teacss.ui.tab = teacss.ui.Panel.extend({},{
 });;
 teacss.ui.codeTab = (function($){
     return teacss.ui.tab.extend({
-        find: function (file) {
-            var tab = this.tabs[file];
-            return tab;
-        },
-        fileData: {
-            /* fileName: {text:fileText,changed:wasFileChangedInEditor}  */
-        },
-        tabs: {
-            /* fileName: tab */
-        }
-    },{
         init: function (options) {
             this._super(options);
 
@@ -10593,29 +10582,24 @@ teacss.ui.codeTab = (function($){
 
             var file = this.apiPath = this.options.file;
             var me = this;
-            if (!this.Class.fileData[file]) {
-                var parts = file.split(".");
-                var ext = parts[parts.length-1];
-                if (ext=='png' || ext=='jpg' || ext=='jpeg' || ext=='gif') {
-                    this.element.html("");
-                    this.element.append($("<img>").attr("src",file));
-                } else {
-                    FileApi.file(file,function (answer){
-                        var data = answer.error || answer.data;
-                        me.Class.fileData[file] = {text:data,changed:false};
-                        me.createEditor();
-                    });
-                }
+            var parts = file.split(".");
+            var ext = parts[parts.length-1];
+            if (ext=='png' || ext=='jpg' || ext=='jpeg' || ext=='gif') {
+                this.element.html("");
+                this.element.append($("<img>").attr("src",file));
             } else {
-                this.createEditor();
+                FileApi.file(file,function (answer){
+                    var data = answer.error || answer.data;
+                    me.createEditor();
+                });
             }
-            this.Class.tabs[options.file] = this;
             
             this.tabs.showNavigation(false);
             this.trigger("init");
+            this.changed = false;
             
             this.bind("close",function(o,e){
-                if (this.Class.fileData[file].changed) {
+                if (this.changed) {
                     e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
                 }
             });
@@ -10642,7 +10626,7 @@ teacss.ui.codeTab = (function($){
         createEditor: function() {
             var me = this;
             var file = this.apiPath;
-            var data = this.Class.fileData[file].text;
+            var data = FileApi.cache[file];
 
             this.editorElement.html("");
 
@@ -10676,9 +10660,9 @@ teacss.ui.codeTab = (function($){
                     var event = $.event.fix(e);
                     if (event.type=='keydown' && event.ctrlKey && event.which == 83) {
                         event.preventDefault();
-                        if (me.Class.fileData[me.options.file].changed) {
+                        if (me.changed) {
                             setTimeout(function(){
-                                me.saveFile(me.options.file);
+                                me.saveFile();
                             },100);
                         }
                         return true;
@@ -10708,8 +10692,8 @@ teacss.ui.codeTab = (function($){
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             
-            var changed = (text!=this.Class.fileData[this.options.file].text);
-            this.Class.fileData[this.options.file].changed = changed;
+            var changed = (text!=FileApi.cache[this.options.file]);
+            this.changed = changed;
             
             if (!changed)
                 tab.removeClass("changed");
@@ -10725,8 +10709,7 @@ teacss.ui.codeTab = (function($){
             FileApi.save(this.apiPath,text,function(answer){
                 var data = answer.error || answer.data;
                 if (data=="ok") {
-                    me.Class.fileData[me.options.file].text = text;
-                    me.Class.fileData[me.options.file].changed = false;
+                    me.changed = false;
                     tab.removeClass("changed");
                     if (me.callback) me.callback();
                 } else {
