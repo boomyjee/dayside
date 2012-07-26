@@ -10599,9 +10599,12 @@ teacss.ui.codeTab = (function($){
                     this.element.html("");
                     this.element.append($("<img>").attr("src",file));
                 } else {
-                    var data = FileApi.file(file);
-                    this.Class.fileData[file] = {text:data,changed:false};
-                    this.createEditor();
+                    var me = this;
+                    FileApi.file(file,function (answer){
+                        var data = answer.error || answer.data;
+                        me.Class.fileData[file] = {text:data,changed:false};
+                        me.createEditor();
+                    });
                 }
             } else {
                 this.createEditor();
@@ -10701,15 +10704,17 @@ teacss.ui.codeTab = (function($){
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             var text = this.editor.getValue();
-            var data = FileApi.save(this.apiPath,text);
-            if (data=="ok") {
-                me.Class.fileData[this.options.file].text = text;
-                me.Class.fileData[this.options.file].changed = false;
-                tab.removeClass("changed");
-                if (me.callback) me.callback();
-            } else {
-                alert(data);
-            }
+            FileApi.save(this.apiPath,text,function(answer){
+                var data = answer.error || answer.data;
+                if (data=="ok") {
+                    me.Class.fileData[me.options.file].text = text;
+                    me.Class.fileData[me.options.file].changed = false;
+                    tab.removeClass("changed");
+                    if (me.callback) me.callback();
+                } else {
+                    alert(data);
+                }
+            });
         },
         onSelect: function () {
             var me = this;
@@ -10750,31 +10755,44 @@ teacss.ui.filePanel = (function($){
                 })
                 .bind("rename.jstree", function(e, data){
                     var path = data.rslt.obj.attr("rel");
-                    var res = FileApi.rename(path,data.rslt.new_name);
-                    if (res!="ok") {
-                        $.jstree.rollback(data.rlbk);
-                        alert(res);
-                    } else {
-                        var rel = path.split("/"); 
-                        rel.pop(); rel.push(data.rslt.new_name); 
-                        rel = rel.join("/");
-                        data.rslt.obj.attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
-                    }
+                    FileApi.rename(path,data.rslt.new_name,function(answer){
+                        var res = answer.error || answer.data;
+                        if (res!="ok") {
+                            $.jstree.rollback(data.rlbk);
+                            alert(res);
+                        } else {
+                            var rel = path.split("/"); 
+                            rel.pop(); rel.push(data.rslt.new_name); 
+                            rel = rel.join("/");
+                            
+                            var obj = data.rslt.obj;
+                            obj.attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            
+                            $(obj).find("li").each(function(){
+                                var sub = $(this).attr("rel");
+                                if (sub.substring(0,path.length)==path)
+                                    sub = rel + sub.substring(path.length);
+                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            });
+                        }
+                    });
                 })
-                .bind("remove.jstree", function (e,data){
+                .bind("delete_node.jstree", function (e,data){
                     if (confirm('Sure to delete files?')) {
                         var pathes = [];
                         data.rslt.obj.each(function(){
                             pathes.push($(this).attr("rel"));
                         });                        
-                        var res = FileApi.remove(pathes);
-                        if (res=="ok") {
-                            me.tree.jstree("refresh",'#'+data.rslt.parent.attr("id"));
-                            return;
-                        }
+                        FileApi.remove(pathes,function(answer){
+                            var res = answer.error || answer.data;
+                            if (res!="ok") {
+                                $.jstree.rollback(data.rlbk);
+                                alert(res);
+                            }
+                        });
+                    } else {
+                        $.jstree.rollback(data.rlbk);
                     }
-                    $.jstree.rollback(data.rlbk);
-                    
                 })
                 .bind("move_node.jstree", function (e,data){
                     var pathes = [];
@@ -10782,11 +10800,26 @@ teacss.ui.filePanel = (function($){
                         pathes.push($(this).attr("rel"));
                     });
                     var dest = data.rslt.np.attr("rel");
-                    var res = FileApi.move(pathes,dest);
+                    var answer = FileApi.move(pathes,dest);
+                    var res = answer.error || answer.data;
                     if (res!="ok") {
+                        $.jstree.rollback(data.rlbk);
                         alert(res);
+                    } else {
+                        data.rslt.o.each(function(){
+                            var path = $(this).attr("rel");
+                            var name = path.split("/").pop();
+                            var rel = dest + "/" + name;
+                            
+                            $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            $(this).find("li").each(function(){
+                                var sub = $(this).attr("rel");
+                                if (sub.substring(0,path.length)==path)
+                                    sub = rel + sub.substring(path.length);
+                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            });
+                        });
                     }
-                    me.tree.jstree("refresh",-1);
                 })
                 .jstree({
                     core: {
@@ -10794,39 +10827,41 @@ teacss.ui.filePanel = (function($){
                     },
                     json_data: {
                         data: function (node,after) {
-                            var list, children,data;
-                            if (node==-1) {
-                                data = FileApi.dir(FileApi.root);
-                                list = [{
-                                    data: {title:"/",icon:'project'},
-                                    attr: { rel: FileApi.root },
-                                    state: "open",
-                                    metadata: {folder:true},
-                                    children: []
-                                }];
-                                children = list[0].children;
-                            } else {
-                                data = FileApi.dir(node.attr("rel"));
-                                children = list = [];
-                            }
-                            for (var i=0;i<data.length;i++) {
-                                var node;
-                                node = {data:{}};
-                                node.data.title = data[i].name;
-                                node.attr = { rel: data[i].path };
-                                if (data[i].folder) {
-                                    node.data.icon = 'folder';
-                                    node.state = "closed";
-                                } else {
-                                    var ext = data[i].path.split(".").pop();
-                                    if (ext.indexOf('/')!=-1) ext = "";
-                                    node.data.icon = 'file '+ext;
+                            FileApi.dir(node==-1 ? FileApi.root : node.attr("rel"),function(answer){
+                                var list, children, data;
+                                if (!answer.error) {
+                                    data = answer.data;
+                                    if (node==-1) {
+                                        list = [{
+                                            data: {title:"/",icon:'project'},
+                                            attr: { rel: FileApi.root },
+                                            state: "open",
+                                            metadata: {folder:true},
+                                            children: []
+                                        }];
+                                        children = list[0].children;
+                                    } else {
+                                        children = list = [];
+                                    }
+                                    for (var i=0;i<data.length;i++) {
+                                        var item = {data:{}};
+                                        item.data.title = data[i].name;
+                                        item.attr = { rel: data[i].path };
+                                        if (data[i].folder) {
+                                            item.data.icon = 'folder';
+                                            item.state = "closed";
+                                        } else {
+                                            var ext = data[i].path.split(".").pop();
+                                            if (ext.indexOf('/')!=-1) ext = "";
+                                            item.data.icon = 'file '+ext;
+                                        }
+                                        item.metadata = data[i];
+                                        item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
+                                        children.push(item);
+                                    }
+                                    after(list);
                                 }
-                                node.metadata = data[i];
-                                node.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
-                                children.push(node);
-                            }
-                            after(list);
+                            });
                         }
                     },
                     contextmenu: {
@@ -10901,16 +10936,18 @@ teacss.ui.filePanel = (function($){
                                         submenu: {
                                             "createFile": {label:"Create file",action:function(){
                                                 if (file = prompt('Enter filename')) {
-                                                    FileApi.createFile(path,file)
-                                                    // refresh
-                                                    me.tree.jstree('refresh',node);
+                                                    FileApi.createFile(path,file,function(answer){
+                                                        // refresh
+                                                        me.tree.jstree('refresh',node);
+                                                    });
                                                 }
                                             }},
                                             "createFolder": {label:"Create folder",action:function(){
                                                 if (file = prompt('Enter folder name')) {
-                                                    FileApi.createFolder(path,file)
-                                                    // refresh
-                                                    me.tree.jstree('refresh',node);
+                                                    FileApi.createFolder(path,file,function(answer){
+                                                        // refresh
+                                                        me.tree.jstree('refresh',node);
+                                                    })
                                                 }
                                             }}
                                         }
@@ -11261,63 +11298,69 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 data.path = href + data.path;
             }
         }
+        var callback = data.callback;
+        data.callback = false;
         
         $.ajax({
             url: FileApi.ajax_url,
             data: $.extend(data,{user_cookie:FileApi.user_cookie,type:type}),
-            async: false,
+            async: callback ? true : false,
             type: "POST",
             success: function (answer) {
-                res = answer;
-                if (res=="auth_error") {
+                res = {data:answer};
+                if (answer=="auth_error") {
                     return res = FileApi.auth_error(type,data,json);
                 }
                 try {
                     if (json) {
-                        var hash = eval('('+res+')');
-                        res = hash;
+                        var hash = eval('('+answer+')');
+                        res = {data:hash};
                     }
                 } catch (e) {
                     alert(answer);
+                    res = {error:answer};
                 }
+                if (callback) callback(res);
             },
-            error: function (xhr,data,text) {
+            error: function (xhr,answer,text) {
                 alert(text);
+                res = {error:text};
+                if (callback) callback(res);
             }
         });
         return res;
     }
         
-    FileApi.dir = function (path) {
-        return FileApi.request('dir',{path:path},true);
+    FileApi.dir = function (path,callback) {
+        return FileApi.request('dir',{path:path,callback:callback},true);
     }
         
-    FileApi.file = function (path) {
-        return FileApi.request('file',{path:path},false);
+    FileApi.file = function (path,callback) {
+        return FileApi.request('file',{path:path,callback:callback},false);
     }
         
-    FileApi.save = function (path,text) {
-        return FileApi.request('save',{path:path,text:text},false);
+    FileApi.save = function (path,text,callback) {
+        return FileApi.request('save',{path:path,text:text,callback:callback},false);
     }
         
-    FileApi.createFile = function (path,file) {
-        return FileApi.request('createFile',{path:path,newFile:file},false);
+    FileApi.createFile = function (path,file,callback) {
+        return FileApi.request('createFile',{path:path,newFile:file,callback:callback},false);
     }
 
-    FileApi.createFolder = function (path,folder) {
-        return FileApi.request('createFolder',{path:path,newFolder:folder},false);
+    FileApi.createFolder = function (path,folder,callback) {
+        return FileApi.request('createFolder',{path:path,newFolder:folder,callback:callback},false);
     }
         
-    FileApi.rename = function (path,name) {
-        return FileApi.request('rename',{path:path,name:name},false);
+    FileApi.rename = function (path,name,callback) {
+        return FileApi.request('rename',{path:path,name:name,callback:callback},false);
     }
         
-    FileApi.remove = function (pathes) {
-        return FileApi.request('remove',{pathes:pathes},false);
+    FileApi.remove = function (pathes,callback) {
+        return FileApi.request('remove',{pathes:pathes,callback:callback},false);
     }
         
-    FileApi.move = function (pathes,dest) {
-        return FileApi.request('move',{pathes:pathes,dest:dest},false);
+    FileApi.move = function (pathes,dest,callback) {
+        return FileApi.request('move',{pathes:pathes,dest:dest,callback:callback},false);
     }
         
     return FileApi;

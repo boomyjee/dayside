@@ -29,31 +29,44 @@ teacss.ui.filePanel = (function($){
                 })
                 .bind("rename.jstree", function(e, data){
                     var path = data.rslt.obj.attr("rel");
-                    var res = FileApi.rename(path,data.rslt.new_name);
-                    if (res!="ok") {
-                        $.jstree.rollback(data.rlbk);
-                        alert(res);
-                    } else {
-                        var rel = path.split("/"); 
-                        rel.pop(); rel.push(data.rslt.new_name); 
-                        rel = rel.join("/");
-                        data.rslt.obj.attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
-                    }
+                    FileApi.rename(path,data.rslt.new_name,function(answer){
+                        var res = answer.error || answer.data;
+                        if (res!="ok") {
+                            $.jstree.rollback(data.rlbk);
+                            alert(res);
+                        } else {
+                            var rel = path.split("/"); 
+                            rel.pop(); rel.push(data.rslt.new_name); 
+                            rel = rel.join("/");
+                            
+                            var obj = data.rslt.obj;
+                            obj.attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            
+                            $(obj).find("li").each(function(){
+                                var sub = $(this).attr("rel");
+                                if (sub.substring(0,path.length)==path)
+                                    sub = rel + sub.substring(path.length);
+                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            });
+                        }
+                    });
                 })
-                .bind("remove.jstree", function (e,data){
+                .bind("delete_node.jstree", function (e,data){
                     if (confirm('Sure to delete files?')) {
                         var pathes = [];
                         data.rslt.obj.each(function(){
                             pathes.push($(this).attr("rel"));
                         });                        
-                        var res = FileApi.remove(pathes);
-                        if (res=="ok") {
-                            me.tree.jstree("refresh",'#'+data.rslt.parent.attr("id"));
-                            return;
-                        }
+                        FileApi.remove(pathes,function(answer){
+                            var res = answer.error || answer.data;
+                            if (res!="ok") {
+                                $.jstree.rollback(data.rlbk);
+                                alert(res);
+                            }
+                        });
+                    } else {
+                        $.jstree.rollback(data.rlbk);
                     }
-                    $.jstree.rollback(data.rlbk);
-                    
                 })
                 .bind("move_node.jstree", function (e,data){
                     var pathes = [];
@@ -61,11 +74,26 @@ teacss.ui.filePanel = (function($){
                         pathes.push($(this).attr("rel"));
                     });
                     var dest = data.rslt.np.attr("rel");
-                    var res = FileApi.move(pathes,dest);
+                    var answer = FileApi.move(pathes,dest);
+                    var res = answer.error || answer.data;
                     if (res!="ok") {
+                        $.jstree.rollback(data.rlbk);
                         alert(res);
+                    } else {
+                        data.rslt.o.each(function(){
+                            var path = $(this).attr("rel");
+                            var name = path.split("/").pop();
+                            var rel = dest + "/" + name;
+                            
+                            $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            $(this).find("li").each(function(){
+                                var sub = $(this).attr("rel");
+                                if (sub.substring(0,path.length)==path)
+                                    sub = rel + sub.substring(path.length);
+                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                            });
+                        });
                     }
-                    me.tree.jstree("refresh",-1);
                 })
                 .jstree({
                     core: {
@@ -73,39 +101,41 @@ teacss.ui.filePanel = (function($){
                     },
                     json_data: {
                         data: function (node,after) {
-                            var list, children,data;
-                            if (node==-1) {
-                                data = FileApi.dir(FileApi.root);
-                                list = [{
-                                    data: {title:"/",icon:'project'},
-                                    attr: { rel: FileApi.root },
-                                    state: "open",
-                                    metadata: {folder:true},
-                                    children: []
-                                }];
-                                children = list[0].children;
-                            } else {
-                                data = FileApi.dir(node.attr("rel"));
-                                children = list = [];
-                            }
-                            for (var i=0;i<data.length;i++) {
-                                var node;
-                                node = {data:{}};
-                                node.data.title = data[i].name;
-                                node.attr = { rel: data[i].path };
-                                if (data[i].folder) {
-                                    node.data.icon = 'folder';
-                                    node.state = "closed";
-                                } else {
-                                    var ext = data[i].path.split(".").pop();
-                                    if (ext.indexOf('/')!=-1) ext = "";
-                                    node.data.icon = 'file '+ext;
+                            FileApi.dir(node==-1 ? FileApi.root : node.attr("rel"),function(answer){
+                                var list, children, data;
+                                if (!answer.error) {
+                                    data = answer.data;
+                                    if (node==-1) {
+                                        list = [{
+                                            data: {title:"/",icon:'project'},
+                                            attr: { rel: FileApi.root },
+                                            state: "open",
+                                            metadata: {folder:true},
+                                            children: []
+                                        }];
+                                        children = list[0].children;
+                                    } else {
+                                        children = list = [];
+                                    }
+                                    for (var i=0;i<data.length;i++) {
+                                        var item = {data:{}};
+                                        item.data.title = data[i].name;
+                                        item.attr = { rel: data[i].path };
+                                        if (data[i].folder) {
+                                            item.data.icon = 'folder';
+                                            item.state = "closed";
+                                        } else {
+                                            var ext = data[i].path.split(".").pop();
+                                            if (ext.indexOf('/')!=-1) ext = "";
+                                            item.data.icon = 'file '+ext;
+                                        }
+                                        item.metadata = data[i];
+                                        item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
+                                        children.push(item);
+                                    }
+                                    after(list);
                                 }
-                                node.metadata = data[i];
-                                node.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
-                                children.push(node);
-                            }
-                            after(list);
+                            });
                         }
                     },
                     contextmenu: {
@@ -180,16 +210,18 @@ teacss.ui.filePanel = (function($){
                                         submenu: {
                                             "createFile": {label:"Create file",action:function(){
                                                 if (file = prompt('Enter filename')) {
-                                                    FileApi.createFile(path,file)
-                                                    // refresh
-                                                    me.tree.jstree('refresh',node);
+                                                    FileApi.createFile(path,file,function(answer){
+                                                        // refresh
+                                                        me.tree.jstree('refresh',node);
+                                                    });
                                                 }
                                             }},
                                             "createFolder": {label:"Create folder",action:function(){
                                                 if (file = prompt('Enter folder name')) {
-                                                    FileApi.createFolder(path,file)
-                                                    // refresh
-                                                    me.tree.jstree('refresh',node);
+                                                    FileApi.createFolder(path,file,function(answer){
+                                                        // refresh
+                                                        me.tree.jstree('refresh',node);
+                                                    })
                                                 }
                                             }}
                                         }

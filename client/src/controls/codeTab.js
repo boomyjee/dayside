@@ -35,9 +35,12 @@ teacss.ui.codeTab = (function($){
                     this.element.html("");
                     this.element.append($("<img>").attr("src",file));
                 } else {
-                    var data = FileApi.file(file);
-                    this.Class.fileData[file] = {text:data,changed:false};
-                    this.createEditor();
+                    var me = this;
+                    FileApi.file(file,function (answer){
+                        var data = answer.error || answer.data;
+                        me.Class.fileData[file] = {text:data,changed:false};
+                        me.createEditor();
+                    });
                 }
             } else {
                 this.createEditor();
@@ -137,15 +140,17 @@ teacss.ui.codeTab = (function($){
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             var text = this.editor.getValue();
-            var data = FileApi.save(this.apiPath,text);
-            if (data=="ok") {
-                me.Class.fileData[this.options.file].text = text;
-                me.Class.fileData[this.options.file].changed = false;
-                tab.removeClass("changed");
-                if (me.callback) me.callback();
-            } else {
-                alert(data);
-            }
+            FileApi.save(this.apiPath,text,function(answer){
+                var data = answer.error || answer.data;
+                if (data=="ok") {
+                    me.Class.fileData[me.options.file].text = text;
+                    me.Class.fileData[me.options.file].changed = false;
+                    tab.removeClass("changed");
+                    if (me.callback) me.callback();
+                } else {
+                    alert(data);
+                }
+            });
         },
         onSelect: function () {
             var me = this;
