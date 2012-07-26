@@ -407,6 +407,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .teacss-ui .editorPanel-toolbar {
     background: #eee;
     padding: 4px 0;
+    height: 19px;
 }
 .teacss-ui .editorPanel-toolbar .ui-button {
     border: none;
