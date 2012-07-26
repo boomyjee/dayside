@@ -88,8 +88,6 @@ abstract class FileApi {
                                 rmdir($sub->__toString());
                             else
                                 unlink($sub->__toString());
-                            
-                            echo $sub->__toString()."\n";
                         }
                         rmdir($path);
                     } elseif (is_file($path)) {

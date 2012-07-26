@@ -10592,6 +10592,7 @@ teacss.ui.codeTab = (function($){
             this.editorElement = this.codeTab.element;
 
             var file = this.apiPath = this.options.file;
+            var me = this;
             if (!this.Class.fileData[file]) {
                 var parts = file.split(".");
                 var ext = parts[parts.length-1];
@@ -10599,7 +10600,6 @@ teacss.ui.codeTab = (function($){
                     this.element.html("");
                     this.element.append($("<img>").attr("src",file));
                 } else {
-                    var me = this;
                     FileApi.file(file,function (answer){
                         var data = answer.error || answer.data;
                         me.Class.fileData[file] = {text:data,changed:false};
@@ -10615,8 +10615,26 @@ teacss.ui.codeTab = (function($){
             this.trigger("init");
             
             this.bind("close",function(o,e){
-                if (this.Class.fileData[file].text!=this.editor.getValue()) {
+                if (this.Class.fileData[file].changed) {
                     e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
+                }
+            });
+            
+            FileApi.events.bind("move",function(o,e){
+                if (e.path==me.options.file) me.options.file = e.new_path;
+            });
+            FileApi.events.bind("rename",function(o,e){
+                if (e.path==me.options.file) {
+                    me.options.file = e.new_path;
+                    var caption = e.new_path.split("/").pop();
+                    var id = me.element.parent().attr("id");
+                    me.element.parent().parent().find("a[href=#"+id+"]").html(caption);
+                }
+            });
+            FileApi.events.bind("remove",function(o,e){
+                if (e.path==me.options.file) {
+                    var id = me.element.parent().attr("id");
+                    me.element.parent().parent().tabs("remove","#"+id);
                 }
             });
         },
@@ -10672,11 +10690,11 @@ teacss.ui.codeTab = (function($){
                 }
             };
             
-            var data = {options:editorOptions};
-            me.options.editorPanel.trigger("editorOptions",data);
-            editorOptions = data.options;
+            var args = {options:editorOptions};
+            me.options.editorPanel.trigger("editorOptions",args);
+            editorOptions = args.options;
             
-            this.editor = CodeMirror(this.editorElement[0],editorOptions);
+            me.editor = CodeMirror(this.editorElement[0],editorOptions);
             
             teacss.jQuery(function(){
                 setTimeout(function(){
@@ -11279,18 +11297,18 @@ var FileApi = window.FileApi = window.FileApi || function () {
     var FileApi = {};
     
     FileApi.ajax_url = '/api';
-    FileApi.base_url = "/";
     FileApi.root = "/";
-    FileApi.user_cookie = (window.uxcandy) ? window.uxcandy.user_cookie : false;
     FileApi.auth_error = function () {
         alert('Authorization failed');
         throw 'Authorization failed';
         return {};
     }
+        
+    if (teacss.ui.eventTarget)
+        FileApi.events = new teacss.ui.eventTarget;
 
-    FileApi.request = function (type,data,json) {
+    FileApi.request = function (type,data,json,callback) {
         var $ = window.jQuery || teacss.jQuery;
-        var res = false;
         
         if (data.path) {
             if (data.path.substring(0,4)!="http") {
@@ -11298,18 +11316,16 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 data.path = href + data.path;
             }
         }
-        var callback = data.callback;
-        data.callback = false;
-        
+
         $.ajax({
             url: FileApi.ajax_url,
-            data: $.extend(data,{user_cookie:FileApi.user_cookie,type:type}),
-            async: callback ? true : false,
+            data: $.extend(data,{type:type}),
+            async: true,
             type: "POST",
             success: function (answer) {
                 res = {data:answer};
                 if (answer=="auth_error") {
-                    return res = FileApi.auth_error(type,data,json);
+                    return res = FileApi.auth_error(type,data,json,callback);
                 }
                 try {
                     if (json) {
@@ -11328,39 +11344,99 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 if (callback) callback(res);
             }
         });
-        return res;
     }
         
+    FileApi.cache = {};
+        
     FileApi.dir = function (path,callback) {
-        return FileApi.request('dir',{path:path,callback:callback},true);
+        FileApi.request('dir',{path:path},true,callback);
     }
         
     FileApi.file = function (path,callback) {
-        return FileApi.request('file',{path:path,callback:callback},false);
+        FileApi.request('file',{path:path},false,function(answer){
+            if (!answer.error) FileApi.cache[path] = answer.data;
+            if (callback) callback(answer);
+        });
     }
         
     FileApi.save = function (path,text,callback) {
-        return FileApi.request('save',{path:path,text:text,callback:callback},false);
+        FileApi.request('save',{path:path,text:text},false,function(answer){
+            if (!answer.error && answer.data=="ok") FileApi.cache[path] = text;
+            if (callback) callback(answer);
+        });
     }
         
     FileApi.createFile = function (path,file,callback) {
-        return FileApi.request('createFile',{path:path,newFile:file,callback:callback},false);
+        FileApi.request('createFile',{path:path,newFile:file},false,function(answer){
+            if (!answer.error && answer.data=="ok") FileApi.cache[path] = "";
+            if (callback) callback(answer);
+        });
     }
 
     FileApi.createFolder = function (path,folder,callback) {
-        return FileApi.request('createFolder',{path:path,newFolder:folder,callback:callback},false);
+        FileApi.request('createFolder',{path:path,newFolder:folder},false,callback);
     }
         
     FileApi.rename = function (path,name,callback) {
-        return FileApi.request('rename',{path:path,name:name,callback:callback},false);
+        FileApi.request('rename',{path:path,name:name},false,function(answer){
+            if (!answer.error && answer.data=="ok") {
+                var new_path = path.split("/"); 
+                new_path.push(name);
+                new_path = new_path.join("/");
+                if (new_path!=path) {
+                    FileApi.cache[new_path] = FileApi.cache[path];
+                    delete FileApi.cache[path];
+                    
+                    if (FileApi.events) 
+                        FileApi.events.trigger("rename",{path:path,new_path:new_path});
+                }
+            }
+            if (callback) callback(answer);
+        });
     }
         
     FileApi.remove = function (pathes,callback) {
-        return FileApi.request('remove',{pathes:pathes,callback:callback},false);
+        FileApi.request('remove',{pathes:pathes},false,function(answer){
+            if (!answer.error && answer.data=="ok") {
+                for (var i=0;i<pathes.length;i++) {
+                    delete FileApi.cache[pathes[i]];
+                    if (FileApi.events) 
+                        FileApi.events.trigger("remove",{path:pathes[i]});
+                }
+            }
+            if (callback) callback(answer);
+        });
     }
         
     FileApi.move = function (pathes,dest,callback) {
-        return FileApi.request('move',{pathes:pathes,dest:dest,callback:callback},false);
+        FileApi.request('move',{pathes:pathes,dest:dest},false,function(answer){
+            if (!answer.error && answer.data=="ok") {
+                var moving = [];
+                for (var path in FileApi.cache) {
+                    for (var i=0;i<pathes.length;i++) {
+                        if (path.indexOf(pathes[i])===0) {
+                            moving.push({path:path,base:pathes[i]});
+                            break;
+                        }
+                    }
+                }
+                for (var i=0;i<moving.length;i++) {
+                    var path = moving[i].path;
+                    var base = moving[i].base;
+                    
+                    var name = base.split("/").pop();
+                    var new_base = dest + "/" + name;
+                    var new_path = new_base + path.substring(base.length);
+                    if (new_path!=path) {
+                        FileApi.cache[new_path] = FileApi.cache[path];
+                        delete FileApi.cache[path];
+                        if (FileApi.events) 
+                            FileApi.events.trigger("move",{path:path,new_path:new_path});
+                    }
+                }
+            }
+            if (callback) callback(answer);
+        });
     }
         
     return FileApi;
@@ -11394,9 +11470,9 @@ window.dayside = window.dayside || (function(){
             root: dir.substring(0,dir.lastIndexOf('/')),
             ajax_url: dir + "/server/demo.php",
             jupload_url: dir + "/server/assets/jupload/jupload.jar",
-            auth_error: function (type,data,json) {
+            auth_error: function (type,data,json,callback) {
                 var password = prompt('Enter password');
-                return FileApi.request(type,$.extend(data||{},{password:password}),json);
+                return FileApi.request(type,$.extend(data||{},{password:password}),json,callback);
             },
             preview: true
         }

@@ -28,6 +28,7 @@ teacss.ui.codeTab = (function($){
             this.editorElement = this.codeTab.element;
 
             var file = this.apiPath = this.options.file;
+            var me = this;
             if (!this.Class.fileData[file]) {
                 var parts = file.split(".");
                 var ext = parts[parts.length-1];
@@ -35,7 +36,6 @@ teacss.ui.codeTab = (function($){
                     this.element.html("");
                     this.element.append($("<img>").attr("src",file));
                 } else {
-                    var me = this;
                     FileApi.file(file,function (answer){
                         var data = answer.error || answer.data;
                         me.Class.fileData[file] = {text:data,changed:false};
@@ -51,8 +51,26 @@ teacss.ui.codeTab = (function($){
             this.trigger("init");
             
             this.bind("close",function(o,e){
-                if (this.Class.fileData[file].text!=this.editor.getValue()) {
+                if (this.Class.fileData[file].changed) {
                     e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
+                }
+            });
+            
+            FileApi.events.bind("move",function(o,e){
+                if (e.path==me.options.file) me.options.file = e.new_path;
+            });
+            FileApi.events.bind("rename",function(o,e){
+                if (e.path==me.options.file) {
+                    me.options.file = e.new_path;
+                    var caption = e.new_path.split("/").pop();
+                    var id = me.element.parent().attr("id");
+                    me.element.parent().parent().find("a[href=#"+id+"]").html(caption);
+                }
+            });
+            FileApi.events.bind("remove",function(o,e){
+                if (e.path==me.options.file) {
+                    var id = me.element.parent().attr("id");
+                    me.element.parent().parent().tabs("remove","#"+id);
                 }
             });
         },
@@ -108,11 +126,11 @@ teacss.ui.codeTab = (function($){
                 }
             };
             
-            var data = {options:editorOptions};
-            me.options.editorPanel.trigger("editorOptions",data);
-            editorOptions = data.options;
+            var args = {options:editorOptions};
+            me.options.editorPanel.trigger("editorOptions",args);
+            editorOptions = args.options;
             
-            this.editor = CodeMirror(this.editorElement[0],editorOptions);
+            me.editor = CodeMirror(this.editorElement[0],editorOptions);
             
             teacss.jQuery(function(){
                 setTimeout(function(){

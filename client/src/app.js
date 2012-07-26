@@ -27,9 +27,9 @@ window.dayside = window.dayside || (function(){
             root: dir.substring(0,dir.lastIndexOf('/')),
             ajax_url: dir + "/server/demo.php",
             jupload_url: dir + "/server/assets/jupload/jupload.jar",
-            auth_error: function (type,data,json) {
+            auth_error: function (type,data,json,callback) {
                 var password = prompt('Enter password');
-                return FileApi.request(type,$.extend(data||{},{password:password}),json);
+                return FileApi.request(type,$.extend(data||{},{password:password}),json,callback);
             },
             preview: true
         }
