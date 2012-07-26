@@ -52,21 +52,17 @@ teacss.ui.filePanel = (function($){
                     });
                 })
                 .bind("delete_node.jstree", function (e,data){
-                    if (confirm('Sure to delete files?')) {
-                        var pathes = [];
-                        data.rslt.obj.each(function(){
-                            pathes.push($(this).attr("rel"));
-                        });                        
-                        FileApi.remove(pathes,function(answer){
-                            var res = answer.error || answer.data;
-                            if (res!="ok") {
-                                $.jstree.rollback(data.rlbk);
-                                alert(res);
-                            }
-                        });
-                    } else {
-                        $.jstree.rollback(data.rlbk);
-                    }
+                    var pathes = [];
+                    data.rslt.obj.each(function(){
+                        pathes.push($(this).attr("rel"));
+                    });                        
+                    FileApi.remove(pathes,function(answer){
+                        var res = answer.error || answer.data;
+                        if (res!="ok") {
+                            $.jstree.rollback(data.rlbk);
+                            alert(res);
+                        }
+                    });
                 })
                 .bind("move_node.jstree", function (e,data){
                     var pathes = [];
@@ -233,7 +229,8 @@ teacss.ui.filePanel = (function($){
                                 me.tree.jstree("rename");
                             }}
                             res["delete"] = {label: "Delete",action:function(){
-                                me.tree.jstree("remove");
+                                if (confirm('Sure to delete files?'))
+                                    me.tree.jstree("remove");
                             }}
 
                             if (path=='/') delete res['delete'];
@@ -280,6 +277,11 @@ teacss.ui.filePanel = (function($){
                                 }
                             }
                             return false;                            
+                        },
+                        "del": function () {
+                            if (confirm('Sure to delete files?')) {
+                                this.remove(this.data.ui.hovered || this._get_node(null));
+                            }
                         }
                     },
                     crrm: {
