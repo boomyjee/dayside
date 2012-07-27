@@ -11312,8 +11312,8 @@ var FileApi = window.FileApi = window.FileApi || function () {
             type: "POST",
             success: function (answer) {
                 res = {data:answer};
-                if (answer=="auth_error") {
-                    return res = FileApi.auth_error(type,data,json,callback);
+                if (answer=="auth_error" || answer=="auth_empty") {
+                    return res = FileApi.auth_error(answer,type,data,json,callback);
                 }
                 try {
                     if (json) {
@@ -11458,8 +11458,8 @@ window.dayside = window.dayside || (function(){
             root: dir.substring(0,dir.lastIndexOf('/')),
             ajax_url: dir + "/server/demo.php",
             jupload_url: dir + "/server/assets/jupload/jupload.jar",
-            auth_error: function (type,data,json,callback) {
-                var password = prompt('Enter password');
+            auth_error: function (auth_type,type,data,json,callback) {
+                var password = prompt(auth_type=='auth_error' ? 'Enter password':'No password is set. Enter one');
                 return FileApi.request(type,$.extend(data||{},{password:password}),json,callback);
             },
             preview: true

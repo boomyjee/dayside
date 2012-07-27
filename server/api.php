@@ -1,7 +1,49 @@
 <?php
 
-abstract class FileApi {
-    abstract function _pathFromUrl($url);
+class FileApi {
+    
+    function __construct() {
+        $fileapi_hash = false;
+        $password_path = __DIR__."/password.php";
+        
+        if (file_exists($password_path))
+            include $password_path;
+        
+        if (!$fileapi_hash) {
+            if (isset($_POST['password'])) {
+                $fileapi_hash = sha1($_POST['password']);
+                file_put_contents($password_path,'<?php $fileapi_hash="'.$fileapi_hash.'";');
+            } else {
+                echo "auth_empty"; die(); 
+            }
+        }
+        
+        if (isset($_POST['password']))
+            setcookie('editor_auth',$test = sha1($_POST['password']),0,'/');
+        else
+            $test = $_COOKIE['editor_auth'];
+        
+        if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
+        $this->{$_POST['type']}();
+        die();                
+    }
+    
+    function _pathFromUrl($url) {
+        $url = explode('/',$url,4);
+        $url = @$url[3] ? "/".$url[3] : "";
+        
+        $base = substr($_SERVER['REQUEST_URI'],0,strlen($_SERVER['REQUEST_URI'])-strlen($_SERVER['QUERY_STRING']));
+        $base = preg_replace('/(\/)?('.basename($_SERVER["PHP_SELF"]).')?\??$/i','',$base);
+        $base = implode('/',explode('/',$base,-2));
+        
+        if ($base=="" || strpos($url,$base)===0) {
+            $rel = substr($url,strlen($base));
+            $path = realpath(__DIR__."/../..").$rel;
+            return $path;
+        }
+        return false;
+    }    
+    
     function dir() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         if (!$path || !is_dir($path)) { echo "ERROR: Invalid directory path"; die(); }

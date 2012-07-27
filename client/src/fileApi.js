@@ -29,8 +29,8 @@ var FileApi = window.FileApi = window.FileApi || function () {
             type: "POST",
             success: function (answer) {
                 res = {data:answer};
-                if (answer=="auth_error") {
-                    return res = FileApi.auth_error(type,data,json,callback);
+                if (answer=="auth_error" || answer=="auth_empty") {
+                    return res = FileApi.auth_error(answer,type,data,json,callback);
                 }
                 try {
                     if (json) {
