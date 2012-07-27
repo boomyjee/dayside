@@ -1,3 +1,0 @@
-demo text file
-
-// boo

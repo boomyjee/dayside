@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        <title>DaysIDE</title>
+        <meta charset="utf-8">
+        <style>
+            body {
+                background: #666;
+                font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+                font-size: 13px;
+                line-height: 18px;
+            }
+        </style>
+            
+        <script language="javascript">
+            var qs = location.search;
+            if (qs.indexOf("dev")!=-1) {
+                document.write('<script tea="server/assets/index.tea"><\/script>');
+                document.write('<script src="server/assets/teacss/teacss.js"><\/script>');
+            } else {
+                document.write('<script src="server/assets/teacss/teacss.js"><\/script>');
+                document.write('<script src="server/assets/teacss/teacss-ui.js"><\/script>');
+                document.write('<link href="server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">');
+                document.write('<script src="client/dayside.js"><\/script>');
+                document.write('<link href="client/dayside.css" rel="stylesheet" type="text/css">');
+                document.write('<script>dayside({preview:false})<\/script>');
+            }
+        </script>
+    </head>
+    <body>
+        Welcome to DaysIDE
+    </body>
+</html>

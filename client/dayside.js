@@ -11432,11 +11432,12 @@ var FileApi = window.FileApi = window.FileApi || function () {
 window.dayside = window.dayside || (function(){
     
     var dir = "/dayside";
+    var res;
+
     var $ = teacss.jQuery;
     $("script").each(function(){
         var src = $(this).attr("src");
         if (!src) return;
-        var res;
         if (res = src.match(/^(.*?)client\/src\/app\.js$/)) dir = res[1];
         if (res = src.match(/^(.*?)client\/dayside\.js$/)) dir = res[1];
     });
@@ -11449,7 +11450,7 @@ window.dayside = window.dayside || (function(){
     }
     
     var link = document.createElement("a");
-    link.href = dir; 
+    link.href = dir=="" ? "." : dir; 
     dir = link.href.replace(/\/$/,'');
     
     var dayside = function (options) {
