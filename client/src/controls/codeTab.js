@@ -1,5 +1,7 @@
 teacss.ui.codeTab = (function($){
     return teacss.ui.tab.extend({
+        tabs: []
+    },{
         init: function (options) {
             this._super(options);
 
@@ -57,6 +59,8 @@ teacss.ui.codeTab = (function($){
                     me.element.parent().parent().tabs("remove","#"+id);
                 }
             });
+            
+            this.Class.tabs.push(this);
         },
         
         createEditor: function() {

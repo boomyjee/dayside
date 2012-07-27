@@ -10564,6 +10564,8 @@ teacss.ui.tab = teacss.ui.Panel.extend({},{
 });;
 teacss.ui.codeTab = (function($){
     return teacss.ui.tab.extend({
+        tabs: []
+    },{
         init: function (options) {
             this._super(options);
 
@@ -10621,6 +10623,8 @@ teacss.ui.codeTab = (function($){
                     me.element.parent().parent().tabs("remove","#"+id);
                 }
             });
+            
+            this.Class.tabs.push(this);
         },
         
         createEditor: function() {
@@ -11252,7 +11256,7 @@ teacss.ui.editorPanel = (function($){
                 styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
             }
             styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; line-height:"+(value.fontSize)+"px !important;}");
-            for (var t in ui.codeTab.tabs) {
+            for (var t=0;t<ui.codeTab.tabs.length;t++) {
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
             }            
@@ -11266,7 +11270,7 @@ teacss.ui.editorPanel = (function($){
             
             // move already opened code tabs to the right panel if needed
             if (this.tabsForFiles != tabsForFiles) {
-                for (var t in ui.codeTab.tabs) {
+                for (var t=0;t<ui.codeTab.tabs.length;t++) {
                     var tab = ui.codeTab.tabs[t];
                     tab.element.detach();
                     this.tabsForFiles.element.tabs("remove",'#'+tab.element.attr("id"));
