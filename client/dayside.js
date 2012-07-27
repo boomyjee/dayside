@@ -11427,6 +11427,18 @@ var FileApi = window.FileApi = window.FileApi || function () {
         });
     }
         
+    FileApi.batch = function (path,callback) {
+        FileApi.request('batch',{path:path},true,function(answer){
+            if (!answer.error) {
+                for (var path in answer.data) {
+                    var info = answer.data[path];
+                    if (!info.directory)
+                        FileApi.cache[path] = info.content;
+                }
+            }
+            if (callback) callback(answer);
+        });
+    }
     return FileApi;
 }();;
 window.dayside = window.dayside || (function(){

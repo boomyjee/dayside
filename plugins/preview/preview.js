@@ -48,6 +48,9 @@ teacss.ui.previewTab = (function($){
         },
 
         editorChanged: function(e,tab) {
+            
+            if (!tab.editor) return;
+            
             var me = tab;
             var cm = me.editor;
             var file = me.options.file;
