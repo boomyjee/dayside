@@ -19,6 +19,10 @@ teacss.ui.tabPanel = teacss.ui.Control.extend({
                 if (tab) {
                     tab.trigger("select",tab);
                 	me.trigger("select",tab);
+                    
+                    setTimeout(function(){
+                        tab.element.find(".ui-accordion").accordion("resize");
+                    },1);
                 }
             }
         });
