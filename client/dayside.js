@@ -11192,9 +11192,9 @@ teacss.ui.editorPanel = (function($){
             var ui = teacss.ui;
             
             // left tab panel (for file tree & code)
-            this.tabs = ui.tabPanel({});
+            this.sidebarTabs = this.tabs = ui.tabPanel({});
             // right tab panel (for preview & code)
-            this.tabs2 = ui.tabPanel({});
+            this.contentTabs = this.tabs2 = ui.tabPanel({});
             // code tabs opened in right panel for default
             this.tabsForFiles = this.tabs2;
             

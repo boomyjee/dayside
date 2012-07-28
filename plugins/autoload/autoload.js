@@ -11,10 +11,12 @@ dayside.plugins.push(function(){
                 }
             }
         }
-        var $ = teacss.jQuery;
-        var head = $("head");
-        for (var path in list) {
-            head.append($("<script>").attr("src",path).addClass("dayside-autoload"));
+        var head = document.getElementsByTagName('head')[0];
+        if (head) for (var path in list) {
+            var script = document.createElement("script");
+            script.src = path;
+            script.setAttribute("class","dayside-autoload");
+            head.appendChild(script);
         }
     });
     
