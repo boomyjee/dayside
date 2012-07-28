@@ -71,12 +71,14 @@ class FileApi {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         $text = @$_REQUEST['text'] ?:"";
         
-        if (!$path || !is_file($path)) { echo "ERROR: Invalid file save path"; die(); }
+        if (!$path) { echo "ERROR: Invalid file save path"; die(); }
      
         $mark = "data:image/png;base64,";
         if (strpos($text,$mark)===0)
             $text = base64_decode(substr($text,strlen($mark)));
-        file_put_contents($path,$text);
+        
+        $res = file_put_contents($path,$text);
+        if ($res===false) { echo "ERROR: Can't save file"; die(); }
         echo "ok";
     }
     
