@@ -10604,6 +10604,10 @@ teacss.ui.codeTab = (function($){
                 if (this.changed) {
                     e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
                 }
+                if (!e.cancel) {
+                    var index = this.Class.tabs.indexOf(this);
+                    if (index!=-1) this.Class.tabs.splice(index, 1);
+                }
             });
             
             FileApi.events.bind("move",function(o,e){
