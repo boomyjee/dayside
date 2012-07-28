@@ -46,7 +46,7 @@ class FileApi {
     
     function dir() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
-        if (!$path || !is_dir($path)) { echo "ERROR: Invalid directory path"; die(); }
+        if (!$path || !is_dir($path)) { echo "false"; die(); }
 
         $res = array();
         $iterator = new \DirectoryIterator($path);

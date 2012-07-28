@@ -10760,6 +10760,7 @@ teacss.ui.filePanel = (function($){
                 })
                 .bind("rename.jstree", function(e, data){
                     var path = data.rslt.obj.attr("rel");
+                    if (data.rslt.new_name==data.rslt.old_name) return;
                     FileApi.rename(path,data.rslt.new_name,function(answer){
                         var res = answer.error || answer.data;
                         if (res!="ok") {
