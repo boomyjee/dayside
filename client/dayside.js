@@ -11245,9 +11245,7 @@ teacss.ui.editorPanel = (function($){
                 change: $.proxy(this.updateOptions,this)
             });
             this.optionsCombo.element
-                .css({'font-size':'12px'})
                 .appendTo(this.toolbar.element);
-            this.optionsCombo.element.find(".ui-button-text").css({padding:"0.15em 1em 0.15em 2.1em"});
             
             this.updateOptions();
             

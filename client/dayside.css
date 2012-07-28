@@ -412,6 +412,10 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .teacss-ui .editorPanel-toolbar .ui-button {
     border: none;
     background: none;
+    font-size: 12px;
+}
+.teacss-ui .editorPanel-toolbar .ui-button-text {
+    padding: 0.15em 1em 0.15em 2.1em;
 }
 .teacss-ui.editorPanel,
 #vakata-contextmenu {
