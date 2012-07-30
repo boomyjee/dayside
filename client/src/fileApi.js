@@ -113,8 +113,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
         });
     }
         
-    FileApi.move = function (pathes,dest,callback) {
-        FileApi.request('move',{pathes:pathes,dest:dest},false,function(answer){
+    FileApi.moveOrCopy = function (pathes,dest,is_copy,callback) {
+        var type = is_copy ? "copy" : "move";
+        FileApi.request(type,{pathes:pathes,dest:dest},false,function(answer){
             if (!answer.error && answer.data=="ok") {
                 var moving = [];
                 for (var path in FileApi.cache) {
@@ -134,14 +135,22 @@ var FileApi = window.FileApi = window.FileApi || function () {
                     var new_path = new_base + path.substring(base.length);
                     if (new_path!=path) {
                         FileApi.cache[new_path] = FileApi.cache[path];
-                        delete FileApi.cache[path];
+                        if (!is_copy) delete FileApi.cache[path];
                         if (FileApi.events) 
-                            FileApi.events.trigger("move",{path:path,new_path:new_path});
+                            FileApi.events.trigger(type,{path:path,new_path:new_path});
                     }
                 }
             }
             if (callback) callback(answer);
         });
+    }
+        
+    FileApi.move = function (pathes,dest,callback) {
+        FileApi.moveOrCopy(pathes,dest,false,callback);
+    }
+        
+    FileApi.copy = function (pathes,dest,callback) {
+        FileApi.moveOrCopy(pathes,dest,true,callback);
     }
         
     FileApi.batch = function (path,callback) {

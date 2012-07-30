@@ -160,6 +160,23 @@ class FileApi {
         echo "ok";
     }    
     
+    function copy() {
+        $dest = $this->_pathFromUrl(@$_REQUEST['dest']);
+        if (!$dest || !is_dir($dest)) { echo "ERROR: Invalid destination path"; die(); }
+        
+        $pathes = @$_REQUEST['pathes'];
+        if (is_array($pathes)) {
+            foreach ($pathes as $one) {
+                $full = $this->_pathFromUrl($one);
+                if ($full) {
+                    $newPath =  $dest."/".basename($full);
+                    copy($full,$newPath);
+                }
+            }
+        }
+        echo "ok";
+    }
+    
     function upload() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         if (!$path || !is_dir($path)) { echo "ERROR: Invalid upload path"; die(); }

@@ -70,27 +70,33 @@ teacss.ui.filePanel = (function($){
                     data.rslt.o.each(function(){
                         pathes.push($(this).attr("rel"));
                     });
+                    
+                    var is_copy = data.args[3];
+                    var dest_nodes = is_copy ? data.rslt.oc : data.rslt.o;
+                    var func_name = is_copy ? "copy" : "move";
+                    
                     var dest = data.rslt.np.attr("rel");
-                    var answer = FileApi.move(pathes,dest);
-                    var res = answer.error || answer.data;
-                    if (res!="ok") {
-                        $.jstree.rollback(data.rlbk);
-                        alert(res);
-                    } else {
-                        data.rslt.o.each(function(){
-                            var path = $(this).attr("rel");
-                            var name = path.split("/").pop();
-                            var rel = dest + "/" + name;
-                            
-                            $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
-                            $(this).find("li").each(function(){
-                                var sub = $(this).attr("rel");
-                                if (sub.substring(0,path.length)==path)
-                                    sub = rel + sub.substring(path.length);
-                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                    var answer = FileApi[func_name](pathes,dest,function(answer){
+                        var res = answer.error || answer.data;
+                        if (res!="ok") {
+                            $.jstree.rollback(data.rlbk);
+                            alert(res);
+                        } else {
+                            dest_nodes.each(function(){
+                                var path = $(this).attr("rel");
+                                var name = path.split("/").pop();
+                                var rel = dest + "/" + name;
+                                
+                                $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                                $(this).find("li").each(function(){
+                                    var sub = $(this).attr("rel");
+                                    if (sub.substring(0,path.length)==path)
+                                        sub = rel + sub.substring(path.length);
+                                    $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                                });
                             });
-                        });
-                    }
+                        }
+                    });
                 })
                 .jstree({
                     core: {

@@ -10674,27 +10674,33 @@ teacss.ui.filePanel = (function($){
                     data.rslt.o.each(function(){
                         pathes.push($(this).attr("rel"));
                     });
+                    
+                    var is_copy = data.args[3];
+                    var dest_nodes = is_copy ? data.rslt.oc : data.rslt.o;
+                    var func_name = is_copy ? "copy" : "move";
+                    
                     var dest = data.rslt.np.attr("rel");
-                    var answer = FileApi.move(pathes,dest);
-                    var res = answer.error || answer.data;
-                    if (res!="ok") {
-                        $.jstree.rollback(data.rlbk);
-                        alert(res);
-                    } else {
-                        data.rslt.o.each(function(){
-                            var path = $(this).attr("rel");
-                            var name = path.split("/").pop();
-                            var rel = dest + "/" + name;
-                            
-                            $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
-                            $(this).find("li").each(function(){
-                                var sub = $(this).attr("rel");
-                                if (sub.substring(0,path.length)==path)
-                                    sub = rel + sub.substring(path.length);
-                                $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                    var answer = FileApi[func_name](pathes,dest,function(answer){
+                        var res = answer.error || answer.data;
+                        if (res!="ok") {
+                            $.jstree.rollback(data.rlbk);
+                            alert(res);
+                        } else {
+                            dest_nodes.each(function(){
+                                var path = $(this).attr("rel");
+                                var name = path.split("/").pop();
+                                var rel = dest + "/" + name;
+                                
+                                $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                                $(this).find("li").each(function(){
+                                    var sub = $(this).attr("rel");
+                                    if (sub.substring(0,path.length)==path)
+                                        sub = rel + sub.substring(path.length);
+                                    $(this).attr("rel",sub).attr("id",sub.replace(/[^A-Za-z0-9_-]/g,'_'));
+                                });
                             });
-                        });
-                    }
+                        }
+                    });
                 })
                 .jstree({
                     core: {
@@ -11229,8 +11235,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
         });
     }
         
-    FileApi.move = function (pathes,dest,callback) {
-        FileApi.request('move',{pathes:pathes,dest:dest},false,function(answer){
+    FileApi.moveOrCopy = function (pathes,dest,is_copy,callback) {
+        var type = is_copy ? "copy" : "move";
+        FileApi.request(type,{pathes:pathes,dest:dest},false,function(answer){
             if (!answer.error && answer.data=="ok") {
                 var moving = [];
                 for (var path in FileApi.cache) {
@@ -11250,14 +11257,22 @@ var FileApi = window.FileApi = window.FileApi || function () {
                     var new_path = new_base + path.substring(base.length);
                     if (new_path!=path) {
                         FileApi.cache[new_path] = FileApi.cache[path];
-                        delete FileApi.cache[path];
+                        if (!is_copy) delete FileApi.cache[path];
                         if (FileApi.events) 
-                            FileApi.events.trigger("move",{path:path,new_path:new_path});
+                            FileApi.events.trigger(type,{path:path,new_path:new_path});
                     }
                 }
             }
             if (callback) callback(answer);
         });
+    }
+        
+    FileApi.move = function (pathes,dest,callback) {
+        FileApi.moveOrCopy(pathes,dest,false,callback);
+    }
+        
+    FileApi.copy = function (pathes,dest,callback) {
+        FileApi.moveOrCopy(pathes,dest,true,callback);
     }
         
     FileApi.batch = function (path,callback) {
