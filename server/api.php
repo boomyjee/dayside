@@ -166,13 +166,26 @@ class FileApi {
         
         $pathes = @$_REQUEST['pathes'];
         if (is_array($pathes)) {
-            foreach ($pathes as $one) {
-                $full = $this->_pathFromUrl($one);
-                if ($full) {
-                    $newPath =  $dest."/".basename($full);
-                    copy($full,$newPath);
+            foreach ($pathes as $path) {
+                $path = $this->_pathFromUrl($path);
+                if ($path && file_exists($path)) {
+                    if (is_dir($path)) {
+                        $base = dirname($path);
+                        mkdir($dest."/".basename($path));
+                        $iterator = new \RecursiveIteratorIterator(
+                            new \RecursiveDirectoryIterator($path,\RecursiveDirectoryIterator::SKIP_DOTS),
+                            \RecursiveIteratorIterator::SELF_FIRST);
+                        foreach ($iterator as $sub) {
+                            if ($sub->isDir())
+                                mkdir($dest.substr($sub->__toString(),strlen($base)));
+                            else
+                                copy($sub->__toString(),$dest.substr($sub->__toString(),strlen($base)));
+                        }
+                    } elseif (is_file($path)) {
+                        copy($path,$dest."/".basename($path));
+                    }
                 }
-            }
+            }            
         }
         echo "ok";
     }
