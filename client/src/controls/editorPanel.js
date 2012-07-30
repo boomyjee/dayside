@@ -12,7 +12,7 @@ teacss.ui.editorPanel = (function($){
             this.tabsForFiles = this.tabs2;
             
             // file tree tab
-            this.filesTab = ui.tab({caption:"Files"});
+            this.filesTab = ui.panel("Files");
             this.tabs.addTab(this.filesTab);
             
             this.filePanel = ui.filePanel({

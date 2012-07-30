@@ -671,7 +671,7 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
 				// All construction is actually done in the init method
 				if ( initializing ) return;
 
-				if ( this.constructor !== Class && arguments.length ) { //we are being called w/o new
+				if ( this.constructor !== Class || this._constructed ) { //we are being called w/o new
                     function construct(constructor, args) {
                         function F() {
                             return constructor.apply(this, args);
@@ -681,7 +681,9 @@ f.event={add:function(a,c,d,e,g){var h,i,j,k,l,m,n,o,p,q,r,s;if(!(a.nodeType===3
                     }
                     return construct(arguments.callee,arguments);
 				} else { //we are being called w/ new
-					return this.Class.newInstance.apply(this.Class, arguments)
+					var obj = this.Class.newInstance.apply(this.Class, arguments)
+                    obj._constructed = true;
+                    return obj;
 				}
 			}
 			// Copy old stuff onto class
@@ -13932,72 +13934,6 @@ teacss.ui.layer = (function ($) {
 })(teacss.jQuery);
     
 })();;
-teacss.ui.Mapper = jQuery.Class.extend({},{
-    value: false,
-    root: false,
-    items: [],
-    init: function (root,name) {
-        this.root = root;
-        root.options.name = "";
-        this.register(root,true);
-    },
-    registerHook: function (func,that) {
-        that = that || this;
-        var items = [];
-        var e = teacss.ui.Control.events.bind("init",function(data,item){  items.push(item); });
-        func.call(that);
-        teacss.ui.Control.events.unbind(e);
-        for (var i=0;i<items.length;i++)
-            this.register(items[i]);
-    },
-    register: function (item,root) {
-        var me = this;
-        var name = item.options.name;
-        
-        if (name!=undefined) {
-            item.change(function(){ 
-                if (this!=me.root || !this.root_change) me.changed(this); 
-            });
-            if (root)
-                this.value = item.getValue();
-            else
-                item.setValue(me.prop(item.options.name));
-            this.items.push(item);
-        }
-    },
-    prop : function(path, value) {
-        var layer = this;
-        path = (path=="") ? "value" : "value."+path;
-        return teacss.ui.prop(layer,path,value);
-    },    
-    changed : function (control) {
-        var name = (control) ? control.options.name : "";
-        var value = (control) ? control.getValue() : this.value;
-        
-        this.prop(name,value);
-        for (var i=0;i<this.items.length;i++) {
-            
-            var ctl = this.items[i];
-            var ctl_name = ctl.options.name;
-            
-            if (ctl!=control && ctl.options.name!=undefined) {
-                if (name=="" || ctl.options.name==""
-                        || (ctl.options.name && ctl.options.name.indexOf(name)==0)
-                        || (ctl.options.name && name.indexOf(ctl.options.name)==0)
-                ) {
-                    var val = this.prop(ctl.options.name);
-                    ctl.setValue(val);
-                    if (!control) this.prop(ctl.options.name,ctl.getValue());
-                }
-            }
-        }
-        if (control!=this.root) {
-            this.root_change = true;
-            this.root.change();
-            this.root_change = false;
-        }
-    }
-});;
 teacss.ui.eventTarget = teacss.ui.EventTarget = teacss.jQuery.Class.extend("teacss.ui.EventTarget",{},{
     init : function () {
         this.listeners = {};
@@ -14027,12 +13963,12 @@ teacss.ui.eventTarget = teacss.ui.EventTarget = teacss.jQuery.Class.extend("teac
         }
     }
 });
-teacss.ui.Control = teacss.ui.eventTarget.extend("teacss.ui.Control",{
+teacss.ui.Control = teacss.ui.control = teacss.ui.eventTarget.extend("teacss.ui.Control",{
     events: new teacss.ui.eventTarget()
 },{
     value: false,
     element: false,
-    
+
     change: function (func) {
         if (func) this.bind('change',func); else this.trigger('change');
     },
@@ -14059,178 +13995,47 @@ teacss.ui.Control = teacss.ui.eventTarget.extend("teacss.ui.Control",{
     getValue : function() { return this.value; },
     setValue:  function(value) { this.value = value; this.trigger("setValue"); }
 });
-teacss.ui.group = teacss.ui.Group = teacss.ui.Control.extend("teacss.ui.Group",{},{
-    init: function (options) {
-        if (typeof(options)=='string') options = {label:options};
-        var $ = teacss.jQuery;
-        this._super(options);
-        this.element = $("<div>");
-        this.header =  $("<h3>").append($("<a href='#'>").html(this.options.label));
-    }
-});
-
-teacss.ui.fieldset = teacss.ui.Fieldset = teacss.ui.Control.extend("teacss.ui.Fieldset",{},{
-    init: function (options) {
-        if (typeof(options)=='string') options = {label:options};
-        var $ = teacss.jQuery;
-        this._super(options);
-        this.element = $("<fieldset>");
-        if (this.options.label) {
-            this.element.append($("<legend>").html(this.options.label));
-        }
-    }
-});
-
-teacss.ui.form = teacss.ui.Form = teacss.ui.Control.extend("teacss.ui.Form",{
-    forms: {},
-    get: function (options) {
-        var sel = options.selector || "body";
-        if (!this.forms[sel]) teacss.ui.form(options);
-        return this.forms[sel];
-    }
-},{
-    init: function (options) {
-        var $ = teacss.jQuery;
-        this._super(teacss.jQuery.extend({
-            width: 300,
-            height: 400,
-            align: 'left',
-            autoOpen: true,
-            items: [],
-            selector: "body",
-            value: {},
-            title: "TeaCss UI"
-        },options));
+teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
+    init: function (f) {
+        this._super();
         
-        this.value = this.options.value;
-        teacss.ui.form.forms[this.options.selector] = this;
-        
-        var options = this.options;
-        var extra = {};
-        if (options.align=='left') {
-            extra.position = [0,0];
-            extra.resizable = this.options.resizable ? "e" : false;
-            extra.draggable = false;
-            extra.show = false;
-            
-            extra.resize = function(e,ui) {
-                options.width = ui.size.width;
-                $("html").css("margin-left",options.width+1);
-                $("*.fixed_fix").css("left",options.width+1);
-            },
-            extra.open = function () {
-                $("html").css("margin-left",options.width+1);
-                $("*.fixed_fix").css("left",options.width+1);
-            }
-            extra.close = function () {
-                $("html").css("margin-left",0);
-                $("*.fixed_fix").css("left",0);
-            }
-        }        
-        
-        var me = this;
-        this.element = $("<div>")
-            .css({overflow:'hidden'});
-        
-        $(function() {
-            me.element.dialog($.extend({
-                title: options.title,
-                resize: function() {
-                    me.panel.accordion("resize");
-                },
-                create: function(event, ui){
-                    var ex_class = options.align=='left' ? 'align-left' : '';
-                    $(this).parent().appendTo(teacss.ui.layer).wrap("<div class='teacss-ui-dialog "+ex_class+"'>");
-                },
-                width: options.width,
-                height: options.height,
-                autoOpen: false,
-                show: 'slide'
-            },extra));
-        })
-                      
-        this.panel = $("<div class='composer-panel'>").appendTo(this.element);
-        this.icon = $("<div class='teacss_ui_icon'>")
-            .click(function(){
-                var offset = $(this).offset();
-                var pos = [offset.top,offset.left];
-                if (options.align=='left') pos = [0,0];
-                me.element.dialog("option","position",pos);
-                me.element.dialog("open");
-                me.panel.accordion("resize");
-                $(this).hide();
-            })
-            
         this.items = [];
+        var me = this;
         var e = teacss.ui.Control.events.bind("init",function(data,item){  me.items.push(item); });
-        this.options.items.call(this);
+        f.call(this);
         teacss.ui.Control.events.unbind(e);
         
-        var group = false;
-        var fieldset = false;
         for (var i=0;i<this.items.length;i++) {
             var item = this.items[i];
-            if (item instanceof teacss.ui.Group) {
-                group = item;
-                this.panel.append(item.header);
-                this.panel.append(item.element);
-            } else if (item instanceof teacss.ui.Fieldset) {
-                fieldset = item;
-                if (group)
-                    group.element.append(item.element);
-                else
-                    this.panel.append(item.element);
-            } else {
-                this.registerItem(item);
-                if (item.options.nested) continue;
-                if (fieldset)
-                    fieldset.element.append(item.element);
-                else if (group) 
-                    group.element.append(item.element);
-                else
-                    this.panel.append(item.element);
+            item.form = me;
+            if (item.options.name!==undefined) {
+                item.change(function(){ me.itemChanged(this); });
+                item.setValue(me.prop(item.options.name));
             }
-        }
-        
-        this.panel.accordion({fillSpace:true,autoHeight:false,header:"h3"});
-        $(window).resize(function(){
-            me.panel.accordion("resize");
-        });        
-        
-        $(function () {
-            if (options.autoOpen) {
-                me.icon.click();
+            if (item.options.formChange) {
+                item.options.formChange.call(item,false,'',me.value);
             }
-            $(options.selector)
-                .append(me.icon)
-                .mouseover(function(){
-                    if (!me.element.dialog("isOpen"))
-                        me.icon.show().css({top:5});
-                 })
-                .mouseout(function(){  me.icon.find(".teacss_ui_icon").hide(); })
-        });
+        }        
     },
-    registerItem: function (item) {
-        var me = this;
-        item.form = me;
-        if (item.options.name!==undefined) {
-            item.change(function(){ me.itemChanged(this); });
-            item.setValue(me.prop(item.options.name));
-        }
-        if (item.options.formChange) {
-            item.options.formChange.call(item,false,'',me.value);
-        }
-        
-    },
+    
     prop : function(path, value) {
         var layer = this;
         path = (path=="") ? "value" : "value."+path;
         return teacss.ui.prop(layer,path,value);
     },
+    
+    setValue: function (value) {
+        this.itemChanged(false,false,value);
+    },
+    
+    getValue: function () {
+        return this.value;
+    },
+    
     itemChanged : function (control,name,value,silent) {
         if (!name) {
             name = (control) ? control.options.name : "";
-            value = (control) ? control.getValue() : this.value;
+            value = (control) ? control.getValue() : value;
         }
 
         this.prop(name,value);
@@ -14250,10 +14055,8 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.Control.extend("teacss.ui.Form",{
             }
             if (ctl!=control && ctl.options.formChange) ctl.options.formChange.call(ctl,control,name,value);
         }
-        if (!silent && control && !control.options.silent) teacss.update();
+        this.trigger("change",{control:control,name:name,value:value,silent:silent});
     }
-    
-    
 });;
 teacss.ui.colorPicker = teacss.ui.Colorpicker = teacss.ui.Control.extend("teacss.ui.Colorpicker",{},{
     setValue: function (value) {
@@ -14681,6 +14484,7 @@ teacss.ui.label = teacss.ui.Label = teacss.ui.Control.extend("teacss.ui.Label",{
 });
 teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{},{
     init : function(options) {
+        if (typeof(options)=='string') options = {label:options};
         this._super(teacss.jQuery.extend({
             'text-align':'left',
             items: []
@@ -14693,16 +14497,37 @@ teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{
                 'text-align': this.options['text-align'],
                 margin: this.options.margin
             })
-
-        for (var i=0;i<this.options.items.length;i++) {
-            var item = this.options.items[i];
-            if (item instanceof teacss.ui.Control) {
-                this.element.append(item.element);
-                item.options.nested = true;
-            } else {
-                this.element.append(item);
-            }
+            
+        this.items = [];
+        this.push(this.options.items);
+    },
+    
+    push: function (what) {
+        if (!what) return this;
+        if (arguments.length>1) {
+            for (var i=0;i<arguments.length;i++) this.push(arguments[i]);
         }
+        else if (what.constructor == Array) {
+            for (var i=0;i<what.length;i++) this.push(what[i]);
+        } 
+        else if (what.call && what.apply) {
+            var items = [];
+            var e = teacss.ui.Control.events.bind("init",function(data,item){  items.push(item); });
+            what = what.call(this);
+            teacss.ui.Control.events.unbind(e);
+            if (!what) what = items;
+            this.push(what);
+        } 
+        else {
+            if (what instanceof teacss.ui.Control) {
+                this.element.append(what.element);
+                what.options.nested = true;
+            } else {
+                this.element.append(what);
+            }
+            this.items.push(what);
+        }
+        return this;
     }
 });
 teacss.ui.sorter = teacss.ui.Sorter = teacss.ui.Control.extend("teacss.ui.Sorter",{},{
@@ -14833,4 +14658,226 @@ teacss.ui.button = teacss.ui.Button = teacss.ui.Control.extend("teacss.ui.Button
         if (options.click) this.element.click($.proxy(options.click,this));
     }
 })
-})(teacss.jQuery);
+})(teacss.jQuery);;
+teacss.ui.fieldset = teacss.ui.Fieldset = teacss.ui.Panel.extend({
+    init: function (options) {
+        this._super(options);
+        this.element = teacss.jQuery("<fieldset>");
+        if (this.options.label) {
+            this.element.append(teacss.jQuery("<legend>").html(this.options.label));
+        }
+    }
+}); ;
+teacss.ui.accordion = teacss.ui.Accordion = teacss.ui.Panel.extend({
+    init: function (options) {
+        this._super(options);
+        this.accordionOptions = {fillSpace:true,autoHeight:false,header:"h3"};
+        this.inner = teacss.jQuery("<div>").appendTo(this.element);
+        
+        var me = this;
+        teacss.jQuery(window).resize(function(){
+            me.inner.accordion("resize");
+        });                    
+    },
+    push: function (what) {
+        if (arguments.length==1 && what instanceof teacss.ui.Control) {
+            this.addGroup(what);
+        } else {
+            this._super.apply(this,arguments);
+        }
+        return this;
+    },
+    addGroup: function (group) {
+        var $ = teacss.jQuery;
+        
+        this.inner.accordion("destroy");
+        this.inner.append($("<h3>").append($("<a href='#'>").html(group.options.label)));
+        this.inner.append(group.element);
+
+        group.element.css({display:"block",margin:0,height:'',width:''});
+        
+        this.inner.accordion(this.accordionOptions);
+    }
+});;
+teacss.ui.splitter = teacss.ui.Splitter = (function($){
+    return teacss.ui.Control.extend("teacss.ui.Splitter",{},{
+        init : function (options) {
+            var me = this;
+            this._super($.extend({
+                value: 600
+            },options));
+            
+            this.element = $("<div>")
+                .addClass("ui-splitter")
+                .css({
+                    position:"absolute",
+                    top: 0, bottom: 0,
+                    width: 3, background: "#aaa", cursor: "e-resize"
+                })
+                .draggable({
+                    axis: "x",
+                    drag: function (e,ui) {
+                        me.setValue(ui.position.left);
+                        me.trigger("change");
+                    },
+                    iframeFix: true
+                })
+                .dblclick(function(){
+                    me.update((me.element.offset().left<10) ? 300:0);
+                })
+          
+            this.setValue(this.options.value);
+        },
+        setValue: function (x) {
+            var setPosition = function (ctl,pos) {
+                ctl.element.css($.extend({
+                    left: 0, top: 0, margin: 0,
+                    position: 'absolute',display: 'block'
+                },pos));
+            }
+            
+            this.options.position = x;
+            setPosition(this.options.panels[0],{bottom:0,width:x});
+            setPosition(this.options.panels[1],{bottom:0,left:x+this.element.width(),right:0});
+            this.element.css({left:x});
+            this._super(x);
+        },
+    });
+})(teacss.jQuery);;
+teacss.ui.tabPanel = teacss.ui.Panel.extend({
+    tabIndex: 0
+},{
+    init: function(options) {
+        var me = this;
+        var $ = teacss.jQuery;
+        this._super($.extend({
+            height: '100%'
+        },options));
+        // structure for ui.tabs
+        this.element.css({
+            height: this.options.height,
+            position: 'relative'
+        });
+        this.element.append("<ul></ul>");
+        this.element.tabs({
+            select: function (e,ui) { 
+                var tab = $(ui.panel).data("tab");
+                if (tab) {
+                    tab.trigger("select",tab);
+                	me.trigger("select",tab);
+                    
+                    setTimeout(function(){
+                        tab.element.find(".ui-accordion").accordion("resize");
+                    },1);
+                }
+            }
+        });
+        this.element.find(".ui-tabs-nav:first").sortable({
+            axis: "x",
+            helper: function(e, item) {
+                var h = item;
+                h.width(item.width()+2);
+                return h;
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs(ui.position.left - $(this).position().left),
+                        before = ui.position.left > $(this).position().left;
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
+            },    
+            stop: function (e, ui) {
+                $(this).children().css('width','');
+            },
+            update: function () {
+                var container = $(this); // ul
+                var panel;
+                $(this).children().each(function() {
+                    panel = $($(this).find('a').attr('href'));
+                    panel.insertAfter(container);
+                    container = panel; // div
+                });
+            },
+            containment: 'parent'
+        });
+        
+        this.element.css({background:"transparent",padding:0});
+        this.element.on("click","span.ui-icon-close", function(){
+            var href = $(this).prev().attr("href");
+            var tab = me.element.find(href).data("tab");
+            var e = {tab:tab,cancel:false};
+            tab.trigger("close",e);
+            
+            if (!e.cancel) {
+                me.element.tabs("remove",$(this).prev().attr("href"));
+            }
+        });
+    },
+    
+    showNavigation: function (flag) {
+        if (!flag) {
+            this.element.find("> .ui-tabs-nav:first").hide();
+            this.element.find("> .ui-tabs-panel").css({top:0});
+        } else {
+            this.element.find("> .ui-tabs-nav:first").show();
+            this.element.find("> .ui-tabs-panel").css({top:''});
+        }
+    },
+    
+    push: function (what) {
+        if (what instanceof teacss.ui.Control) {
+            this.addTab(what);
+        } else {
+            this._super(what);
+        }
+        return this;
+    },
+    
+    addTab: function (tab) {
+        if (!(tab instanceof teacss.ui.Control)) tab = teacss.ui.tab(tab);
+        var id = 'tab' + this.Class.tabIndex++;
+        
+        if (tab.options.closable) {
+            tabTemplate = "<li><a href='#{href}'>#{label}</a><span class='ui-icon ui-icon-close'>Close</span></li>"
+        } else {
+            tabTemplate = "<li><a href='#{href}'>#{label}</a></li>"
+        }
+        this.element.tabs("option","tabTemplate",tabTemplate);
+        this.element.tabs("add",'#'+id,tab.options.caption || tab.options.label || "Tab "+this.Class.tabIndex);
+        this.element.find('#'+id).append(tab.element).data("tab",tab);
+        
+        tab.element.css({position: 'absolute', display: 'block', top: 0, bottom: 0, right: 0, left: 0, margin: 0});
+        
+        tab.options.nested = true;
+        tab.options.id = id;
+        return tab;
+    },
+    selectTab: function(tab) {
+        this.element.tabs("select",'#'+tab.options.id);
+    },
+    prevTab: function () {
+        var sel = this.element.tabs("option","selected");
+        if (sel>0) this.element.tabs("option","selected",sel-1);
+    },
+    nextTab: function () {
+        var sel = this.element.tabs("option","selected");
+        var N = this.element.tabs("length");
+        if (sel+1<N) this.element.tabs("option","selected",sel+1);
+    },
+    selectedTab: function () {
+        var sel = this.element.tabs("option","selected");
+        if (sel<0) return false;
+        return this.element.find("> div").eq(sel).data("tab");
+    }
+});

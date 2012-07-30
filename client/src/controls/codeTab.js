@@ -1,5 +1,5 @@
 teacss.ui.codeTab = (function($){
-    return teacss.ui.tab.extend({
+    return teacss.ui.Panel.extend({
         tabs: []
     },{
         init: function (options) {
@@ -13,7 +13,7 @@ teacss.ui.codeTab = (function($){
                 .css({position:'absolute',left:0,right:0,top:0,bottom:0})
                 .appendTo(this.element);
             
-            this.codeTab = new teacss.ui.tab({caption:'Code'});
+            this.codeTab = teacss.ui.panel("Code");
             this.tabs.addTab(this.codeTab);
             
             this.editorElement = this.codeTab.element;
