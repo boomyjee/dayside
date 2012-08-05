@@ -21,7 +21,7 @@ class FileApi {
         if (isset($_POST['password']))
             setcookie('editor_auth',$test = sha1($_POST['password']),0,'/');
         else
-            $test = $_COOKIE['editor_auth'];
+            $test = @$_COOKIE['editor_auth'];
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
         $this->{$_POST['type']}();

@@ -63,8 +63,11 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         token: function(stream, stack) {
             switch (stack.state) {
                 case "scope":
+                case "scope_in_js":
                     if (stream.match("}")) { 
+                        var state = stack.state;
                         if (!stack.pop()) return "pop_error"; 
+                        if (state=="scope_in_js") return "js_block_end";
                         return 'scope_end'; 
                     }
                     if (stream.match(/^[ \t\n\r]+/)) return "blank";
@@ -85,6 +88,8 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
                 case "js_block":
                     if (stack.data.braces===undefined) stack.data.braces = 1;
                     
+                    if (stream.match(/^(\s)*?@\{/)) { stack.push('scope_in_js'); return 'js_block_start'; }
+
                     if (stream.match(/^(\s)*?\{/,false)) { stream.eatSpace(); stack.data.braces++; }
                     if (stream.match(/^(\s)*?\}/,false)) { stream.eatSpace(); stack.data.braces--; }
             

@@ -4988,8 +4988,11 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
         token: function(stream, stack) {
             switch (stack.state) {
                 case "scope":
+                case "scope_in_js":
                     if (stream.match("}")) { 
+                        var state = stack.state;
                         if (!stack.pop()) return "pop_error"; 
+                        if (state=="scope_in_js") return "js_block_end";
                         return 'scope_end'; 
                     }
                     if (stream.match(/^[ \t\n\r]+/)) return "blank";
@@ -5010,6 +5013,8 @@ CodeMirror.defineMode("teacss", function(config, parserConfig) {
                 case "js_block":
                     if (stack.data.braces===undefined) stack.data.braces = 1;
                     
+                    if (stream.match(/^(\s)*?@\{/)) { stack.push('scope_in_js'); return 'js_block_start'; }
+
                     if (stream.match(/^(\s)*?\{/,false)) { stream.eatSpace(); stack.data.braces++; }
                     if (stream.match(/^(\s)*?\}/,false)) { stream.eatSpace(); stack.data.braces--; }
             
@@ -10479,6 +10484,12 @@ teacss.ui.codeTab = (function($){
                 }
             });
             
+            this.bind("select",function(o,e){
+                setTimeout(function(){
+                    me.editor.refresh();
+                },1);
+            });
+            
             FileApi.events.bind("move",function(o,e){
                 if (e.path==me.options.file) me.options.file = e.new_path;
             });
@@ -11134,6 +11145,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
     if (teacss.ui.eventTarget)
         FileApi.events = new teacss.ui.eventTarget;
 
+    FileApi._async = true;
     FileApi.request = function (type,data,json,callback) {
         var $ = window.jQuery || teacss.jQuery;
         
@@ -11147,7 +11159,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
         $.ajax({
             url: FileApi.ajax_url,
             data: $.extend(data,{type:type}),
-            async: true,
+            async: this._async,
             type: "POST",
             success: function (answer) {
                 res = {data:answer};
@@ -11287,6 +11299,20 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (callback) callback(answer);
         });
     }
+        
+    for (var key in FileApi) {
+        var f = FileApi[key];
+        if (f && f.call && f.apply) {
+            FileApi[key+"Sync"] = (function(f){
+                return function () {
+                    FileApi._async = false;
+                    f.apply(FileApi,arguments);
+                    FileApi._async = true;
+                };
+            })(f);
+        }
+    }
+        
     return FileApi;
 }();;
 window.dayside = window.dayside || (function(){

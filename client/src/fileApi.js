@@ -12,6 +12,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
     if (teacss.ui.eventTarget)
         FileApi.events = new teacss.ui.eventTarget;
 
+    FileApi._async = true;
     FileApi.request = function (type,data,json,callback) {
         var $ = window.jQuery || teacss.jQuery;
         
@@ -25,7 +26,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
         $.ajax({
             url: FileApi.ajax_url,
             data: $.extend(data,{type:type}),
-            async: true,
+            async: this._async,
             type: "POST",
             success: function (answer) {
                 res = {data:answer};
@@ -165,5 +166,19 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (callback) callback(answer);
         });
     }
+        
+    for (var key in FileApi) {
+        var f = FileApi[key];
+        if (f && f.call && f.apply) {
+            FileApi[key+"Sync"] = (function(f){
+                return function () {
+                    FileApi._async = false;
+                    f.apply(FileApi,arguments);
+                    FileApi._async = true;
+                };
+            })(f);
+        }
+    }
+        
     return FileApi;
 }();

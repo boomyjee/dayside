@@ -46,6 +46,12 @@ teacss.ui.codeTab = (function($){
                 }
             });
             
+            this.bind("select",function(o,e){
+                setTimeout(function(){
+                    me.editor.refresh();
+                },1);
+            });
+            
             FileApi.events.bind("move",function(o,e){
                 if (e.path==me.options.file) me.options.file = e.new_path;
             });
