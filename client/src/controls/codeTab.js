@@ -48,7 +48,7 @@ teacss.ui.codeTab = (function($){
             
             this.bind("select",function(o,e){
                 setTimeout(function(){
-                    me.editor.refresh();
+                    if (me.editor) me.editor.refresh();
                 },1);
             });
             
@@ -170,7 +170,7 @@ teacss.ui.codeTab = (function($){
         onSelect: function () {
             var me = this;
             setTimeout(function(){
-                me.editor.refresh();
+                if (me.editor) me.editor.refresh();
             },100);
         }
     });

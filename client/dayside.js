@@ -10486,7 +10486,7 @@ teacss.ui.codeTab = (function($){
             
             this.bind("select",function(o,e){
                 setTimeout(function(){
-                    me.editor.refresh();
+                    if (me.editor) me.editor.refresh();
                 },1);
             });
             
@@ -10608,7 +10608,7 @@ teacss.ui.codeTab = (function($){
         onSelect: function () {
             var me = this;
             setTimeout(function(){
-                me.editor.refresh();
+                if (me.editor) me.editor.refresh();
             },100);
         }
     });
@@ -10789,8 +10789,8 @@ teacss.ui.filePanel = (function($){
                                                         '        CODE="wjhk.jupload2.JUploadApplet"',
                                                         '        NAME="JUpload"',
                                                         '        ARCHIVE="'+me.options.jupload+'"',
-                                                        '        WIDTH="640"',
-                                                        '        HEIGHT="300"',
+                                                        '        WIDTH="100%"',
+                                                        '        HEIGHT="100%"',
                                                         '        MAYSCRIPT="true"',
                                                         '        ALT="The java pugin must be installed.">',
                                                         '    <param name="postURL" value="'+FileApi.ajax_url+'" />',

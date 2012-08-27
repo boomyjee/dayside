@@ -1,4 +1,4 @@
-var teacss = teacss || (function(){
+window.teacss = window.teacss || (function(){
     var teacss = {
         // runtime
         tea: false,
@@ -163,7 +163,12 @@ var teacss = teacss || (function(){
                         output += ast.children[i].getJS(this);
                     output += "}";
                 } else {
-                    output += ast.selector.substring(1)+";";
+                    var args;
+                    if (/^\(\s*\)$/.test(match[3])) 
+                        args = "(this)";
+                    else
+                        args = "(this, "+ match[3].substring(1);
+                    output += match[1] + ".call"+args+";";
                 }
                 return output;
             }
@@ -292,8 +297,13 @@ var teacss = teacss || (function(){
                 callback(list.join(';\n'));
             });
         },
-        insert: function (document,names) {
+        insert: function (document,names,callback) {
 
+            if (names && names.call && names.apply) {
+                callback = names;
+                names = undefined;
+            }
+            
             var id = "script_"+(teacss.tea.processed).replace(/[^A-Za-z0-9]/g,'_');
             var node = document.getElementById(id);
             if (node) return;
@@ -338,6 +348,7 @@ var teacss = teacss || (function(){
                         script = document.createElement("script");
                         script.innerHTML = code;
                         head.appendChild(script);
+                        done();
                     },what);
                 } else {
                     q.defer(function(what,done){
@@ -345,6 +356,8 @@ var teacss = teacss || (function(){
                     },what);
                 }
             }
+            
+            if (callback) q.await(callback);
         }
     });
     
@@ -546,26 +559,30 @@ var teacss = teacss || (function(){
         
     teacss.process = function (path,callback,document) {
         if (path[0]=="/") path = location.protocol + "//" +location.host+path;
-
+        
+        function processParsed(parsed,callback) {
+            if (!parsed) 
+                callback();
+            else {
+                if (parsed.imports.length==0) callback();
+                var loaded = 0;
+                var loaded_cb = function () {
+                    loaded++;
+                    if (loaded==parsed.imports.length) callback();
+                }
+                for (var i=0;i<parsed.imports.length;i++) {
+                    processFile(parsed.imports[i],loaded_cb);
+                }     
+            }
+        }
+        
         function processFile(path,callback) {
             teacss.parseFile(path,function(parsed){
-                if (!parsed) 
-                    callback();
-                else {
-                    if (parsed.imports.length==0) callback();
-                    var loaded = 0;
-                    var loaded_cb = function () {
-                        loaded++;
-                        if (loaded==parsed.imports.length) callback();
-                    }
-                    for (var i=0;i<parsed.imports.length;i++) {
-                        processFile(parsed.imports[i],loaded_cb);
-                    }     
-                }
+                processParsed(parsed,callback);
             });
         }
         
-        processFile(path,function(){
+        function wrap() {
             for (var key in teacss.tea) {
                 if (teacss.tea[key] && teacss.tea[key].start) teacss.tea[key].start();
             }
@@ -578,7 +595,9 @@ var teacss = teacss || (function(){
                 if (teacss.tea[key] && teacss.tea[key].finish) teacss.tea[key].finish();
             }
             callback();
-        });
+        }        
+        
+        processFile(path,wrap);
     }
         
     teacss.sheets = function () {
@@ -612,7 +631,7 @@ var teacss = teacss || (function(){
             var sheet = teacss.sheets[i];
             q.defer(function(sheet,done){
                 teacss.process(
-                    sheet.src,
+                    sheet.src || location.href,
                     function(){
                         teacss.tea.Style.insert(document);
                         teacss.tea.Script.insert(document);
@@ -1411,15 +1430,14 @@ teacss.image = teacss.functions.image = teacss.image || (function(){
     var endDeferred = function (callback) {
         deferred--;
         if (deferred==0) {
-            if (callback)
-                callback.apply();
-            else 
-                teacss.update();
+            teacss.image.deferredUpdate = true;
+            if (callback) callback.apply(); else teacss.image.update();
+            teacss.image.deferredUpdate = false;
         }
     }
 
     var load = function (list,callback) {
-        var list = (list.constructor==Array) ? list : [list];
+        var list = (list && list.constructor==Array) ? list : [list];
         var left = list.length;
         var local_callback = function (url) {
             left--;
@@ -1487,6 +1505,7 @@ teacss.image = teacss.functions.image = teacss.image || (function(){
     constructor.startDeferred = startDeferred;
     constructor.endDeferred = endDeferred;
     constructor.load = load;
+    constructor.update = function () { teacss.update(); }
 
     return constructor;
 })();;
@@ -2236,6 +2255,7 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
         var tea = teacss.tea;
         var selector = tea.Style.current.getSelector();
         var id = selector.replace(/[^A-Za-z_0-9-]/g,"_")+"_canvas";
+        var doc = teacss.tea.document ? teacss.tea.document : document;
         
         Canvas.defaultElement.width = canvas.width;
         Canvas.defaultElement.height = canvas.height;
@@ -2248,7 +2268,7 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
             context = cached.context;
         } 
         else {
-            element = document.createElement("canvas");
+            element = doc.createElement("canvas");
             context = element.getContext('2d');
             previewCanvasCache[id] = { element: element, context : context }
         }
@@ -2258,7 +2278,6 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
         
         context.drawImage(Canvas.defaultElement,0,0);
         
-        var doc = teacss.tea.document ? teacss.tea.document : document;
         if (doc.mozSetImageElement) {
             tea.rule('background-image','-moz-element(#'+id+')');
             doc.mozSetImageElement(id,element);
