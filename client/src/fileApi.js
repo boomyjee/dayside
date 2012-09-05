@@ -119,10 +119,11 @@ var FileApi = window.FileApi = window.FileApi || function () {
         FileApi.request(type,{pathes:pathes,dest:dest},false,function(answer){
             if (!answer.error && answer.data=="ok") {
                 var moving = [];
+                var moving_dest = [];
                 for (var path in FileApi.cache) {
                     for (var i=0;i<pathes.length;i++) {
                         if (path.indexOf(pathes[i])===0) {
-                            moving.push({path:path,base:pathes[i]});
+                            moving.push({path:path,base:pathes[i],dest_base:dest[i]});
                             break;
                         }
                     }
@@ -130,10 +131,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 for (var i=0;i<moving.length;i++) {
                     var path = moving[i].path;
                     var base = moving[i].base;
-                    
-                    var name = base.split("/").pop();
-                    var new_base = dest + "/" + name;
+                    var new_base = moving[i].dest_base;
                     var new_path = new_base + path.substring(base.length);
+                    
                     if (new_path!=path) {
                         FileApi.cache[new_path] = FileApi.cache[path];
                         if (!is_copy) delete FileApi.cache[path];

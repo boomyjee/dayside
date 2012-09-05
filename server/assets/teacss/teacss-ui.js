@@ -2327,7 +2327,22 @@ teacss.ui.Control = teacss.ui.control = teacss.ui.eventTarget.extend("teacss.ui.
     disable: function() { this.setEnabled(false) },
 
     getValue : function() { return this.value; },
-    setValue:  function(value) { this.value = value; this.trigger("setValue"); }
+    setValue:  function(value) { this.value = value; this.trigger("setValue"); },
+    
+    visibility: function (f) {
+        var control = this;
+        var cb = function(){
+            if (f.call(this))
+                control.element.show();
+            else
+                control.element.hide();
+        }
+        setTimeout(function() {
+            control.form.bind("change",cb);
+            cb.call(control.form);
+        },1);
+        return this;
+    }    
 });
 teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
     init: function (f,value) {
@@ -2778,14 +2793,10 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
         }
     },
     getLabel : function() {
-        try {
-            return this.options.label || teacss.jQuery.tmpl(
-                    this.options.labelTpl || this.options.itemTpl,
-                    teacss.jQuery.extend({value:this.value},this.options.itemData,this.selected)
-            );
-        } catch (e) {
-            return "Tpl error";
-        }
+        return this.options.label || teacss.jQuery.tmpl(
+                this.options.labelTpl || this.options.itemTpl,
+                teacss.jQuery.extend({value:this.value},this.options.itemData,this.selected)
+        );
     },
     hide : function(e) {
         this.panel.css("display","none");
@@ -3192,6 +3203,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
                 h.width(item.width()+2);
                 return h;
             },
+            distance: 3,
             sort: function (event, ui) {
                 var that = $(this),
                 w = ui.helper.outerWidth();
@@ -3259,7 +3271,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
     
     addTab: function (tab) {
         if (!(tab instanceof teacss.ui.Control)) tab = teacss.ui.tab(tab);
-        var id = 'tab' + this.Class.tabIndex++;
+        var id = 'tab' + teacss.ui.tabPanel.tabIndex++;
         
         if (tab.options.closable) {
             tabTemplate = "<li><a href='#{href}'>#{label}</a><span class='ui-icon ui-icon-close'>Close</span></li>"
@@ -3267,7 +3279,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
             tabTemplate = "<li><a href='#{href}'>#{label}</a></li>"
         }
         this.element.tabs("option","tabTemplate",tabTemplate);
-        this.element.tabs("add",'#'+id,tab.options.caption || tab.options.label || "Tab "+this.Class.tabIndex);
+        this.element.tabs("add",'#'+id,tab.options.caption || tab.options.label || "Tab "+teacss.ui.tabPanel.tabIndex);
         this.element.find('#'+id).append(tab.element).data("tab",tab);
         
         tab.element.css({width:'100%',height:'100%', margin: 0});

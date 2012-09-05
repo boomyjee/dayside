@@ -790,13 +790,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .teacss-ui .ui-dialog {
     font-size: 12px !important;
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    padding: 0;
     margin: 0;
-    border: 0;
 }
 .teacss-ui fieldset {
     margin-bottom: 5px;
@@ -813,20 +807,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .teacss-ui .colorpicker input {
     width: inherit;
-}
-.teacss-ui .align-left .ui-dialog {
-    top: 0 !important;
-    left: 0 !important;
-    bottom: 0 !important;
-}
-.teacss-ui .ui-dialog .ui-dialog-content {
-    position: absolute;
-    height: auto !important;
-    top: 30px;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    padding: 0;
 }
 .teacss-ui .ui-accordion .ui-accordion-content {
     padding: 5px 5px 5px 5px;
