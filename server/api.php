@@ -144,16 +144,14 @@ class FileApi {
     }
     
     function move() {
-        $dest = $this->_pathFromUrl(@$_REQUEST['dest']);
-        if (!$dest || !is_dir($dest)) { echo "ERROR: Invalid destination path"; die(); }
-        
         $pathes = @$_REQUEST['pathes'];
-        if (is_array($pathes)) {
-            foreach ($pathes as $one) {
+        $dest = @$_REQUEST['dest'];
+        if (is_array($pathes) && is_array($dest)) {
+            foreach ($pathes as $i=>$one) {
                 $full = $this->_pathFromUrl($one);
-                if ($full) {
-                    $newPath =  $dest."/".basename($full);
-                    rename($full,$newPath);
+                $full_dest = $this->_pathFromUrl(@$dest[$i]);
+                if ($full && $full_dest) {
+                    rename($full,$full_dest);
                 }
             }
         }
@@ -161,28 +159,26 @@ class FileApi {
     }    
     
     function copy() {
-        $dest = $this->_pathFromUrl(@$_REQUEST['dest']);
-        if (!$dest || !is_dir($dest)) { echo "ERROR: Invalid destination path"; die(); }
-        
         $pathes = @$_REQUEST['pathes'];
-        if (is_array($pathes)) {
-            foreach ($pathes as $path) {
+        $dest = @$_REQUEST['dest'];
+        if (is_array($pathes) && is_array($dest)) {
+            foreach ($pathes as $i=>$path) {
                 $path = $this->_pathFromUrl($path);
-                if ($path && file_exists($path)) {
+                $newPath = $this->_pathFromUrl(@$dest[$i]);
+                if ($path && file_exists($path) && $newPath) {
                     if (is_dir($path)) {
-                        $base = dirname($path);
-                        mkdir($dest."/".basename($path));
+                        mkdir($newPath);
                         $iterator = new \RecursiveIteratorIterator(
                             new \RecursiveDirectoryIterator($path,\RecursiveDirectoryIterator::SKIP_DOTS),
                             \RecursiveIteratorIterator::SELF_FIRST);
                         foreach ($iterator as $sub) {
                             if ($sub->isDir())
-                                mkdir($dest.substr($sub->__toString(),strlen($base)));
+                                mkdir($newPath.substr($sub->__toString(),strlen($path)));
                             else
-                                copy($sub->__toString(),$dest.substr($sub->__toString(),strlen($base)));
+                                copy($sub->__toString(),$newPath.substr($sub->__toString(),strlen($newPath)));
                         }
                     } elseif (is_file($path)) {
-                        copy($path,$dest."/".basename($path));
+                        copy($path,$newPath);
                     }
                 }
             }            

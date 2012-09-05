@@ -10682,16 +10682,21 @@ teacss.ui.filePanel = (function($){
                 })
                 .bind("move_node.jstree", function (e,data){
                     var pathes = [];
+                    var dest = data.rslt.np.attr("rel");
+                    var dest_pathes = [];
+                    
                     data.rslt.o.each(function(){
-                        pathes.push($(this).attr("rel"));
+                        var path = $(this).attr("rel");
+                        pathes.push(path);
+                        var name = path.split("/").pop();
+                        dest_pathes.push(dest + "/" + name);
                     });
                     
                     var is_copy = data.args[3];
                     var dest_nodes = is_copy ? data.rslt.oc : data.rslt.o;
                     var func_name = is_copy ? "copy" : "move";
                     
-                    var dest = data.rslt.np.attr("rel");
-                    var answer = FileApi[func_name](pathes,dest,function(answer){
+                    var answer = FileApi[func_name](pathes,dest_pathes,function(answer){
                         var res = answer.error || answer.data;
                         if (res!="ok") {
                             $.jstree.rollback(data.rlbk);
@@ -10790,7 +10795,7 @@ teacss.ui.filePanel = (function($){
                                                         '        NAME="JUpload"',
                                                         '        ARCHIVE="'+me.options.jupload+'"',
                                                         '        WIDTH="100%"',
-                                                        '        HEIGHT="100%"',
+                                                        '        HEIGHT="400px"',
                                                         '        MAYSCRIPT="true"',
                                                         '        ALT="The java pugin must be installed.">',
                                                         '    <param name="postURL" value="'+FileApi.ajax_url+'" />',
@@ -10809,10 +10814,16 @@ teacss.ui.filePanel = (function($){
                                             me.uploadPanel.dialog({
                                                 autoOpen: false,
                                                 resizable: false,
-                                                width: 668, height: 350,
+                                                width: 650, 
+                                                height: 'auto',
+                                                modal: true,
                                                 title: "Upload files",
+                                                position: "center",
                                                 create: function(event, ui){
                                                     $(this).parent().appendTo(teacss.ui.layer);
+                                                },
+                                                open: function(event, ui){
+                                                    $('.ui-widget-overlay').appendTo(teacss.ui.layer);
                                                 }
                                             });
                                         }
@@ -11252,10 +11263,11 @@ var FileApi = window.FileApi = window.FileApi || function () {
         FileApi.request(type,{pathes:pathes,dest:dest},false,function(answer){
             if (!answer.error && answer.data=="ok") {
                 var moving = [];
+                var moving_dest = [];
                 for (var path in FileApi.cache) {
                     for (var i=0;i<pathes.length;i++) {
                         if (path.indexOf(pathes[i])===0) {
-                            moving.push({path:path,base:pathes[i]});
+                            moving.push({path:path,base:pathes[i],dest_base:dest[i]});
                             break;
                         }
                     }
@@ -11263,10 +11275,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 for (var i=0;i<moving.length;i++) {
                     var path = moving[i].path;
                     var base = moving[i].base;
-                    
-                    var name = base.split("/").pop();
-                    var new_base = dest + "/" + name;
+                    var new_base = moving[i].dest_base;
                     var new_path = new_base + path.substring(base.length);
+                    
                     if (new_path!=path) {
                         FileApi.cache[new_path] = FileApi.cache[path];
                         if (!is_copy) delete FileApi.cache[path];
