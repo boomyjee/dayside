@@ -1,3 +1,4 @@
+// jstree icons for different file types
 .jstree-icon {
     &.project { background: url(@{tea.dir}../lib/jstree/icons/project.png) 0 0 !important; }
     &.file { background: url(@{tea.dir}../lib/jstree/icons/file.png) 0 0 !important; }
@@ -20,13 +21,36 @@
     &.txt,&.haml { background: url(@{tea.dir}../lib/jstree/icons/txt.png) 0 0 !important; }
     &.xls,&.xlsx { background: url(@{tea.dir}../lib/jstree/icons/xls.png) 0 0 !important; }
     &.zop { background: url(@{tea.dir}../lib/jstree/icons/zip.png) 0 0 !important; }
+    &.hidden { opacity: 0.3;  filter: alpha(opacity=30); }
 }
 
-
-.teacss-ui .teacss-ui-dialog.align-left .ui-dialog {
-    height: auto !important;
+// nested tabs (no border)
+.teacss-ui .ui-tabs-panel > div > .ui-tabs {
+    border: none;
 }
 
+// scrollable tabs
+.teacss-ui .ui-tabs .ui-tabs-nav {
+    font-size: 0;
+    overflow: hidden;
+    white-space:nowrap;
+    position: relative;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+}
+
+.teacss-ui .ui-tabs .ui-tabs-nav li {
+    float: none;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.teacss-ui .ui-tabs .ui-tabs-nav:hover {
+    overflow-x: auto;
+    z-index: 50000;
+}
+
+// changed mark on tab ready to save
 .teacss-ui .ui-tabs-nav li.changed {
     a {
         color: #000;
@@ -36,6 +60,7 @@
     }
 }
 
+// misc
 #teacss-layer .adjust-color span {
     display: inline-block;
     width: 20px;
@@ -45,6 +70,7 @@
     vertical-align: middle;
 }
 
+// smaller buttons on toolbar
 .teacss-ui .editorPanel-toolbar {
     background: #eee;
     padding: 4px 0;
@@ -61,6 +87,7 @@
     }
 }
 
+// styles for jsTree menu
 .teacss-ui.editorPanel,
 #vakata-contextmenu
 {
