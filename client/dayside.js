@@ -10752,6 +10752,9 @@ teacss.ui.filePanel = (function($){
                                             if (ext.indexOf('/')!=-1) ext = "";
                                             item.data.icon = 'file '+ext;
                                         }
+                                        if (data[i].cls)
+                                            item.data.icon += ' '+data[i].cls;
+                                        
                                         item.metadata = data[i];
                                         item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
                                         children.push(item);

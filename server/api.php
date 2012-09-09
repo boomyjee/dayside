@@ -166,6 +166,16 @@ class FileApi {
                 $path = $this->_pathFromUrl($path);
                 $newPath = $this->_pathFromUrl(@$dest[$i]);
                 if ($path && file_exists($path) && $newPath) {
+                    $copyN = 1;
+                    while (file_exists($newPath)) {
+                        $path_parts = pathinfo(@$dest[$i]);
+                        $ext = @$path_parts['extension'] ? ".".$path_parts['extension']:"";
+                        $newPath = $this->_pathFromUrl($path_parts['dirname'].
+                            "/".$path_parts['filename']."-copy".($copyN>1?$copyN:"").$ext);
+                        if (!$newPath) continue;
+                        $copyN++;
+                    }
+                    
                     if (is_dir($path)) {
                         mkdir($newPath);
                         $iterator = new \RecursiveIteratorIterator(
@@ -175,7 +185,7 @@ class FileApi {
                             if ($sub->isDir())
                                 mkdir($newPath.substr($sub->__toString(),strlen($path)));
                             else
-                                copy($sub->__toString(),$newPath.substr($sub->__toString(),strlen($newPath)));
+                                copy($sub->__toString(),$newPath.substr($sub->__toString(),strlen($path)));
                         }
                     } elseif (is_file($path)) {
                         copy($path,$newPath);
