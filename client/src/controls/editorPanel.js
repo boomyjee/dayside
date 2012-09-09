@@ -25,10 +25,7 @@ teacss.ui.editorPanel = (function($){
                     }
                     if (!tab) {
                         tab = ui.codeTab({file:file,closable:true,editorPanel:me});
-                        tab.editorPanel = me;
                         me.tabsForFiles.addTab(tab);
-                        
-                        me.trigger("codeTabCreated",tab);
                     }
                     me.tabsForFiles.selectTab(tab);
                 }
@@ -61,11 +58,20 @@ teacss.ui.editorPanel = (function($){
                 .appendTo(this.toolbar.element);
             
             this.updateOptions();
+            this.loadTabs();
             
             this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
             this.element.css({position:'fixed',left:0,top:0,right:0,bottom:0,});
             
             this.element.appendTo("body").addClass("teacss-ui");
+            
+            // tabs state save
+            this.bind("codeTabCreated",function(b,tab){
+                setTimeout(me.saveTabs,1);
+                tab.bind("close",function(){setTimeout(me.saveTabs,1)});
+            });
+            $(".ui-tabs").bind("tabsselect",function(){setTimeout(me.saveTabs,1)});
+            $(".ui-tabs-nav").bind("sortstop",me.saveTabs);
         },
         // triggered when optionsCombo value changes
         updateOptions: function () {
@@ -100,6 +106,33 @@ teacss.ui.editorPanel = (function($){
                 }
                 this.tabsForFiles = tabsForFiles;
             }            
+        },
+        saveTabs: function () {
+            var hash = {};
+            teacss.jQuery(".ui-tabs-panel").each(function(){
+                var tab = teacss.jQuery(this).data("tab");
+                var id = tab.options.id;
+                var active_href = $(this).parent().find("> .ui-tabs-nav .ui-tabs-selected a").attr("href");
+                var selected = ("#"+id)==active_href;
+                
+                if (tab && tab.Class==teacss.ui.codeTab) {
+                    hash[tab.options.file] = selected;
+                }
+            });
+            teacss.jQuery.jStorage.set("editorPanel_tabs_"+location.href,hash);
+        },
+        loadTabs: function () {
+            var me = this;
+            var hash = teacss.jQuery.jStorage.get("editorPanel_tabs_"+location.href);
+            if (hash) setTimeout(function () {
+                for (var file in hash) {
+                    var tab = new teacss.ui.codeTab({file:file,closable:true,editorPanel:me});
+                    me.tabsForFiles.push(tab);
+                    if (hash[file])
+                        me.tabsForFiles.selectTab(tab);
+                }
+            },1);
         }
+        
     });
 })(teacss.jQuery);

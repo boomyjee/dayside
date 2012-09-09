@@ -71,6 +71,9 @@ teacss.ui.codeTab = (function($){
             });
             
             this.Class.tabs.push(this);
+            
+            this.editorPanel = dayside.editor;
+            dayside.editor.trigger("codeTabCreated",this);
         },
         
         createEditor: function() {
@@ -121,6 +124,13 @@ teacss.ui.codeTab = (function($){
                 },
                 onUpdate: function (editor) {
                     me.editorPanel.trigger("editorChanged",me);
+                },
+                onScroll: function () {
+                    var si = me.editor.getScrollInfo();
+                    var data = $.jStorage.get("editorPanel_codeTabScroll");
+                    if (!data) data = {};
+                    data[me.options.file] = {x:si.x,y:si.y};
+                    $.jStorage.set("editorPanel_codeTabScroll",data);
                 }
             };
             
@@ -129,6 +139,13 @@ teacss.ui.codeTab = (function($){
             editorOptions = args.options;
             
             me.editor = CodeMirror(this.editorElement[0],editorOptions);
+            
+            var scrollData = $.jStorage.get("editorPanel_codeTabScroll");
+            if (scrollData && scrollData[me.options.file])
+                setTimeout(function(){
+                    var data = scrollData[me.options.file];
+                    me.editor.scrollTo(data.x,data.y);
+                },1);
             
             teacss.jQuery(function(){
                 setTimeout(function(){
