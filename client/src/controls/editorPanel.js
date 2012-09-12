@@ -78,6 +78,20 @@ teacss.ui.editorPanel = (function($){
             var ui = teacss.ui;
             var value = this.optionsCombo.value;
             
+            // apply indent settings to CodeMirror defaults and opened editors
+            CodeMirror.defaults.tabSize = value.tabSize;
+            CodeMirror.defaults.indentUnit = value.tabSize;
+            CodeMirror.defaults.indentWithTabs = value.useTab;
+            
+            for (var t=0;t<ui.codeTab.tabs.length;t++) {
+                var e = ui.codeTab.tabs[t].editor;
+                if (e) {
+                    e.setOption("tabSize",value.tabSize);
+                    e.setOption("indentUnit",value.tabSize);
+                    e.setOption("indentWithTabs",value.useTab);
+                }
+            }             
+            
             // create dynamic CSS node to reflect fontSize changes for CodeMirror
             var styles = $("#ideStyles");
             if (styles.length==0) {
@@ -89,11 +103,6 @@ teacss.ui.editorPanel = (function($){
                 if (e) e.refresh();
             }            
             
-            // apply indent setting to CodeMirror defaults
-            CodeMirror.defaults.tabSize = value.tabSize;
-            CodeMirror.defaults.indentUnit = value.tabSize;
-            CodeMirror.defaults.indentWithTabs = value.useTab;
-        
             // select where code tabs are located
             if (value.editorLayout=="left") {
                 var tabsForFiles = this.tabs;
