@@ -139,13 +139,9 @@ teacss.ui.codeTab = (function($){
             editorOptions = args.options;
             
             me.editor = CodeMirror(this.editorElement[0],editorOptions);
+            me.restoreScroll();
             
-            var scrollData = $.jStorage.get("editorPanel_codeTabScroll");
-            if (scrollData && scrollData[me.options.file])
-                setTimeout(function(){
-                    var data = scrollData[me.options.file];
-                    me.editor.scrollTo(data.x,data.y);
-                },1);
+            this.bind("select",me.restoreScroll);
             
             teacss.jQuery(function(){
                 setTimeout(function(){
@@ -153,6 +149,15 @@ teacss.ui.codeTab = (function($){
                     me.editorPanel.trigger("editorChanged",me);
                 },100)
             })
+        },
+        restoreScroll: function () {
+            var me = this;
+            var scrollData = $.jStorage.get("editorPanel_codeTabScroll");
+            if (scrollData && scrollData[me.options.file])
+                setTimeout(function(){
+                    var data = scrollData[me.options.file];
+                    me.editor.scrollTo(data.x,data.y);
+                },1);
         },
         editorChange: function() {
             var text = this.editor.getValue();
