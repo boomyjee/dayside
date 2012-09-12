@@ -35,9 +35,9 @@ teacss.ui.editorPanel = (function($){
             // splitter to make tab panels resizable
             this.splitter = ui.splitter({ panels:[this.tabs,this.tabs2] });
             this.splitter.bind("change",function(){
-                $.jStorage.set("editorPanel_splitterPos_"+location.href,this.value);
+                dayside.storage.set("splitterPos",this.value);
             });
-            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos_"+location.href,600));
+            this.splitter.setValue(dayside.storage.get("splitterPos",600));
             
             this.mainPanel = new ui.panel({items:[this.tabs,this.tabs2,this.splitter],margin:0});
             this.mainPanel.element.css({position:'absolute',left:0,right:0,top:27,bottom:0,'z-index':1});
@@ -133,11 +133,11 @@ teacss.ui.editorPanel = (function($){
                     hash[tab.options.file] = selected;
                 }
             });
-            teacss.jQuery.jStorage.set("editorPanel_tabs_"+location.href,hash);
+            dayside.storage.set("tabs",hash);
         },
         loadTabs: function () {
             var me = this;
-            var hash = teacss.jQuery.jStorage.get("editorPanel_tabs_"+location.href);
+            var hash = dayside.storage.get("tabs");
             if (hash) setTimeout(function () {
                 for (var file in hash) {
                     var tab = new teacss.ui.codeTab({file:file,closable:true,editorPanel:me});

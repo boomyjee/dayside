@@ -162,7 +162,7 @@ teacss.ui.codeTab = (function($){
         },
         saveState: function () {
             var me = this;
-            var data = $.jStorage.get("editorPanel_codeTabState");
+            var data = dayside.storage.get("codeTabState");
             if (!data) data = {};
             if (this.editor) {
                 var si = me.editor.getScrollInfo();
@@ -170,12 +170,12 @@ teacss.ui.codeTab = (function($){
             } else {
                 data[me.options.file] = this.colorPicker.value;
             }
-            $.jStorage.set("editorPanel_codeTabState",data);
+            dayside.storage.set("codeTabState",data);
             
         },
         restoreState: function () {
             var me = this;
-            var stateData = $.jStorage.get("editorPanel_codeTabState");
+            var stateData = dayside.storage.get("codeTabState");
             if (stateData && stateData[me.options.file]) {
                 var data = stateData[me.options.file];
                 if (this.editor) {
