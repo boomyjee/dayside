@@ -439,6 +439,7 @@ span.cm-invalidchar {color: #f00;}
     float: none;
     display: inline-block;
     font-size: 12px;
+    vertical-align: middle;
 }
 .teacss-ui .ui-tabs .ui-tabs-nav:hover {
     overflow-x: auto;

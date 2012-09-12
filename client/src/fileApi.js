@@ -13,8 +13,11 @@ var FileApi = window.FileApi = window.FileApi || function () {
         FileApi.events = new teacss.ui.eventTarget;
 
     FileApi._async = true;
+    
+    FileApi.requestCounter = 0;
     FileApi.request = function (type,data,json,callback) {
         var $ = window.jQuery || teacss.jQuery;
+        var requestID = ++FileApi.requestCounter;
         
         if (data.path) {
             if (data.path.substring(0,4)!="http") {
@@ -29,6 +32,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
             async: this._async,
             type: "POST",
             success: function (answer) {
+                FileApi.requestID = requestID;
                 res = {data:answer};
                 if (answer=="auth_error" || answer=="auth_empty") {
                     return res = FileApi.auth_error(answer,type,data,json,callback);
