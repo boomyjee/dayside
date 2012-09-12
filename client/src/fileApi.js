@@ -91,6 +91,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
         FileApi.request('rename',{path:path,name:name},false,function(answer){
             if (!answer.error && answer.data=="ok") {
                 var new_path = path.split("/"); 
+                new_path.pop();
                 new_path.push(name);
                 new_path = new_path.join("/");
                 if (new_path!=path) {
