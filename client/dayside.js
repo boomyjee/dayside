@@ -10632,7 +10632,6 @@ teacss.ui.codeTab = (function($){
                     me.editorChange();
                 },
                 tabMode:"shift",
-                indentUnit:4,
                 matchBrackets: true,
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
                 theme:'default',
@@ -11085,84 +11084,39 @@ teacss.ui.filePanel = (function($){
 teacss.ui.optionsCombo = (function($){
     return teacss.ui.Combo.extend({},{
         init: function (options) {
-            this.value = options.value || {
+            this.defaults = {
                 fontSize: 14,
-                editorLayout: 'right'
-            };
+                tabSize: 4,
+                useTab: false
+            }
             
             var ui = teacss.ui;
             var me = this;
-            var items = [
-                this.fontLabel = ui.label({template:'Font size: ${value}px'}),
-                this.fontSlider = ui.slider({
-                        min:10,max:24,margin:"0px 15px 5px",change:function(){
-                        me.value.fontSize = this.value;
-                        me.setValue(me.value);
-                        me.trigger("change");
-                    }
-                }),
-                ui.label({template:'Editor layout'}),
-                this.editorLayoutSelect = new (ui.Control.extend({
-                    init: function () {
-                        this._super({});
-                        this.element = $("<div>").css({padding:"0 0 10px 15px",'font-size':12});
-                        
-                        var values = {
-                            'Left panel' : 'left',
-                            'Right panel' : 'right'
-                        };
-                        
-                        for (var key in values) {
-                            var val = values[key];
-                            this.element.append(
-                                "<label><input style='display:inline' type='radio' name='editorLayout' value='{val}'> {key}</label><br>"
-                                .replace("{val}",val)
-                                .replace("{key}",key)
-                            );
-                        }
-                        
-                        var me_editor = this;
-                        this.element.on("change","input",function(){
-                            me_editor.value = $(this).val();
-                            me_editor.trigger("change");
-                            
-                            me.value.editorLayout = me_editor.value;
-                            me.setValue(me.value);
-                            me.trigger("change");
-                        });
-                    },
-                    setValue: function (val) {
-                        this._super(val);
-                        this.element
-                            .find("input")
-                            .filter(function(){
-                                return $(this).attr("value")==val
-                            })
-                            .attr("checked",true);
-                    }
-                }))
-            ];
-            this._super($.extend(options,{items:items}));
+            var panel,check;
+            this.form = ui.form(function(){
+                panel = ui.panel({width:200,height:'auto',margin:0}).push(
+                    ui.label({template:'Font size: ${value}px',name:'fontSize'}),
+                    ui.slider({min:10,max:24,margin:"0px 15px 5px",name:'fontSize'}),
+                    ui.label({template:'Tab size: ${value}',name:'tabSize'}),
+                    ui.slider({min:1,max:16,margin:"0px 15px 5px",name:'tabSize'}),
+                    check = ui.check({margin:"5px 15px 10px 10px",width:'auto',label:'Use tab character',name:'useTab'})
+                );
+            });
+            check.element.css("font-size",10);
+            this._super($.extend(options,{items:[panel]}));
             this.loadValue();
+            this.form.bind("change",function(){
+                me.value = me.form.value;
+                me.trigger("change");
+                me.saveValue();
+            });
         },
         saveValue: function () {
             $.jStorage.set("editorPanel_options_"+location.href,this.value);
         },
         loadValue: function () {
-            this.setValue(
-                $.jStorage.get("editorPanel_options_"+location.href,{
-                    fontSize: 14,
-                    editorLayout: 'right'
-                })
-            );
-        },
-        setValue: function (value) {
-            this.value = value;
-            this.fontLabel.setValue(this.value.fontSize);
-            this.fontSlider.setValue(this.value.fontSize);
-            this.editorLayoutSelect.setValue(this.value.editorLayout);
-            
-            this.saveValue();
+            this.value = $.extend({},this.defaults,$.jStorage.get("editorPanel_options_"+location.href,{}));
+            this.form.setValue(this.value);
         }
     });
 })(teacss.jQuery);;
@@ -11256,6 +11210,11 @@ teacss.ui.editorPanel = (function($){
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
             }            
+            
+            // apply indent setting to CodeMirror defaults
+            CodeMirror.defaults.tabSize = value.tabSize;
+            CodeMirror.defaults.indentUnit = value.tabSize;
+            CodeMirror.defaults.indentWithTabs = value.useTab;
         
             // select where code tabs are located
             if (value.editorLayout=="left") {
