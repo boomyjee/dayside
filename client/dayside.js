@@ -10552,6 +10552,7 @@ teacss.ui.codeTab = (function($){
                 );
                 this.restoreState();
             } else {
+                me.editorElement.append("<div style='padding:10px'>Loading...</div>");
                 FileApi.file(file,function (answer){
                     var data = answer.error || answer.data;
                     me.createEditor();
