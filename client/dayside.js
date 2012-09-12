@@ -10537,6 +10537,20 @@ teacss.ui.codeTab = (function($){
             if (ext=='png' || ext=='jpg' || ext=='jpeg' || ext=='gif') {
                 this.element.html("");
                 this.element.append($("<img>").attr("src",file));
+                
+                var colorPicker = this.colorPicker = new teacss.ui.colorPicker({width:40,height:30});
+                colorPicker.change(function(){
+                    me.element.css({ background: this.value });
+                    me.saveState();
+                });
+                this.element.append(
+                    colorPicker.element.css({
+                        position:'absolute',
+                        left: 5,
+                        bottom: 5
+                    })
+                );
+                this.restoreState();
             } else {
                 FileApi.file(file,function (answer){
                     var data = answer.error || answer.data;
@@ -10638,11 +10652,7 @@ teacss.ui.codeTab = (function($){
                     me.editorPanel.trigger("editorChanged",me);
                 },
                 onScroll: function () {
-                    var si = me.editor.getScrollInfo();
-                    var data = $.jStorage.get("editorPanel_codeTabScroll");
-                    if (!data) data = {};
-                    data[me.options.file] = {x:si.x,y:si.y};
-                    $.jStorage.set("editorPanel_codeTabScroll",data);
+                    me.saveState();
                 }
             };
             
@@ -10651,9 +10661,9 @@ teacss.ui.codeTab = (function($){
             editorOptions = args.options;
             
             me.editor = CodeMirror(this.editorElement[0],editorOptions);
-            me.restoreScroll();
+            me.restoreState();
             
-            this.bind("select",me.restoreScroll);
+            this.bind("select",me.restoreState);
             
             teacss.jQuery(function(){
                 setTimeout(function(){
@@ -10662,14 +10672,33 @@ teacss.ui.codeTab = (function($){
                 },100)
             })
         },
-        restoreScroll: function () {
+        saveState: function () {
             var me = this;
-            var scrollData = $.jStorage.get("editorPanel_codeTabScroll");
-            if (scrollData && scrollData[me.options.file])
-                setTimeout(function(){
-                    var data = scrollData[me.options.file];
-                    me.editor.scrollTo(data.x,data.y);
-                },1);
+            var data = $.jStorage.get("editorPanel_codeTabState");
+            if (!data) data = {};
+            if (this.editor) {
+                var si = me.editor.getScrollInfo();
+                data[me.options.file] = {x:si.x,y:si.y};
+            } else {
+                data[me.options.file] = this.colorPicker.value;
+            }
+            $.jStorage.set("editorPanel_codeTabState",data);
+            
+        },
+        restoreState: function () {
+            var me = this;
+            var stateData = $.jStorage.get("editorPanel_codeTabState");
+            if (stateData && stateData[me.options.file]) {
+                var data = stateData[me.options.file];
+                if (this.editor) {
+                    setTimeout(function(){
+                        me.editor.scrollTo(data.x,data.y);
+                    },1);
+                } else {
+                    this.colorPicker.setValue(data);
+                    this.colorPicker.trigger("change");
+                }
+            }
         },
         editorChange: function() {
             var text = this.editor.getValue();
