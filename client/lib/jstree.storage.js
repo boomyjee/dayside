@@ -1,7 +1,6 @@
 /*
  * jsTree storage plugin
- * Stores the currently opened/selected nodes in a jStorage and then restores them
- * Depends on the jStorage plugin
+ * Stores the currently opened/selected nodes in a dayside.storage and then restores them
  */
 (function ($) {
 	$.jstree.plugin("storage", {
@@ -9,15 +8,15 @@
 			var s = this._get_settings().storage,
 				tmp;
 			if(!!s.save_loaded) {
-				tmp = $.jStorage.get(s.save_loaded);
+				tmp = dayside.storage.get(s.save_loaded);
 				if(tmp && tmp.length) { this.data.core.to_load = tmp.split(","); }
 			}
 			if(!!s.save_opened) {
-				tmp = $.jStorage.get(s.save_opened);
+				tmp = dayside.storage.get(s.save_opened);
 				if(tmp && tmp.length) { this.data.core.to_open = tmp.split(","); }
 			}
 			if(!!s.save_selected) {
-				tmp = $.jStorage.get(s.save_selected);
+				tmp = dayside.storage.get(s.save_selected);
 				if(tmp && tmp.length && this.data.ui) { this.data.ui.to_select = tmp.split(","); }
 			}
 			this.get_container()
@@ -41,15 +40,15 @@
 				if(!c) { // if called manually and not by event
 					if(s.save_loaded) {
 						this.save_loaded();
-						$.jStorage.set(s.save_loaded, this.data.core.to_load.join(","));
+						dayside.storage.set(s.save_loaded, this.data.core.to_load.join(","));
 					}
 					if(s.save_opened) {
 						this.save_opened();
-						$.jStorage.set(s.save_opened, this.data.core.to_open.join(","));
+						dayside.storage.set(s.save_opened, this.data.core.to_open.join(","));
 					}
 					if(s.save_selected && this.data.ui) {
 						this.save_selected();
-						$.jStorage.set(s.save_selected, this.data.ui.to_select.join(","));
+						dayside.storage.set(s.save_selected, this.data.ui.to_select.join(","));
 					}
 					return;
 				}
@@ -58,18 +57,18 @@
 					case "close_node":
 						if(!!s.save_opened) { 
 							this.save_opened(); 
-							$.jStorage.set(s.save_opened, this.data.core.to_open.join(",")); 
+							dayside.storage.set(s.save_opened, this.data.core.to_open.join(",")); 
 						}
 						if(!!s.save_loaded) { 
 							this.save_loaded(); 
-							$.jStorage.set(s.save_loaded, this.data.core.to_load.join(",")); 
+							dayside.storage.set(s.save_loaded, this.data.core.to_load.join(",")); 
 						}
 						break;
 					case "select_node":
 					case "deselect_node":
 						if(!!s.save_selected && this.data.ui) { 
 							this.save_selected(); 
-							$.jStorage.set(s.save_selected, this.data.ui.to_select.join(",")); 
+							dayside.storage.set(s.save_selected, this.data.ui.to_select.join(",")); 
 						}
 						break;
 				}

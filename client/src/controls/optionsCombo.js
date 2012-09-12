@@ -29,10 +29,10 @@ teacss.ui.optionsCombo = (function($){
             });
         },
         saveValue: function () {
-            $.jStorage.set("editorPanel_options_"+location.href,this.value);
+            dayside.storage.set("options",this.value);
         },
         loadValue: function () {
-            this.value = $.extend({},this.defaults,$.jStorage.get("editorPanel_options_"+location.href,{}));
+            this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
             this.form.setValue(this.value);
         }
     });

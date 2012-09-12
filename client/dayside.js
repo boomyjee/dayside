@@ -10422,18 +10422,9 @@ jQuery.cookie = function(name, value, options) {
 	});
 
 })( jQuery );;
-(function(g){function m(){if(e.jStorage)try{d=n(""+e.jStorage)}catch(a){e.jStorage="{}"}else e.jStorage="{}";j=e.jStorage?(""+e.jStorage).length:0}function h(){try{e.jStorage=o(d),c&&(c.setAttribute("jStorage",e.jStorage),c.save("jStorage")),j=e.jStorage?(""+e.jStorage).length:0}catch(a){}}function i(a){if(!a||"string"!=typeof a&&"number"!=typeof a)throw new TypeError("Key name must be string or numeric");if("__jstorage_meta"==a)throw new TypeError("Reserved key name");return!0}function k(){var a,
-b,c,e=Infinity,f=!1;clearTimeout(p);if(d.__jstorage_meta&&"object"==typeof d.__jstorage_meta.TTL){a=+new Date;c=d.__jstorage_meta.TTL;for(b in c)c.hasOwnProperty(b)&&(c[b]<=a?(delete c[b],delete d[b],f=!0):c[b]<e&&(e=c[b]));Infinity!=e&&(p=setTimeout(k,e-a));f&&h()}}if(!g||!g.toJSON&&!Object.toJSON&&!window.JSON)throw Error("jQuery, MooTools or Prototype needs to be loaded before jStorage!");var d={},e={jStorage:"{}"},c=null,j=0,o=g.toJSON||Object.toJSON||window.JSON&&(JSON.encode||JSON.stringify),
-n=g.evalJSON||window.JSON&&(JSON.decode||JSON.parse)||function(a){return(""+a).evalJSON()},f=!1,p,l={isXML:function(a){return(a=(a?a.ownerDocument||a:0).documentElement)?"HTML"!==a.nodeName:!1},encode:function(a){if(!this.isXML(a))return!1;try{return(new XMLSerializer).serializeToString(a)}catch(b){try{return a.xml}catch(d){}}return!1},decode:function(a){var b="DOMParser"in window&&(new DOMParser).parseFromString||window.ActiveXObject&&function(a){var b=new ActiveXObject("Microsoft.XMLDOM");b.async=
-"false";b.loadXML(a);return b};if(!b)return!1;a=b.call("DOMParser"in window&&new DOMParser||window,a,"text/xml");return this.isXML(a)?a:!1}};g.jStorage={version:"0.1.7.0",set:function(a,b,c){i(a);c=c||{};l.isXML(b)?b={_is_xml:!0,xml:l.encode(b)}:"function"==typeof b?b=null:b&&"object"==typeof b&&(b=n(o(b)));d[a]=b;isNaN(c.TTL)?h():this.setTTL(a,c.TTL);return b},get:function(a,b){i(a);return a in d?d[a]&&"object"==typeof d[a]&&d[a]._is_xml&&d[a]._is_xml?l.decode(d[a].xml):d[a]:"undefined"==typeof b?
-null:b},deleteKey:function(a){i(a);return a in d?(delete d[a],d.__jstorage_meta&&("object"==typeof d.__jstorage_meta.TTL&&a in d.__jstorage_meta.TTL)&&delete d.__jstorage_meta.TTL[a],h(),!0):!1},setTTL:function(a,b){var c=+new Date;i(a);b=Number(b)||0;return a in d?(d.__jstorage_meta||(d.__jstorage_meta={}),d.__jstorage_meta.TTL||(d.__jstorage_meta.TTL={}),0<b?d.__jstorage_meta.TTL[a]=c+b:delete d.__jstorage_meta.TTL[a],h(),k(),!0):!1},flush:function(){d={};h();return!0},storageObj:function(){function a(){}
-a.prototype=d;return new a},index:function(){var a=[],b;for(b in d)d.hasOwnProperty(b)&&"__jstorage_meta"!=b&&a.push(b);return a},storageSize:function(){return j},currentBackend:function(){return f},storageAvailable:function(){return!!f},reInit:function(){var a;if(c&&c.addBehavior){a=document.createElement("link");c.parentNode.replaceChild(a,c);c=a;c.style.behavior="url(#default#userData)";document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}";try{a=c.getAttribute("jStorage")}catch(b){}e.jStorage=
-a;f="userDataBehavior"}m()}};(function(){var a=!1;if("localStorage"in window)try{window.localStorage.setItem("_tmptest","tmpval"),a=!0,window.localStorage.removeItem("_tmptest")}catch(b){}if(a)try{window.localStorage&&(e=window.localStorage,f="localStorage")}catch(d){}else if("globalStorage"in window)try{window.globalStorage&&(e=window.globalStorage[window.location.hostname],f="globalStorage")}catch(g){}else if(c=document.createElement("link"),c.addBehavior){c.style.behavior="url(#default#userData)";
-document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}";try{a=c.getAttribute("jStorage")}catch(h){}e.jStorage=a;f="userDataBehavior"}else{c=null;return}m();k()})()})(window.$||window.jQuery);;
 /*
  * jsTree storage plugin
- * Stores the currently opened/selected nodes in a jStorage and then restores them
- * Depends on the jStorage plugin
+ * Stores the currently opened/selected nodes in a dayside.storage and then restores them
  */
 (function ($) {
 	$.jstree.plugin("storage", {
@@ -10441,15 +10432,15 @@ document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}
 			var s = this._get_settings().storage,
 				tmp;
 			if(!!s.save_loaded) {
-				tmp = $.jStorage.get(s.save_loaded);
+				tmp = dayside.storage.get(s.save_loaded);
 				if(tmp && tmp.length) { this.data.core.to_load = tmp.split(","); }
 			}
 			if(!!s.save_opened) {
-				tmp = $.jStorage.get(s.save_opened);
+				tmp = dayside.storage.get(s.save_opened);
 				if(tmp && tmp.length) { this.data.core.to_open = tmp.split(","); }
 			}
 			if(!!s.save_selected) {
-				tmp = $.jStorage.get(s.save_selected);
+				tmp = dayside.storage.get(s.save_selected);
 				if(tmp && tmp.length && this.data.ui) { this.data.ui.to_select = tmp.split(","); }
 			}
 			this.get_container()
@@ -10473,15 +10464,15 @@ document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}
 				if(!c) { // if called manually and not by event
 					if(s.save_loaded) {
 						this.save_loaded();
-						$.jStorage.set(s.save_loaded, this.data.core.to_load.join(","));
+						dayside.storage.set(s.save_loaded, this.data.core.to_load.join(","));
 					}
 					if(s.save_opened) {
 						this.save_opened();
-						$.jStorage.set(s.save_opened, this.data.core.to_open.join(","));
+						dayside.storage.set(s.save_opened, this.data.core.to_open.join(","));
 					}
 					if(s.save_selected && this.data.ui) {
 						this.save_selected();
-						$.jStorage.set(s.save_selected, this.data.ui.to_select.join(","));
+						dayside.storage.set(s.save_selected, this.data.ui.to_select.join(","));
 					}
 					return;
 				}
@@ -10490,18 +10481,18 @@ document.getElementsByTagName("head")[0].appendChild(c);c.load("jStorage");a="{}
 					case "close_node":
 						if(!!s.save_opened) { 
 							this.save_opened(); 
-							$.jStorage.set(s.save_opened, this.data.core.to_open.join(",")); 
+							dayside.storage.set(s.save_opened, this.data.core.to_open.join(",")); 
 						}
 						if(!!s.save_loaded) { 
 							this.save_loaded(); 
-							$.jStorage.set(s.save_loaded, this.data.core.to_load.join(",")); 
+							dayside.storage.set(s.save_loaded, this.data.core.to_load.join(",")); 
 						}
 						break;
 					case "select_node":
 					case "deselect_node":
 						if(!!s.save_selected && this.data.ui) { 
 							this.save_selected(); 
-							$.jStorage.set(s.save_selected, this.data.ui.to_select.join(",")); 
+							dayside.storage.set(s.save_selected, this.data.ui.to_select.join(",")); 
 						}
 						break;
 				}
@@ -10674,7 +10665,7 @@ teacss.ui.codeTab = (function($){
         },
         saveState: function () {
             var me = this;
-            var data = $.jStorage.get("editorPanel_codeTabState");
+            var data = dayside.storage.get("codeTabState");
             if (!data) data = {};
             if (this.editor) {
                 var si = me.editor.getScrollInfo();
@@ -10682,12 +10673,12 @@ teacss.ui.codeTab = (function($){
             } else {
                 data[me.options.file] = this.colorPicker.value;
             }
-            $.jStorage.set("editorPanel_codeTabState",data);
+            dayside.storage.set("codeTabState",data);
             
         },
         restoreState: function () {
             var me = this;
-            var stateData = $.jStorage.get("editorPanel_codeTabState");
+            var stateData = dayside.storage.get("codeTabState");
             if (stateData && stateData[me.options.file]) {
                 var data = stateData[me.options.file];
                 if (this.editor) {
@@ -11112,10 +11103,10 @@ teacss.ui.optionsCombo = (function($){
             });
         },
         saveValue: function () {
-            $.jStorage.set("editorPanel_options_"+location.href,this.value);
+            dayside.storage.set("options",this.value);
         },
         loadValue: function () {
-            this.value = $.extend({},this.defaults,$.jStorage.get("editorPanel_options_"+location.href,{}));
+            this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
             this.form.setValue(this.value);
         }
     });
@@ -11157,9 +11148,9 @@ teacss.ui.editorPanel = (function($){
             // splitter to make tab panels resizable
             this.splitter = ui.splitter({ panels:[this.tabs,this.tabs2] });
             this.splitter.bind("change",function(){
-                $.jStorage.set("editorPanel_splitterPos_"+location.href,this.value);
+                dayside.storage.set("splitterPos",this.value);
             });
-            this.splitter.setValue($.jStorage.get("editorPanel_splitterPos_"+location.href,600));
+            this.splitter.setValue(dayside.storage.get("splitterPos",600));
             
             this.mainPanel = new ui.panel({items:[this.tabs,this.tabs2,this.splitter],margin:0});
             this.mainPanel.element.css({position:'absolute',left:0,right:0,top:27,bottom:0,'z-index':1});
@@ -11255,11 +11246,11 @@ teacss.ui.editorPanel = (function($){
                     hash[tab.options.file] = selected;
                 }
             });
-            teacss.jQuery.jStorage.set("editorPanel_tabs_"+location.href,hash);
+            dayside.storage.set("tabs",hash);
         },
         loadTabs: function () {
             var me = this;
-            var hash = teacss.jQuery.jStorage.get("editorPanel_tabs_"+location.href);
+            var hash = dayside.storage.get("tabs");
             if (hash) setTimeout(function () {
                 for (var file in hash) {
                     var tab = new teacss.ui.codeTab({file:file,closable:true,editorPanel:me});
@@ -11462,7 +11453,6 @@ var FileApi = window.FileApi = window.FileApi || function () {
     return FileApi;
 }();;
 window.dayside = window.dayside || (function(){
-    
     var dir = "/dayside";
     var res;
 
@@ -11512,6 +11502,43 @@ window.dayside = window.dayside || (function(){
             preview: true
         }
         dayside.options = options = $.extend(defaults,options);
+        dayside.storage = {
+            key: function (key) {
+                return "dayside_"+location.href;
+            },
+            get: function (key,def) {
+                if (typeof(localStorage)!='undefined') {
+                    var gkey = this.key();
+                    var item = localStorage.getItem(gkey);
+                    if (item) {
+                        try {
+                            item = eval('('+item+')');
+                        } catch (e) {
+                            return def;
+                        }
+                        return item[key];
+                    }
+                }
+                return def;
+            },
+            set: function (key,value) {
+                if (typeof(localStorage)!='undefined') {
+                    var gkey = this.key();
+                    var item = localStorage.getItem(gkey);
+                    if (item) {
+                        try {
+                            item = eval('('+item+')'); 
+                        } catch (e) {
+                            item = {};
+                        }
+                    } else {
+                        item = {};
+                    }
+                    item[key] = value;
+                    localStorage.setItem(gkey,JSON.stringify(item));
+                }
+            }
+        }
         
         teacss.jQuery(function ($){
             FileApi.root = options.root;
