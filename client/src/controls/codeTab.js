@@ -18,7 +18,7 @@ teacss.ui.codeTab = (function($){
             
             this.editorElement = this.codeTab.element;
 
-            var file = this.apiPath = this.options.file;
+            var file = this.options.file;
             var me = this;
             var parts = file.split(".");
             var ext = parts[parts.length-1];
@@ -92,7 +92,7 @@ teacss.ui.codeTab = (function($){
         
         createEditor: function() {
             var me = this;
-            var file = this.apiPath;
+            var file = this.options.file;
             var data = FileApi.cache[file];
 
             this.editorElement.html("");
@@ -207,7 +207,7 @@ teacss.ui.codeTab = (function($){
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             var text = this.editor.getValue();
-            FileApi.save(this.apiPath,text,function(answer){
+            FileApi.save(this.options.file,text,function(answer){
                 var data = answer.error || answer.data;
                 if (data=="ok") {
                     me.changed = false;
