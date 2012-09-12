@@ -120,7 +120,6 @@ teacss.ui.codeTab = (function($){
                     me.editorChange();
                 },
                 tabMode:"shift",
-                indentUnit:4,
                 matchBrackets: true,
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
                 theme:'default',
