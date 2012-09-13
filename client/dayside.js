@@ -10511,7 +10511,7 @@ teacss.ui.codeTab = (function($){
             var caption = this.options.file.split("/").pop().split("\\").pop();
             this.options.caption = caption;
             
-            this.tabs = new teacss.ui.tabPanel({});
+            this.tabs = new teacss.ui.tabPanel({width:'100%',height:'100%'});
             this.tabs.element
                 .css({position:'absolute',left:0,right:0,top:0,bottom:0})
                 .appendTo(this.element);
@@ -10812,6 +10812,7 @@ teacss.ui.filePanel = (function($){
                     var dest_nodes = is_copy ? data.rslt.oc : data.rslt.o;
                     var func_name = is_copy ? "copy" : "move";
                     
+                    if (!is_copy && pathes.length && pathes[0]==dest_pathes[0]) return;
                     var answer = FileApi[func_name](pathes,dest_pathes,function(answer){
                         var res = answer.error || answer.data;
                         if (res!="ok") {
@@ -10820,10 +10821,36 @@ teacss.ui.filePanel = (function($){
                         } else {
                             dest_nodes.each(function(){
                                 var path = $(this).attr("rel");
-                                var name = path.split("/").pop();
+                                // save initial name, without "copyN" addon
+                                var blank_name;
+                                var name = blank_name = path.split("/").pop();
                                 var rel = dest + "/" + name;
                                 
+                                // split to extension and basename because copyN is added in between
+                                var parts = name.split(".");
+                                var ext = "";
+                                if (parts.length>1) ext = "."+parts.pop();
+                                var base = parts.join(".");
+                                
+                                var all_lis = me.tree.find("li");
+                                var N = 1;
+                                // while name is busy goto next one
+                                while (all_lis.filter(function(){return $(this).attr("rel")==rel;}).length>0) {
+                                    name = base + "-copy" + (N>1?N:"") + ext;
+                                    rel = dest + "/" + name;
+                                    N++;
+                                }
                                 $(this).attr("rel",rel).attr("id",rel.replace(/[^A-Za-z0-9_-]/g,'_'));
+                                
+                                // if name was busy at least once, correct the copied noed state
+                                if (name!=blank_name) {
+                                    // rename it
+                                    me.tree.jstree('set_text', this, name);
+                                    // an resort parent
+                                    me.tree.jstree('sort',$(this).parent());
+                                }
+                                
+                                // rename all node children
                                 $(this).find("li").each(function(){
                                     var sub = $(this).attr("rel");
                                     if (sub.substring(0,path.length)==path)
@@ -10869,7 +10896,7 @@ teacss.ui.filePanel = (function($){
                                             item.data.icon = 'file '+ext;
                                         }
                                         if (data[i].cls)
-                                            item.data.icon += ' '+data[i].cls;
+                                            item.attr['class'] = data[i].cls;
                                         
                                         item.metadata = data[i];
                                         item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
@@ -11050,9 +11077,9 @@ teacss.ui.filePanel = (function($){
                                     else
                                         if (parent!=rel) valid = false;
                                 });
+                                console.debug(m);
                                 var dest = m.np.attr("rel");
                                 if (!valid) return false;
-                                if (parent==dest) return false;
                                 if (dest==undefined) return false;
                                 return true;
                             }
@@ -11185,6 +11212,62 @@ teacss.ui.editorPanel = (function($){
             });
             $(".ui-tabs").bind("tabsselect",function(){setTimeout(me.saveTabs,1)});
             $(".ui-tabs-nav").bind("sortstop",me.saveTabs);
+            
+            // context menu for tabs
+            $(document).on("contextmenu",".ui-tabs-nav > li",function(e){
+                if (e.which==3) {
+                    var li = this;
+                    var id = $(this).find("a:first").attr("href");
+                    var tab = $(this).parents(".ui-tabs").eq(0).find(id).data("tab");
+                    if (tab) {
+                        var items = {
+                            close: {
+                                label: "Close",
+                                action: function () {
+                                    me.tabsForFiles.closeTab(tab);
+                                }
+                            },
+                            closeAll: {
+                                label: "Close all",
+                                action: function () {
+                                    items.closeOthers.action();
+                                    items.close.action();
+                                }
+                            },
+                            closeOthers: {
+                                label: "Close others",
+                                action: function () {
+                                    var tabs = $(li).parents(".ui-tabs").eq(0);
+                                    $(li).siblings().each(function(){
+                                        var id = $(this).find("a").attr("href");
+                                        var other = tabs.find(id).data("tab");
+                                        if (tab) me.tabsForFiles.closeTab(other);
+                                    });                                    
+                                }
+                            },
+                            save: {
+                                label: "Save",
+                                separator_before: true,
+                                action: function () {
+                                    tab.saveFile();
+                                }
+                            }
+                        }
+                            
+                        if (!tab.options.closable) delete items.close;
+                        if ($(this).siblings().length==0) {
+                            delete items.closeOthers;
+                            delete items.closeAll;
+                        }
+                        if (!$(this).hasClass("changed")) delete items.save;
+                        
+                        var pos = $(this).offset();
+                        $.vakata.context.show(items,false,pos.left,pos.top+$(this).height());
+                        $("#vakata-contextmenu").addClass("jstree-default-context");
+                    }
+                    e.preventDefault();
+                }
+            });
         },
         // triggered when optionsCombo value changes
         updateOptions: function () {

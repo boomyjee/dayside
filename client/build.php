@@ -8,13 +8,13 @@
 ?>
 <html>
     <head>
-        <title>editorPanel build</title>
+        <title>dayside build</title>
         <meta charset="utf-8">
         <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
         <script src="/~boomyjee/teacss/lib/teacss.js"></script>
     </head>
     <body>
-        Build page for "editorPanel" project<br>
+        Build page for "dayside" project<br>
         <button onclick = "build();">Build</button>
         <br>
         <script>

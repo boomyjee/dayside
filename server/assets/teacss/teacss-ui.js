@@ -3241,12 +3241,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
         this.element.on("click","span.ui-icon-close", function(){
             var href = $(this).prev().attr("href");
             var tab = me.element.find(href).data("tab");
-            var e = {tab:tab,cancel:false};
-            tab.trigger("close",e);
-            
-            if (!e.cancel) {
-                me.element.tabs("remove",$(this).prev().attr("href"));
-            }
+            me.closeTab(tab);
         });
     },
     
@@ -3271,6 +3266,13 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
         return this;
     },
     
+    closeTab: function (tab) {
+        var e = {tab:tab,cancel:false};
+        tab.trigger("close",e);
+        if (!e.cancel) {
+            this.element.tabs("remove","#"+tab.options.id);
+        }
+    },
     addTab: function (tab) {
         if (!(tab instanceof teacss.ui.Control)) tab = teacss.ui.panel(tab);
         var id = 'tab' + teacss.ui.tabPanel.tabIndex++;

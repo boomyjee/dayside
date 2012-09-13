@@ -420,10 +420,6 @@ span.cm-invalidchar {color: #f00;}
 .jstree-icon.zop {
     background: url(src/../lib/jstree/icons/zip.png) 0 0 !important;
 }
-.jstree-icon.hidden {
-    opacity: 0.3;
-    filter: alpha(opacity=30);
-}
 .teacss-ui .ui-tabs-panel > div > .ui-tabs {
     border: none;
 }
