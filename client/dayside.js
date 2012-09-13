@@ -11003,17 +11003,17 @@ teacss.ui.filePanel = (function($){
                                     }
                                 });
                             }
-
-                            res["rename"] = {label: "Rename",separator_before:true, action:function(){
-                                me.tree.jstree("rename");
-                            }}
-                            res["delete"] = {label: "Delete",action:function(){
-                                if (confirm('Sure to delete files?'))
-                                    me.tree.jstree("remove");
-                            }}
-
-                            if (path=='/') delete res['delete'];
                             
+                            if (path!=FileApi.root) {
+                                res["rename"] = {label: "Rename",separator_before:true, action:function(){
+                                    me.tree.jstree("rename");
+                                }}
+                                res["delete"] = {label: "Delete",action:function(){
+                                    if (confirm('Sure to delete files?'))
+                                        me.tree.jstree("remove");
+                                }}
+                            }
+                                
                             var data = {
                                 menu: res,
                                 path: path,
