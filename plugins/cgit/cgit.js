@@ -1,3 +1,0 @@
-dayside.plugins.push(function(){
-    
-});

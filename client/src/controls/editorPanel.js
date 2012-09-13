@@ -72,6 +72,62 @@ teacss.ui.editorPanel = (function($){
             });
             $(".ui-tabs").bind("tabsselect",function(){setTimeout(me.saveTabs,1)});
             $(".ui-tabs-nav").bind("sortstop",me.saveTabs);
+            
+            // context menu for tabs
+            $(document).on("contextmenu",".ui-tabs-nav > li",function(e){
+                if (e.which==3) {
+                    var li = this;
+                    var id = $(this).find("a:first").attr("href");
+                    var tab = $(this).parents(".ui-tabs").eq(0).find(id).data("tab");
+                    if (tab) {
+                        var items = {
+                            close: {
+                                label: "Close",
+                                action: function () {
+                                    me.tabsForFiles.closeTab(tab);
+                                }
+                            },
+                            closeAll: {
+                                label: "Close all",
+                                action: function () {
+                                    items.closeOthers.action();
+                                    items.close.action();
+                                }
+                            },
+                            closeOthers: {
+                                label: "Close others",
+                                action: function () {
+                                    var tabs = $(li).parents(".ui-tabs").eq(0);
+                                    $(li).siblings().each(function(){
+                                        var id = $(this).find("a").attr("href");
+                                        var other = tabs.find(id).data("tab");
+                                        if (tab) me.tabsForFiles.closeTab(other);
+                                    });                                    
+                                }
+                            },
+                            save: {
+                                label: "Save",
+                                separator_before: true,
+                                action: function () {
+                                    tab.saveFile();
+                                }
+                            }
+                        }
+                            
+                        if (!tab.options.closable) delete items.close;
+                        if ($(this).siblings().length==0) {
+                            delete items.closeOthers;
+                            delete items.closeAll;
+                        }
+                        if (!$(this).hasClass("changed")) delete items.save;
+                        
+                        var pos = $(this).offset();
+                        $.vakata.context.show(items,false,pos.left,pos.top+$(this).height());
+                        $("#vakata-contextmenu").addClass("jstree-default-context");
+                    }
+                    e.preventDefault();
+                }
+            });
         },
         // triggered when optionsCombo value changes
         updateOptions: function () {
