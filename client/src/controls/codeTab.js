@@ -144,7 +144,7 @@ teacss.ui.codeTab = (function($){
                 }
             };
             
-            var args = {options:editorOptions};
+            var args = {options:editorOptions,tab:me};
             me.options.editorPanel.trigger("editorOptions",args);
             editorOptions = args.options;
             

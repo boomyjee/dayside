@@ -3318,6 +3318,7 @@ teacss.ui.dialog = teacss.ui.Dialog = teacss.ui.panel.extend({
             autoOpen: false
         },o));
         
+        this.element.css("display","");
         this.element.dialog($.extend({},this.options,{
             create: function(event, ui){
                 $(this).parent().appendTo(teacss.ui.layer);
