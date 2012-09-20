@@ -1,4 +1,4 @@
-dayside.plugins.push(function(){
+dayside.ready(function () {
     dayside.editor.bind("codeTabCreated",function (b,tab){
         var file = tab.options.file;
         var ext = file.split(".").pop();
@@ -17,4 +17,4 @@ dayside.plugins.push(function(){
             )
         }
     });
-});
+})

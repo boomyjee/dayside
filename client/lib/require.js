@@ -126,7 +126,7 @@
     }
         
     var factory = function (base) {
-        return function () {
+        var r = function () {
             var old = window.require.base;
             window.require.base = base;
             
@@ -188,6 +188,9 @@
             }
             return result;
         }
+        r.path = base;
+        r.dir = r.path ? r.path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '') : r.path;
+        return r;
     }
 
     window.require = factory();
@@ -195,4 +198,5 @@
     window.require.extensions = extensions;
     window.require.factory = factory;
     window.require.cache = cache;
+    window.require.getFile = getFile;
 })();

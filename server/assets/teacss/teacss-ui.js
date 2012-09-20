@@ -3228,11 +3228,11 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
             update: function () {
                 var container = $(this); // ul
                 var panel;
-                $(this).children().each(function() {
+                /*$(this).children().each(function() {
                     panel = $($(this).find('a').attr('href'));
                     panel.insertAfter(container);
                     container = panel; // div
-                });
+                });*/
             },
             containment: 'parent'
         });
