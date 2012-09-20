@@ -1,4 +1,4 @@
-dayside.plugins.push(function(){
+dayside.ready(function(){
     dayside.editor.bind("codeChanged",teapot_codeChanged);
     dayside.editor.bind("editorOptions",function (b,e){
         setTimeout(function(){

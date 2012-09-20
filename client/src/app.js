@@ -91,15 +91,24 @@ window.dayside = window.dayside || (function(){
             FileApi.ajax_url = options.ajax_url;
             FileApi.auth_error = options.auth_error;
             
+            dayside.loaded = false;
             var editor = window.dayside.editor = new teacss.ui.editorPanel({
                 jupload: options.jupload_url
             });
-            
-            for (var i=0;i<dayside.plugins.length;i++)
-                dayside.plugins[i].call(dayside);
+            dayside.loaded = true;
+            onLoaded();
         });        
     }
-    dayside.plugins = [];
+        
+    var load_list = [];
+    function onLoaded() {
+        for (var i=0;i<load_list.length;i++) load_list[i]();
+        load_list = [];
+    }
+    dayside.ready = function (f) {
+        if (dayside.loaded) f(); else load_list.push(f);
+    }
     dayside.url = dir;
+    dayside.plugins = {};
     return dayside;
 })();

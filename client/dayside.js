@@ -10629,7 +10629,7 @@ jQuery.cookie = function(name, value, options) {
     }
         
     var factory = function (base) {
-        return function () {
+        var r = function () {
             var old = window.require.base;
             window.require.base = base;
             
@@ -10691,6 +10691,9 @@ jQuery.cookie = function(name, value, options) {
             }
             return result;
         }
+        r.path = base;
+        r.dir = r.path ? r.path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '') : r.path;
+        return r;
     }
 
     window.require = factory();
@@ -10698,6 +10701,7 @@ jQuery.cookie = function(name, value, options) {
     window.require.extensions = extensions;
     window.require.factory = factory;
     window.require.cache = cache;
+    window.require.getFile = getFile;
 })();;
 teacss.ui.codeTab = (function($){
     return teacss.ui.Panel.extend({
@@ -11496,24 +11500,6 @@ teacss.ui.editorPanel = (function($){
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
             }            
-            
-            // select where code tabs are located
-            if (value.editorLayout=="left") {
-                var tabsForFiles = this.tabs;
-            } else {
-                var tabsForFiles = this.tabs2;
-            }
-            
-            // move already opened code tabs to the right panel if needed
-            if (this.tabsForFiles != tabsForFiles) {
-                for (var t=0;t<ui.codeTab.tabs.length;t++) {
-                    var tab = ui.codeTab.tabs[t];
-                    tab.element.detach();
-                    this.tabsForFiles.element.tabs("remove",'#'+tab.element.attr("id"));
-                    tabsForFiles.addTab(tab);
-                }
-                this.tabsForFiles = tabsForFiles;
-            }            
         },
         saveTabs: function () {
             var hash = {};
@@ -11826,15 +11812,24 @@ window.dayside = window.dayside || (function(){
             FileApi.ajax_url = options.ajax_url;
             FileApi.auth_error = options.auth_error;
             
+            dayside.loaded = false;
             var editor = window.dayside.editor = new teacss.ui.editorPanel({
                 jupload: options.jupload_url
             });
-            
-            for (var i=0;i<dayside.plugins.length;i++)
-                dayside.plugins[i].call(dayside);
+            dayside.loaded = true;
+            onLoaded();
         });        
     }
-    dayside.plugins = [];
+        
+    var load_list = [];
+    function onLoaded() {
+        for (var i=0;i<load_list.length;i++) load_list[i]();
+        load_list = [];
+    }
+    dayside.ready = function (f) {
+        if (dayside.loaded) f(); else load_list.push(f);
+    }
     dayside.url = dir;
+    dayside.plugins = {};
     return dayside;
 })();

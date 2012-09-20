@@ -158,24 +158,6 @@ teacss.ui.editorPanel = (function($){
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
             }            
-            
-            // select where code tabs are located
-            if (value.editorLayout=="left") {
-                var tabsForFiles = this.tabs;
-            } else {
-                var tabsForFiles = this.tabs2;
-            }
-            
-            // move already opened code tabs to the right panel if needed
-            if (this.tabsForFiles != tabsForFiles) {
-                for (var t=0;t<ui.codeTab.tabs.length;t++) {
-                    var tab = ui.codeTab.tabs[t];
-                    tab.element.detach();
-                    this.tabsForFiles.element.tabs("remove",'#'+tab.element.attr("id"));
-                    tabsForFiles.addTab(tab);
-                }
-                this.tabsForFiles = tabsForFiles;
-            }            
         },
         saveTabs: function () {
             var hash = {};

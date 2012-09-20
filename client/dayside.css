@@ -423,6 +423,11 @@ span.cm-invalidchar {color: #f00;}
 .teacss-ui .ui-tabs-panel > div > .ui-tabs {
     border: none;
 }
+.teacss-ui ul.ui-tabs-nav li .ui-button-text {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    height: 1.4em;
+}
 .teacss-ui .ui-tabs .ui-tabs-nav {
     font-size: 0;
     overflow: hidden;
@@ -465,8 +470,11 @@ span.cm-invalidchar {color: #f00;}
     background: none;
     font-size: 12px;
 }
-.teacss-ui .editorPanel-toolbar .ui-button-text {
+.teacss-ui .editorPanel-toolbar .ui-button-text-icon-primary .ui-button-text {
     padding: 0.15em 1em 0.15em 2.1em;
+}
+.teacss-ui .editorPanel-toolbar .ui-button-text-only .ui-button-text {
+    padding: 0.15em 1em 0.15em 1em;
 }
 .teacss-ui.editorPanel,
 #vakata-contextmenu {
