@@ -8,7 +8,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
         throw 'Authorization failed';
         return {};
     }
-        
+
     if (teacss.ui.eventTarget)
         FileApi.events = new teacss.ui.eventTarget;
 
@@ -28,7 +28,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
 
         $.ajax({
             url: FileApi.ajax_url,
-            data: $.extend(data,{type:type}),
+            data: $.extend(data,{type:type,_type:type}),
             async: this._async,
             type: "POST",
             success: function (answer) {

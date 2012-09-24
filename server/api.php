@@ -20,11 +20,13 @@ class FileApi {
         
         if (isset($_POST['password']))
             setcookie('editor_auth',$test = sha1($_POST['password']),0,'/');
+        elseif (isset($_REQUEST['auth_token']))
+            $test = $_REQUEST['auth_token'];
         else
             $test = @$_COOKIE['editor_auth'];
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
-        $this->{$_POST['type']}();
+        $this->{$_REQUEST['_type']}();
         die();                
     }
     
@@ -42,7 +44,7 @@ class FileApi {
             return $path;
         }
         return false;
-    }    
+    }
     
     function dir() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);

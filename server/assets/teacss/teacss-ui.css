@@ -922,7 +922,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .teacss-ui .ui-tabs.fixed > .ui-tabs-panel {
     position: absolute;
-    top: 34px;
+    top: 30px;
     bottom: 0;
     right: 0;
     left: 0;
