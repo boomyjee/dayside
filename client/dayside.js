@@ -10729,7 +10729,7 @@ teacss.ui.codeTab = (function($){
             var ext = parts[parts.length-1];
             if (ext=='png' || ext=='jpg' || ext=='jpeg' || ext=='gif') {
                 this.element.html("");
-                this.element.append($("<img>").attr("src",file));
+                this.element.append($("<img>").attr("src",file+"?t="+Math.floor(Math.random()*0x10000).toString(16)));
                 
                 var colorPicker = this.colorPicker = new teacss.ui.colorPicker({width:40,height:30});
                 colorPicker.change(function(){
@@ -11540,7 +11540,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
         throw 'Authorization failed';
         return {};
     }
-        
+
     if (teacss.ui.eventTarget)
         FileApi.events = new teacss.ui.eventTarget;
 
@@ -11560,7 +11560,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
 
         $.ajax({
             url: FileApi.ajax_url,
-            data: $.extend(data,{type:type}),
+            data: $.extend(data,{type:type,_type:type}),
             async: this._async,
             type: "POST",
             success: function (answer) {

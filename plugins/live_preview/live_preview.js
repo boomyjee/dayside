@@ -2,7 +2,8 @@ require("./editableCombo.js");
 
 exports = dayside.plugins.live_preview = $.Class.extend({
     get_url: function (what) { return FileApi.root+"/"+what.replace(/^\//,''); },
-    events: teacss.ui.eventTarget()
+    events: teacss.ui.eventTarget(),
+    instance: false
 },{
     loadPages: function () {
         return dayside.storage.get("previewPages",{});
@@ -21,6 +22,7 @@ exports = dayside.plugins.live_preview = $.Class.extend({
         me.live_preview = false;
         me.delay = 100;
         
+        dayside.plugins.live_preview.instance = this;
         var changes = {};
         
         function tabChanged(tab) {
@@ -46,7 +48,7 @@ exports = dayside.plugins.live_preview = $.Class.extend({
         })
         ed.bind("codeChanged",function(b,tab){ if (me.live_preview) tabChanged(tab) });
         ed.toolbar.push(
-            teacss.ui.button({
+            me.button = teacss.ui.button({
                 label:"Live preview",
                 margin: 0,
                 icons: { primary: "ui-icon-link" },
@@ -138,6 +140,7 @@ exports = dayside.plugins.live_preview = $.Class.extend({
             $("<span class='ui-icon ui-icon-refresh'>").css({display:"inline-block",float:"none"})
             .click(function(e){
                 frame[0].contentWindow.location.reload(true);                
+                ed.tabs2.selectTab(previewTab);
             })
         )
     }
