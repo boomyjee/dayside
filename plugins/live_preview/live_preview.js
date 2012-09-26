@@ -1,6 +1,6 @@
 require("./editableCombo.js");
 
-exports = dayside.plugins.live_preview = $.Class.extend({
+exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
     get_url: function (what) { return FileApi.root+"/"+what.replace(/^\//,''); },
     events: teacss.ui.eventTarget(),
     instance: false
@@ -55,28 +55,29 @@ exports = dayside.plugins.live_preview = $.Class.extend({
                 click: function(){
                     me.live_preview = !me.live_preview;
                     
-                    var codeTabs, splitter_key, splitter_def;
+                    var codeTabs, layout_key, layout_def;
                     if (me.live_preview) {
                         codeTabs = ed.tabs;
-                        splitter_key = "splitterPos_live";
-                        splitter_def = 900;
+                        layout_key = "mainLayout_live";
+                        layout_def = {left:900,right:300,bottom:300};
                         this.element.css("background","#fc7");
                     } else {
                         codeTabs = ed.tabs2;
-                        splitter_key = "splitterPos";
-                        splitter_def = 600;
+                        layout_key = "mainLayout";
+                        layout_def = undefined;
                         this.element.css("background","");
                     }
                     
-                    delete ed.splitter.listeners["change"];
-                    ed.splitter.change(function (){
-                        dayside.storage.set(splitter_key,this.value);
+                    delete ed.mainPanel.listeners["change"];
+                    ed.mainPanel.change(function (){
+                        dayside.storage.set(layout_key,this.getValue());
                     });
-                    ed.splitter.setValue(dayside.storage.get(splitter_key,splitter_def));
+                    debugger;
+                    ed.mainPanel.setValue(dayside.storage.get(layout_key,layout_def));
                     
                     moving_tabs = true;
                     if (ed.tabsForFiles != codeTabs) {
-                        var selected = ((codeTabs == ed.tabs) ? ed.tabs2 : ed.tabs).selectedTab();
+                        var selected = ed.tabsForFiles.selectedTab();
                         for (var t=0;t<ui.codeTab.tabs.length;t++) {
                             var tab = ui.codeTab.tabs[t];
                             tab.element.detach();
@@ -85,10 +86,11 @@ exports = dayside.plugins.live_preview = $.Class.extend({
                             tab.editorChange();
                         }
                         ed.tabsForFiles = codeTabs;
-                        ed.tabsForFiles.selectTab(selected);
+                        if (selected) {
+                            ed.tabsForFiles.selectTab(selected);
+                        }
                     }
                     moving_tabs = false;
-                    
                     me.Class.events.trigger("modeChanged",{plugin:me});
                 }
             })

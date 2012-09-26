@@ -420,6 +420,31 @@ span.cm-invalidchar {color: #f00;}
 .jstree-icon.zop {
     background: url(src/../lib/jstree/icons/zip.png) 0 0 !important;
 }
+.teacss-ui .ui-drop-icons {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -70px;
+    margin-top: -22px;
+}
+.teacss-ui .ui-drop-icons div {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    margin:2px;
+    line-height: 40px;
+    display: inline-block;
+    border: 1px solid #555;
+    color: #555;
+    z-index: 100;
+    position: relative;
+    background: white;
+    cursor: pointer;
+}
+.teacss-ui .ui-drop-icons div.hover, .teacss-ui .ui-drop-icons div:hover {
+    border: 1px solid #fca;
+    color: #fca;
+}
 .teacss-ui .ui-tabs-panel > div > .ui-tabs {
     border: none;
 }
