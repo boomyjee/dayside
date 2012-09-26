@@ -136,14 +136,15 @@ teacss.ui.filePanel = (function($){
                     },
                     json_data: {
                         data: function (node,after) {
-                            FileApi.dir(node==-1 ? FileApi.root : node.attr("rel"),function(answer){
+                            var rel = node==-1 ? FileApi.root.replace(/\/$/,'') : node.attr("rel");
+                            FileApi.dir(rel,function(answer){
                                 var list, children, data;
                                 if (!answer.error) {
                                     data = answer.data;
                                     if (node==-1) {
                                         list = [{
                                             data: {title:"/",icon:'project'},
-                                            attr: { rel: FileApi.root },
+                                            attr: { rel: rel },
                                             state: "open",
                                             metadata: {folder:true},
                                             children: []
@@ -346,7 +347,6 @@ teacss.ui.filePanel = (function($){
                                     else
                                         if (parent!=rel) valid = false;
                                 });
-                                console.debug(m);
                                 var dest = m.np.attr("rel");
                                 if (!valid) return false;
                                 if (dest==undefined) return false;

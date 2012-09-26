@@ -23,6 +23,39 @@
     &.zop { background: url(@{tea.dir}../lib/jstree/icons/zip.png) 0 0 !important; }
 }
 
+// drop panel icons
+.teacss-ui .ui-drop-icons {
+    @ var color = '#555';
+    @ var hcolor = '#fca';
+    @ var size = '40px';
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -70px;
+    margin-top: -22px;
+    
+    div {
+        font-size: @size;
+        width: @size;
+        height: @size;
+        margin:2px;
+        line-height: @size;
+        display: inline-block;
+        border: 1px solid @color;
+        color: @color;
+        z-index: 100;
+        position: relative;
+        background: white;
+        cursor: pointer;
+    }
+    
+    div.hover,div:hover {
+        border: 1px solid @hcolor;
+        color: @hcolor;
+    }
+}
+
 // nested tabs (no border)
 .teacss-ui .ui-tabs-panel > div > .ui-tabs {
     border: none;

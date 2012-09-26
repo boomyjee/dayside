@@ -93,6 +93,7 @@ class FileApi {
         if (file_exists($newFile)) { echo "ERROR: File already exists"; die(); }
         file_put_contents($newFile,"");
         echo "ok";
+        return $newFile;
     }
             
     function createFolder() {
@@ -104,6 +105,7 @@ class FileApi {
         if (file_exists($newFolder)) { echo "ERROR: Folder already exists"; die(); }
         mkdir($newFolder);
         echo "ok";
+        return $newFolder;
     }
     
     function rename() {
@@ -246,4 +248,25 @@ class FileApi {
         }
         echo json_encode($res);
     }
+    
+    function pixlr() {
+        if (isset($_REQUEST['image'])) {
+            $url = $_REQUEST['image'];
+            $path = $this->_pathFromUrl($_REQUEST['dir']."/".$_REQUEST['title'].".".$_REQUEST['type']);
+            if (!$path) {
+                echo "ERROR: invalid path";
+                die();
+            }
+            $file = fopen ($url, "rb");
+            if ($file) {
+                $newf = fopen($path, "wb");
+                if ($newf) while(!feof($file)) {
+                    fwrite($newf, fread($file, 1024 * 8 ), 1024 * 8 );
+                }
+            }
+            if ($file) fclose($file);
+            if ($newf) fclose($newf);
+            echo "ok";
+        }
+    }    
 }

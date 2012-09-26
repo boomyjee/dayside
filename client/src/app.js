@@ -30,10 +30,10 @@ window.dayside = window.dayside || (function(){
             ajax_url: dir + "/server/demo.php",
             jupload_url: dir + "/server/assets/jupload/jupload.jar",
             auth_error: function (auth_type,type,data,json,callback) {
-                if (authWait) {
+                if (authWait && !data.password) {
                     authWait.push({type:type,data:data,json:json,callback:callback});
                 } else {
-                    authWait = [];
+                    if (!data.password) authWait = [];
                     var password = prompt(auth_type=='auth_error' ? 'Enter password':'No password is set. Enter one');
                     return FileApi.request(type,$.extend(data||{},{password:password}),json,function(answer){
                         for (var i=0;i<authWait.length;i++) {

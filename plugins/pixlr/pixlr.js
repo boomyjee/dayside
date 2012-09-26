@@ -59,7 +59,10 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
     },
     
     openForDir: function(dir,file,codeTab) {
-        var dir_short = (dir==FileApi.root) ? "/" : dir.split("/").pop();
+        var root = FileApi.root.replace(/\/$/,'');
+        var dir = dir.replace(/\/$/,'');
+        
+        var dir_short = (dir==root) ? "/" : dir.split("/").pop();
         var title = "Pixrl: " + dir_short;
         var options = {
             service:'editor',
