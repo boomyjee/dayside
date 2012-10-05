@@ -116,9 +116,6 @@ teacss.ui.codeTab = (function($){
                 value:data,
                 lineNumbers:true,
                 mode: mode,
-                onChange: function () {
-                    me.editorChange();
-                },
                 tabMode:"shift",
                 matchBrackets: true,
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
@@ -135,30 +132,28 @@ teacss.ui.codeTab = (function($){
                         return true;
                     }
                     return false;
-                },
-                onUpdate: function (editor) {
-                    me.editorPanel.trigger("editorChanged",me);
-                },
-                onScroll: function () {
-                    me.saveState();
                 }
             };
             
             var args = {options:editorOptions,tab:me};
-            me.options.editorPanel.trigger("editorOptions",args);
+            dayside.editor.trigger("editorOptions",args);
             editorOptions = args.options;
             
-            me.editor = CodeMirror(this.editorElement[0],editorOptions);
-            me.restoreState();
+            function makeEditor() {
+                me.editor = CodeMirror(me.editorElement[0],editorOptions);
+                dayside.editor.trigger("editorCreated",{cm:me.editor,tab:me});
+                me.editor.on("change",function(){ me.editorChange(); })
+                me.restoreState();
+            }
             
-            this.bind("select",me.restoreState);
-            
-            teacss.jQuery(function(){
-                setTimeout(function(){
-                    me.editor.refresh();
-                    me.editorPanel.trigger("editorChanged",me);
-                },100)
-            })
+            if (this.editorElement.is(":visible")) {
+                makeEditor();
+            } else {
+                var f = this.bind("select",function(){
+                    setTimeout(makeEditor);
+                    me.unbind("select",f);
+                });
+            }
         },
         saveState: function () {
             var me = this;
@@ -166,7 +161,7 @@ teacss.ui.codeTab = (function($){
             if (!data) data = {};
             if (this.editor) {
                 var si = me.editor.getScrollInfo();
-                data[me.options.file] = {x:si.x,y:si.y};
+                data[me.options.file] = {x:si.left,y:si.top};
             } else {
                 data[me.options.file] = this.colorPicker.value;
             }
@@ -187,6 +182,8 @@ teacss.ui.codeTab = (function($){
                     this.colorPicker.trigger("change");
                 }
             }
+            if (this.editor)
+                this.editor.on("scroll",function(){me.saveState()});
         },
         editorChange: function() {
             var text = this.editor.getValue();

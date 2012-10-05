@@ -54,6 +54,7 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                 icons: { primary: "ui-icon-link" },
                 click: function(){
                     me.live_preview = !me.live_preview;
+                    dayside.storage.set("previewEnabled",me.live_preview);
                     
                     var codeTabs, layout_key, layout_def;
                     if (me.live_preview) {
@@ -72,7 +73,6 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                     ed.mainPanel.change(function (){
                         dayside.storage.set(layout_key,this.getValue());
                     });
-                    debugger;
                     ed.mainPanel.setValue(dayside.storage.get(layout_key,layout_def));
                     
                     moving_tabs = true;
@@ -130,6 +130,11 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                 tabChanged(tab);
             }
         });
+        
+        if (dayside.storage.get("previewEnabled")) {
+            me.button.element.click();
+        }
+        
         ed.tabs2.addTab(previewTab,0);
         if (dayside.storage.get("previewSelected")) ed.tabs2.selectTab(previewTab);
         ed.tabs2.bind("select",function(b,tab){

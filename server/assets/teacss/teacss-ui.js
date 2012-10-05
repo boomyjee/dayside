@@ -2344,16 +2344,23 @@ teacss.ui.Control = teacss.ui.control = teacss.ui.eventTarget.extend("teacss.ui.
         return this;
     }    
 });
+teacss.ui.Control.events.bind("init",function(data,item){ 
+    if (teacss.ui.form.activeForm) teacss.ui.form.activeForm.items.push(item); 
+});
+
 teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
+    activeForm: false
+},{
     init: function (f,value) {
         this._super();
         this.value = value || {};
-        
         this.items = [];
         var me = this;
-        var e = teacss.ui.Control.events.bind("init",function(data,item){ me.items.push(item); });
+
+        var old_active = teacss.ui.form.activeForm;
+        teacss.ui.form.activeForm = this;
         f.call(this);
-        teacss.ui.Control.events.unbind(e);
+        teacss.ui.form.activeForm = old_active;
         
         for (var i=0;i<this.items.length;i++) {
             var item = this.items[i];
@@ -2362,6 +2369,7 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
     },
     
     registerItem: function(item) {
+        if (item.form) return;
         var me = this;
         item.form = me;
         item.trigger("formRegister");
@@ -2372,7 +2380,6 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         if (item.options.formChange) {
             item.options.formChange.call(item,false,'',me.value);
         }
-        
     },
     
     prop : function(path, value) {
@@ -2407,12 +2414,11 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
                 ) {
                     var val = this.prop(ctl.options.name);
                     ctl.setValue(val);
-                    //if (!control) this.prop(ctl.options.name,ctl.getValue());
                 }
             }
             if (ctl!=control && ctl.options.formChange) ctl.options.formChange.call(ctl,control,name,value);
         }
-        this.trigger("change",{control:control,name:name,value:value,silent:silent});
+        if (control) this.trigger("change",{control:control,name:name,value:value,silent:silent});
     }
 });;
 teacss.ui.colorPicker = teacss.ui.Colorpicker = teacss.ui.Control.extend("teacss.ui.Colorpicker",{},{
@@ -2680,6 +2686,10 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                         
                 if (panelPos.top+me.panel.height()>$(window).height()) {
                     panelPos.top = $(window).height() - me.panel.height();
+                }
+                
+                if (panelPos.left+me.panel.width()>$(window).width()) {
+                    panelPos.left = $(window).width() - me.panel.width();
                 }
 
                 me.panel.css({
