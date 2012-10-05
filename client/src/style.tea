@@ -23,6 +23,10 @@
     &.zop { background: url(@{tea.dir}../lib/jstree/icons/zip.png) 0 0 !important; }
 }
 
+#teacss-layer {
+    position: absolute;
+}
+
 // drop panel icons
 .teacss-ui .ui-drop-icons {
     @ var color = '#555';
@@ -88,6 +92,14 @@
 .teacss-ui .ui-tabs .ui-tabs-nav:hover {
     overflow-x: auto;
     z-index: 50000;
+}
+
+// button label
+.button-label {
+    background:white;
+    display:inline-block;
+    border:1px solid #aaa;
+    padding:0 2px;
 }
 
 // changed mark on tab ready to save

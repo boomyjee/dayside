@@ -156,7 +156,7 @@ window.teacss = window.teacss || (function(){
             var output = "";
             // test for mixin
             var match;
-            if (match = /^\.([-0-9A-Za-z_\.]+)(<[-0-9A-Za-z_]+>)*(\(.*\))\s*$/.exec(ast.selector)) {
+            if (match = /^\.([-0-9A-Za-z_\.]+)(<[-0-9A-Za-z_]+>)*(\([\s\S]*\))\s*$/m.exec(ast.selector)) {
                 if (ast.is_block) {
                     output += match[1] + " = function "+match[3]+" {";
                     for (var i=0;i<ast.children.length;i++)
@@ -180,6 +180,7 @@ window.teacss = window.teacss || (function(){
             function string_format(s) { return '"'+s.replace(/(["\\])/g,'\\$1').replace(/\r?\n(\s*)/g,'\\n"+\n$1"')+'"'; }
 
             var selector_string = "";
+            var modifiers = "";
             if (this.format=="string") {
                 for (var t=0;t<ast.selector_tokens.length;t++) {
                     var token = ast.selector_tokens[t];
@@ -189,7 +190,7 @@ window.teacss = window.teacss || (function(){
                         case "js_inline_block": selector_string += '('+token.data.slice(2,-1)+')'; break;
                         case "rule": 
                             var data = token.data;
-                            if (t==0 && token.data[0]=="!") data = token.data.substring(1);
+                            if (t==0 && token.data[0]=="!") { data = token.data.substring(1); modifiers = "!"; }
                             if (t==ast.selector_tokens.length-1) data = data.replace(/\s+$/,'');
                             selector_string += string_format(data); 
                             break;
@@ -219,7 +220,7 @@ window.teacss = window.teacss || (function(){
                     output += "});";    
                 }
             } else {
-                output += "tea."+keyword+"("+selector_string+");"
+                output += "tea."+keyword+"("+selector_string+",'"+modifiers+"');"
             }
             return output;
         }
@@ -421,13 +422,14 @@ window.teacss = window.teacss || (function(){
                 val.call(this.current);
                 this.current = this.current.parent;            
             } else {
-                var s = (val!==undefined) ? key+':'+val : key;
+                var s = key;
+                var modifiers = val;
                 if (key.substring(0,7)=="@append") return this.append(s);
                 
                 var idx;
                 if ((idx=s.indexOf(":"))!=-1) {
                     var subkey = trim(s.substring(0,idx));
-                    if (this.aliases && idx && this.aliases[subkey]) {
+                    if (this.aliases && idx && this.aliases[subkey] && modifiers!="!") {
                         window[this.aliases[subkey]](trim(s.substring(idx+1)));
                         return;
                     }
@@ -795,15 +797,18 @@ window.teacss = window.teacss || (function(){
                 else if (stack.data.string_double) {
                     if (stream.peek()=='"' && stream.string[stream.pos-1]!='\\') stack.data.string_double = false;
                 }
-                else if (stack.data.inside_url) {
-                    if (stream.peek()==")") stack.data.inside_url = false;
-                }
                 else {
-                    if (stream.peek()=="'") { stack.data.string_single = true; }
+                    if (stack.data.braces===undefined) stack.data.braces = 0;
+                    
+                    if (stream.peek()=="(") { stack.data.braces++; }
+                    else if (stream.peek()==")") { stack.data.braces--; }
+                    else if (stream.peek()=="'") { stack.data.string_single = true; }
                     else if (stream.peek()=='"') { stack.data.string_double = true; }
-                    else if (stream.match("url(",false)) { stack.data.inside_url = true; }
-                    else if (stream.peek()==';' || stream.peek()=='}') { stack.pop(); return null; }
-                    else if (stream.peek()=='{') { stream.next(); stack.pop(); stack.push('scope'); return "scope_start"; }
+                    if (stack.data.braces==0) 
+                    {
+                        if (stream.peek()==';' || stream.peek()=='}') { stack.pop(); return null; }
+                        else if (stream.peek()=='{') { stream.next(); stack.pop(); stack.push('scope'); return "scope_start"; }
+                    }
                 }
                 stream.next();
                 return "rule";
@@ -867,10 +872,12 @@ window.teacss = window.teacss || (function(){
             this.data = data;
         }
         SyntaxNode.prototype = {
-            push: function (name,data) {
+            push: function (name,data,start) {
                 var ast = new SyntaxNode(name,data);
                 this.children.push(ast);
                 ast.parent = this;
+                ast.start = start;
+                ast.end = start + (data ? data.length : 0);
                 return ast;
             },
             flatten: function () {
@@ -970,7 +977,7 @@ window.teacss = window.teacss || (function(){
                 case "js_line":
                 case "blank":
                 case "comment":
-                case "comment_line": ast.push(token.name,token.data); break;
+                case "comment_line": ast.push(token.name,token.data,pos); break;
 
                 // import tokens, calculate full path for later inclusion
                 case "import":
@@ -997,7 +1004,7 @@ window.teacss = window.teacss || (function(){
                     
                 // we start a new rule node, probably with children if it's a block rule
                 case "rule":
-                case "js_inine":
+                case "js_inline":
                 case "js_inline_block":
                     ast = ast.push("rule");
                     // gather all the tokens that define rule selector
@@ -2289,10 +2296,10 @@ teacss.Canvas.effects = teacss.Canvas.effects || function() {
         context.drawImage(Canvas.defaultElement,0,0);
         
         if (doc.mozSetImageElement) {
-            tea.rule('background-image','-moz-element(#'+id+')');
+            tea.rule('background-image:-moz-element(#'+id+')');
             doc.mozSetImageElement(id,element);
         } else {
-            tea.rule('background-image','-webkit-canvas('+id+')');
+            tea.rule('background-image:-webkit-canvas('+id+')');
             context = doc.getCSSCanvasContext("2d",id,canvas.width,canvas.height);
             context.drawImage(element,0,0);
         }

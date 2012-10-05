@@ -197,7 +197,7 @@ teacss.ui.filePanel = (function($){
                                             if (me.options.jupload) {
                                                 
                                                 var formdata = me.options.jupload_data || {};
-                                                formdata = $.extend(formdata,{path:FileApi.root,type:"upload"});
+                                                formdata = $.extend(formdata,{path:FileApi.root,_type:"upload"});
                                                 var inputs = "";
                                                 for (var key in formdata)
                                                     inputs += '<input type="hidden" name="'+key+'" value="'+formdata[key]+'">';
