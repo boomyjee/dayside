@@ -96,6 +96,11 @@ teacss.ui.dockPanel = (function($){
                         }
                     });
                 },
+                helper: function(e, item) {
+                    var h = item;
+                    h.width(item.width()+2);
+                    return h;
+                },                    
                 start: function (e,ui) {
                     $(this).css("overflow","visible").height($(this).height());
                     $(".ui-drop-icons").show();
@@ -103,6 +108,7 @@ teacss.ui.dockPanel = (function($){
                 stop: function (e,ui) {
                     $(this).css({overflow:"",height:""});
                     $(".ui-drop-icons").hide();
+                    ui.item.css('width','');
                 },
                 receive: function (e,ui) {
                     var sel = ui.item.find("a").attr("href");
