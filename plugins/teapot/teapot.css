@@ -1,7 +1,3 @@
-.CodeMirror .fold-gutter {
-    width: 1em;
-}
-
 .CodeMirror pre.hidden-line {
     visibility: hidden;
 }

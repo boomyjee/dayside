@@ -12133,7 +12133,7 @@ teacss.ui.codeTab = (function($){
                 lineNumbers:true,
                 mode: mode,
                 tabMode:"shift",
-                matchBrackets: true,
+                gutters: ["CodeMirror-linenumbers","fold-gutter"],
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
                 theme:'default',
                 onKeyEvent: function (editor,e) {
