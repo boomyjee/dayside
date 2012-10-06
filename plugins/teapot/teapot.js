@@ -2,40 +2,38 @@ require("./teapot.css",true);
 
 window.teapot = dayside.plugins.teapot = {ui:{}}
 dayside.ready(function(){
-    dayside.editor.bind("codeChanged",teapot_codeChanged);
-    dayside.editor.bind("editorOptions",function(b,e){
-        if (e.tab.options.file.split(".").pop()=="tea") {
-            e.options.gutters = ["CodeMirror-linenumbers","fold-gutter"];
-            setTimeout(function(){
-                teapot_codeChanged(false,e.tab);
-            },1);
-        }
-    });
-    
-    function compensateScroll() {
+    // helper function to show expanded controls independent on hScroll
+    teapot.compensateScroll = function () {
         var els = teacss.jQuery(".widget.right");
         var parent = els.parent().eq(0);
         var w = parent.width()+parseFloat(parent.css("padding-left"));
         var left = parseFloat(parent.css("left"));
         els.width(left+w-24);
     }
-    teapot.compensateScroll = compensateScroll;
-    
+
+    // for new tabs
     dayside.editor.bind("editorCreated",function(b,e){
-        e.tab.editor.on("scroll",compensateScroll);
-    });
-    setTimeout(function(){
-        for (var i=0;i<teacss.ui.codeTab.tabs.length;i++) {
-            var tab = teacss.ui.codeTab.tabs[i];
-            if (tab.options.file.split(".").pop()=="tea") {
-                teapot_codeChanged(false,tab);
-                if (tab.editor) {
-                    tab.editor.setOption("gutters",["CodeMirror-linenumbers","fold-gutter"]);
-                    tab.editor.on("scroll",compensateScroll);
-                }
-            }
+        if (e.tab.options.file.split(".").pop()=="tea") {
+            e.tab.editor.on("scroll",teapot.compensateScroll);
+            teapot_codeChanged(false,e.tab);
         }
-    },1);
+    });
+    
+    // for existing (plugin can be called with tabs already open)
+    for (var i=0;i<teacss.ui.codeTab.tabs.length;i++) {
+        var tab = teacss.ui.codeTab.tabs[i];
+        if (tab.options.file.split(".").pop()=="tea") {
+            if (tab.editor) (function (editor) {
+                setTimeout(function(){
+                    editor.on("scroll",teapot.compensateScroll);
+                    teapot_codeChanged(false,tab);
+                },1);
+            })(tab.editor);
+        }
+    }
+
+    // update controls on code changes
+    dayside.editor.bind("codeChanged",teapot_codeChanged);
 });
 
 teapot.property = function(options) {
@@ -200,6 +198,11 @@ function teapot_controlChanged(cm,control,s) {
         }
     });
     teapot.skip = false;
+    
+    clearTimeout(control.codeTab.controlChangedTimeout);
+    control.codeTab.controlChangedTimeout = setTimeout(function(){
+        teapot_codeChanged(false,control.codeTab);
+    },1000);
 }
     
 function teapot_codeChanged(b,tab) {
@@ -264,6 +267,7 @@ function teapot_codeChanged(b,tab) {
             control.element.addClass("widget-control");
             control.others = teapot.controls;
             control.hidden = ui[key].hidden;
+            control.codeTab = tab;
             teapot.controls.push(control);
         }
     }
