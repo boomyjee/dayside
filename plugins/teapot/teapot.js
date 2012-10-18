@@ -3,37 +3,65 @@ require("./teapot.css",true);
 window.teapot = dayside.plugins.teapot = {ui:{}}
 dayside.ready(function(){
     // helper function to show expanded controls independent on hScroll
-    teapot.compensateScroll = function () {
-        var els = teacss.jQuery(".widget.right");
+    teapot.compensateScroll = function (els) {
+        els = els || teacss.jQuery(".widget.right");
         var parent = els.parent().eq(0);
+        if (!parent.length) return;
         var w = parent.width()+parseFloat(parent.css("padding-left"));
-        var left = parseFloat(parent.css("left"));
+        var left = parseFloat(parent[0].style.left);
         els.width(left+w-24);
+    }
+        
+    function bindEvents(tab) {
+        var editor = tab.editor;
+        editor.on("scroll",teapot.compensateScroll);        
+        editor.on("cursorActivity", function() {
+            var line = editor.getCursor().line;
+            var lineInfo = editor.lineInfo(line);
+            
+            if (editor.activeLine) {
+                editor.setLineClass(editor.activeLine, (editor.activeLine.className || "").replace(" active-line",""));
+                if (editor.activeLine.widgets) for (var w=0;w<editor.activeLine.widgets.length;w++) {
+                    $(editor.activeLine.widgets[w].node).removeClass("active-line");
+                }
+            }
+            
+            if (lineInfo.handle.className && lineInfo.handle.className.indexOf("active-line")==-1) {
+                editor.activeLine = editor.setLineClass(line, (lineInfo.handle.className || "")+" active-line");
+                if (lineInfo.widgets) for (var w=0;w<lineInfo.widgets.length;w++) {
+                    $(lineInfo.widgets[w].node).addClass("active-line");
+                    teapot.compensateScroll($(lineInfo.widgets[w].node));
+                }
+            }
+        });        
+        
+        setTimeout(function(){
+            teapot_codeChanged(tab,true);
+            setTimeout(function(){
+                editor.refresh();
+            },1);
+        },1);
     }
 
     // for new tabs
     dayside.editor.bind("editorCreated",function(b,e){
-        if (e.tab.options.file.split(".").pop()=="tea") {
-            e.tab.editor.on("scroll",teapot.compensateScroll);
-            teapot_codeChanged(false,e.tab);
-        }
+        if (e.tab.options.file.split(".").pop()=="tea") bindEvents(e.tab);
     });
+    dayside.editor.mainPanel.leftSplitter.bind("change",teapot.compensateScroll);
+    dayside.editor.mainPanel.rightSplitter.bind("change",teapot.compensateScroll);
     
     // for existing (plugin can be called with tabs already open)
     for (var i=0;i<teacss.ui.codeTab.tabs.length;i++) {
         var tab = teacss.ui.codeTab.tabs[i];
         if (tab.options.file.split(".").pop()=="tea") {
-            if (tab.editor) (function (editor) {
-                setTimeout(function(){
-                    editor.on("scroll",teapot.compensateScroll);
-                    teapot_codeChanged(false,tab);
-                },1);
-            })(tab.editor);
+            if (tab.editor) bindEvents(tab);
         }
     }
 
     // update controls on code changes
-    dayside.editor.bind("codeChanged",teapot_codeChanged);
+    dayside.editor.bind("codeChanged",function(b,tab){
+        teapot_codeChanged(tab);
+    });
 });
 
 teapot.property = function(options) {
@@ -201,11 +229,13 @@ function teapot_controlChanged(cm,control,s) {
     
     clearTimeout(control.codeTab.controlChangedTimeout);
     control.codeTab.controlChangedTimeout = setTimeout(function(){
+        teapot.skip = control;
         teapot_codeChanged(false,control.codeTab);
+        teapot.skip = false;
     },1000);
 }
     
-function teapot_codeChanged(b,tab) {
+function teapot_codeChanged(tab,foldByDefault) {
     if (!tab.editor) return;
     if (teapot.skip===true) return;
     var $ = teacss.jQuery;
@@ -282,7 +312,11 @@ function teapot_codeChanged(b,tab) {
             if (foldData.fold) {
                 control.markerElement.html("►");
                 foldData.fold = cm.foldLines(foldData.start+1,foldData.end+1);
-                cm.setLineClass(foldData.start,"hidden-line");
+                
+                if (cm.getCursor().line==foldData.start)
+                    cm.setLineClass(foldData.start,"hidden-line active-line");
+                else
+                    cm.setLineClass(foldData.start,"hidden-line");
                 control.widgetLine.removeClass("right");
             } else {
                 control.markerElement.html("▼");
@@ -341,12 +375,18 @@ function teapot_codeChanged(b,tab) {
                 var start = cm.posFromIndex(control.meta.start);
                 var end = cm.posFromIndex(control.meta.end);
                 
+                var lineInfo = cm.lineInfo(start.line);
+                if (lineInfo.handle.foldData) {
+                    control.foldData = lineInfo.handle.foldData;
+                } else {
+                    control.foldData = lineInfo.handle.foldData = {fold:foldByDefault};
+                }
+                
                 if (!control.widgetLine) {
                     control.markerElement = $("<div>").css({color:"#aaa"});
                     control.widgetLine = $("<div>").addClass("widget");
-                    control.foldData = {fold:true};
                     
-                    control.markerElement.add(control.widgetLine).click(control,function(e){
+                    control.markerElement.click(control,function(e){
                         if ($(this).hasClass("widget")) {
                             if ($(e.target).parent()[0]!=this || e.target.tagName!="SPAN") return;
                         }
@@ -372,7 +412,7 @@ function teapot_codeChanged(b,tab) {
                 cm.setGutterMarker(start.line,"fold-gutter",control.markerElement[0]);                
                 
                 var spaces = new Array(start.ch+1).join(" ");
-                var pre = control.args.pre===undefined ? cm.lineInfo(start.line).text : control.args.pre;
+                var pre = control.args.pre===undefined ? lineInfo.text : control.args.pre;
                 var post = control.args.post;
                 control.widgetLine.empty().append("<span>"+spaces+pre+"</span>",control.element,"<span>"+post+"</span>");
                 control.widget = cm.addLineWidget(start.line,control.widgetLine[0],{noHScroll:true});
@@ -380,5 +420,6 @@ function teapot_codeChanged(b,tab) {
                 updateControl(control);
             }
         });
+        teapot.compensateScroll();
     }
 }    

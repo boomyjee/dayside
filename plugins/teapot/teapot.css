@@ -1,5 +1,10 @@
-.CodeMirror pre.hidden-line {
-    visibility: hidden;
+.CodeMirror pre.hidden-line:not(.active-line) {
+    color: transparent;
+    z-index: 1;
+}
+
+.CodeMirror pre.hidden-line:not(.active-line) span {
+    color: transparent;
 }
 
 .CodeMirror-linewidget .widget {
@@ -16,11 +21,13 @@
     position: relative;
 }
 
-.CodeMirror-linewidget .widget.right {
+.CodeMirror-linewidget .widget.right, 
+.CodeMirror-linewidget .widget.active-line {
     text-align: right;
 }
         
-.CodeMirror-linewidget .widget.right > span {
+.CodeMirror-linewidget .widget.right > span,
+.CodeMirror-linewidget .widget.active-line > span {
     display: none;
 }
                 
