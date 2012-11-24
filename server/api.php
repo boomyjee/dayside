@@ -46,7 +46,7 @@ class FileApi {
         return false;
     }
     
-    function dir() {
+    function dir($ret=false) {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         if (!$path || !is_dir($path)) { echo "ERROR: Invalid directory path"; die(); }
 
@@ -54,13 +54,16 @@ class FileApi {
         $iterator = new \DirectoryIterator($path);
         foreach ($iterator as $sub) {
             $name = $sub->__toString();
-            $file = $_REQUEST['path'].str_replace($path,"",str_replace("\\","/",$sub->getPathname()));
+            $file = $_REQUEST['path'].str_replace(str_replace("\\","/",$path),"",str_replace("\\","/",$sub->getPathname()));
             if (!$sub->isDot())
                 $res[($sub->isDir() ? '0':'1').$file] = array('name'=>$name,'folder'=>$sub->isDir(),'path'=>$file);
         }
         ksort($res);
         $res = array_values($res);
-        echo json_encode($res);
+        if ($ret) 
+            return $res;
+        else
+            echo json_encode($res);
     }
     
     function file() {

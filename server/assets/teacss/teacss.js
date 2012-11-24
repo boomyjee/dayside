@@ -177,6 +177,11 @@ window.teacss = window.teacss || (function(){
                 return output;
             }
             
+            if (/^@append\s/.test(ast.selector)) {
+                output = "tea.scope.append("+ast.selector.replace(/^@append\s*/,'')+");";
+                return output;
+            }
+            
             function string_format(s) { return '"'+s.replace(/(["\\])/g,'\\$1').replace(/\r?\n(\s*)/g,'\\n"+\n$1"')+'"'; }
 
             var selector_string = "";
@@ -229,13 +234,58 @@ window.teacss = window.teacss || (function(){
     teacss.tea.Script = teacss.Scope.extend({
         // parser
         getJS: function (ast) {
+            function string_format(s) { return '"'+s.replace(/(["\\])/g,'\\$1').replace(/\r?\n(\s*)/g,'\\n"+\n"$1')+'"'; }
+            function flatten(ast,list) {
+                function push(what) {
+                    if (
+                        list.last_name!="js_inline" && list.last_name!="js_inline_block" && list.length
+                        && what.name!="js_inline" && what.name!="js_inline_block"
+                    ) {
+                        list[list.length-1].data += what.data;
+                    } else {
+                        list.push(what);
+                    }
+                    list.last_name = what.name;
+                }
+
+                if (list.length!=0) {
+                    if (ast.name=='rule') {
+                        for (var t=0;t<ast.selector_tokens.length;t++)
+                            push(ast.selector_tokens[t]);
+                    } else {
+                        push(ast);
+                    }
+                }
+                if (ast.is_block) list.push({data:"{"});
+                for (var i=0;i<ast.children.length;i++) {
+                    flatten(ast.children[i],list);
+                }
+                if (ast.is_block) push({data:"}"});
+            }
+            
             var output = "";
             output += "tea.Script.init('"+trim(ast.selector.replace(/^Script\s*/,''))+"',function(){";
             for (var i=0;i<ast.children.length;i++) {
                 var child = ast.children[i];
                 if (child.name=="rule") {
                     if (child.is_block) {
-                        output += "tea.Script.append(function()"+child.flatten().replace(/^@append\s*/,'')+");";
+                        var chunks = [];
+                        flatten(child,chunks);
+                        
+                        var string_list = [];
+                        for (var j=0;j<chunks.length;j++) {
+                            var chunk = chunks[j];
+                            switch (chunk.name) {
+                                case "js_inline": string_list.push('('+chunk.data.slice(1)+')');break;
+                                case "js_inline_block": string_list.push('('+chunk.data.slice(2,-1)+')');break;
+                                default:
+                                    string_list.push(string_format(chunk.data));
+                                    break;
+                            }
+                        }
+                        
+                        var s = string_list.join('+');
+                        output += "tea.Script.append("+s+",true);";
                     } else {
                         output += "tea.Script.append("+child.selector.replace(/^@append\s*/,'')+");";
                     }
@@ -261,14 +311,18 @@ window.teacss = window.teacss || (function(){
             f.call(this);
             this.list = old_list;
         },
-        append: function (what) {
-            if (!(what && what.call && what.apply)) {
+        append: function (what,isCode) {
+            if (!isCode) {
                 what = teacss.getFullPath(what,teacss.tea.path);
             }
-            this.list.push(what);
+            this.list.push({what:what,isCode:isCode});
         },
         get: function (names,callback) {
             var q = new queue(10);
+            if (!callback) {
+                callback = names;
+                names = false;
+            }
             
             if (!names) {
                 names = [];
@@ -284,10 +338,22 @@ window.teacss = window.teacss || (function(){
                     list.push( this.files[key][i] );
             }
             
+            var set = {};
+            var unique = [];
             for (var i=0;i<list.length;i++) {
-                var what = list[i];
-                if (what && what.call && what.apply) {
-                    list[i] = what.toString().replace(/^\s*function\s*\(.*?\)\s*/,'');
+                if (!list[i].isCode) {
+                    var path = teacss.path.absolute(list[i].what);
+                    if (set[path]) continue;
+                    set[path] = true;
+                }
+                unique.push(list[i]);
+            }
+            list = unique;
+            
+            for (var i=0;i<list.length;i++) {
+                var what = list[i].what;
+                if (list[i].isCode) {
+                    list[i] = what;
                 } else {
                     var path = what;
                     q.defer(function(i,list,path,done){
@@ -326,17 +392,21 @@ window.teacss = window.teacss || (function(){
             }
             if (names.constructor!=Array) names = [names];
             var list = [];
+            var set = {};
             for (var n=0;n<names.length;n++) {
                 var key = names[n];
                 if (!this.files[key]) continue;
                 for (var i=0;i<this.files[key].length;i++) {
                     var what = this.files[key][i];
-                    
-                    if (what && what.call && what.apply) {
+                    if (what.isCode) {
                         list.push(what);
                     } else {
-                        if (list.length==0 || list[list.length-1].apply) list.push([]);
-                        list[list.length-1].push(what);
+                        var path = teacss.path.absolute(what.what);
+                        if (!set[path]) {
+                            set[path] = true;
+                            if (list.length==0 || list[list.length-1].isCode) list.push([]);
+                            list[list.length-1].push(what.what);
+                        }
                     }
                 }
             }
@@ -347,14 +417,14 @@ window.teacss = window.teacss || (function(){
             
             for (var i=0;i<list.length;i++) {
                 var what = list[i];
-                if (what && what.call && what.apply) {
+                if (what.isCode) {
                     q.defer(function (what,done){
-                        var code = what.toString().replace(/^\s*function\s*\(.*?\)\s*/,'');
+                        var code = what;
                         script = document.createElement("script");
                         script.innerHTML = code;
                         head.appendChild(script);
                         done();
-                    },what);
+                    },what.what);
                 } else {
                     q.defer(function(what,done){
                         loader.js(what,done);
@@ -442,10 +512,13 @@ window.teacss = window.teacss || (function(){
         },
         namespace: function (selector,func) {
             this.indent = "    ";
+            var old_current = this.current;
+            this.current = false;
             this.rules.push({getOutput:function(){return selector+' {\n'}});
             func.call(this.current);
             this.rules.push({getOutput:function(){return '}\n'}});
             this.indent = "";
+            this.current = old_current;
         },
         append: function (path) {
             path = path.replace(/^@append\s*/,'');
@@ -1011,16 +1084,16 @@ window.teacss = window.teacss || (function(){
                     ast.selector = token.data;
                     ast.selector_tokens = [token];
                     ast.start = pos;
-                    if (tokens[t+1])
-                        while (tokens[t+1].name=="rule" || 
-                               tokens[t+1].name=="js_inline" || 
-                               tokens[t+1].name=="js_inline_block") 
-                        { 
-                            t++;
-                            ast.selector_tokens.push(tokens[t]);
-                            ast.selector += tokens[t].data;
-                            pos += tokens[t].data.length;
-                        }
+                    while (tokens[t+1] &&
+                       (tokens[t+1].name=="rule" || 
+                        tokens[t+1].name=="js_inline" || 
+                        tokens[t+1].name=="js_inline_block")) 
+                    { 
+                        t++;
+                        ast.selector_tokens.push(tokens[t]);
+                        ast.selector += tokens[t].data;
+                        pos += tokens[t].data.length;
+                    }
                     ast.data = ast.selector;
                     var is_block = ast.is_block = (tokens[t+1] && tokens[t+1].name=="scope_start");
                     if (ast.is_block) { t++; pos += tokens[t].data.length; }
@@ -2590,5 +2663,5 @@ window.Texture = window.Texture || (function() {
     return Texture;
 })();;
 {
-    teacss.update();
-}
+        teacss.update();
+    }

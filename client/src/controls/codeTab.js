@@ -186,6 +186,8 @@ teacss.ui.codeTab = (function($){
                 this.editor.on("scroll",function(){me.saveState()});
         },
         editorChange: function() {
+            if (!this.editor) return;
+            
             var text = this.editor.getValue();
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();

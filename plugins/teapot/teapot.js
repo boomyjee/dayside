@@ -4,7 +4,7 @@ window.teapot = dayside.plugins.teapot = {ui:{}}
 dayside.ready(function(){
     // helper function to show expanded controls independent on hScroll
     teapot.compensateScroll = function (els) {
-        els = els || teacss.jQuery(".widget.right");
+        els = els || teacss.jQuery(".widget.right,.widget.active-line");
         var parent = els.parent().eq(0);
         if (!parent.length) return;
         var w = parent.width()+parseFloat(parent.css("padding-left"));
@@ -14,7 +14,7 @@ dayside.ready(function(){
         
     function bindEvents(tab) {
         var editor = tab.editor;
-        editor.on("scroll",teapot.compensateScroll);        
+        editor.on("scroll",function(){teapot.compensateScroll()});        
         editor.on("cursorActivity", function() {
             var line = editor.getCursor().line;
             var lineInfo = editor.lineInfo(line);
@@ -47,8 +47,8 @@ dayside.ready(function(){
     dayside.editor.bind("editorCreated",function(b,e){
         if (e.tab.options.file.split(".").pop()=="tea") bindEvents(e.tab);
     });
-    dayside.editor.mainPanel.leftSplitter.bind("change",teapot.compensateScroll);
-    dayside.editor.mainPanel.rightSplitter.bind("change",teapot.compensateScroll);
+    dayside.editor.mainPanel.leftSplitter.bind("change",function(){teapot.compensateScroll()});
+    dayside.editor.mainPanel.rightSplitter.bind("change",function(){teapot.compensateScroll()});
     
     // for existing (plugin can be called with tabs already open)
     for (var i=0;i<teacss.ui.codeTab.tabs.length;i++) {
@@ -60,7 +60,19 @@ dayside.ready(function(){
 
     // update controls on code changes
     dayside.editor.bind("codeChanged",function(b,tab){
-        teapot_codeChanged(tab);
+        if (teapot.skip===true) return;
+        if (tab.activeControls) for (var i=0;i<tab.activeControls.length;i++) {
+            //tab.activeControls[i].element.css("visibility","hidden");
+        }
+        // as this update comes with realtime typing do it only when typing stops to avoid lags
+        // and also disable controls because they can be irrelevant to current code state
+        clearTimeout(tab.teapotCodeChangedTimeout);
+        tab.teapotCodeChangedTimeout = setTimeout(function(){
+            teapot_codeChanged(tab);
+            if (tab.activeControls) for (var i=0;i<tab.activeControls.length;i++) {
+                tab.activeControls[i].element.css("visibility","");
+            }
+        },200);
     });
 });
 
