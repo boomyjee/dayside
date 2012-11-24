@@ -7090,6 +7090,30 @@ CodeMirror.defineMode("gfm", function(config, parserConfig) {
   };
 }, "markdown");
 ;
+CodeMirror.defineMode("liquid", function(config, parserConfig) {
+  var liquidOverlay = {
+    token: function(stream, state) {
+
+      // Variables.
+      if (stream.match("{{")) {
+        while ((ch = stream.next()) != null)
+          if (ch == "}" && stream.next() == "}") break;
+        return "liquid-variable";
+      }
+      
+      // Tags.
+      if(stream.match("{%")) {
+        while ((ch = stream.next()) != null)
+          if (ch == "%" && stream.next() == "}") break;
+        return "liquid-tag";
+      }
+      
+      while (stream.next() != null && !stream.match("{{", false) && !stream.match("{%", false)) {}
+      return null;
+    }
+  };
+  return CodeMirror.overlayParser(CodeMirror.getMode(config, parserConfig.backdrop || "text/html"), liquidOverlay);
+});;
 /*
  * jsTree 1.0-rc3
  * http://jstree.com/
@@ -12305,6 +12329,8 @@ teacss.ui.codeTab = (function($){
                 this.editor.on("scroll",function(){me.saveState()});
         },
         editorChange: function() {
+            if (!this.editor) return;
+            
             var text = this.editor.getValue();
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
@@ -12516,6 +12542,11 @@ teacss.ui.filePanel = (function($){
                                         item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
                                         children.push(item);
                                     }
+                                    
+                                    var e = {data:list,node:node};
+                                    me.trigger("json_data",e);
+                                    list = e.data;
+                                    
                                     after(list);
                                 }
                             });

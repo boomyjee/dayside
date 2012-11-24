@@ -172,6 +172,11 @@ teacss.ui.filePanel = (function($){
                                         item.attr.id = data[i].path.replace(/[^A-Za-z0-9_-]/g,'_');
                                         children.push(item);
                                     }
+                                    
+                                    var e = {data:list,node:node};
+                                    me.trigger("json_data",e);
+                                    list = e.data;
+                                    
                                     after(list);
                                 }
                             });

@@ -1,7 +1,72 @@
-require("./editableCombo.js");
+teacss.ui.editableCombo = teacss.ui.combo.extend({
+    init: function (o) {
+        var $ = teacss.jQuery;
+        var input,me = this;
+        this._super($.extend({
+            items: [input = teacss.ui.html({html:
+                "<input style='padding:5px;width:236px;border:1px solid #777' placeholder='Type to add items...'>"})],
+            comboWidth: 250,
+            labelTpl:"${label}",
+            itemTpl: [
+              "<div class='combo-item'>",
+                "<span class='combo-label'>${label}</span>",
+                "<span class='ui-icon ui-icon-close' style='float:right'></span>",
+                //"<span class='ui-icon ui-icon-arrow-4' style='float:right'></span>",                
+              "</div>"
+            ].join(''),
+            icons: { secondary: "ui-icon-triangle-1-s" }
+        },o));
+        
+        input.element.keypress(function(e){
+            if (e.which==13) {
+                var val = $(this).val();
+                if (val) {
+                    for (var i=0;i<me.items.length;i++)
+                        if (me.items[i].label==val) return;
+                    $(this).val("").detach();
+                    me.items.push({label:val,value:val});
+                    me.refresh();
+                    me.setSelected();
+                    $(this).focus();
+                    me.trigger("change");
+                }
+            }
+        })
+    },
+    refresh: function () {
+        var me = this;
+        this._super();
+        this.panel.find(".ui-icon-close").mousedown(function (e) {
+            e.stopPropagation();
+            var item = teacss.jQuery(this).parent().data("item");
+            me.items.splice(me.items.indexOf(item),1);
+            me.items[0].element.detach();
+            me.refresh();
+            me.trigger("change");
+       });
+    },
+    setValue: function (val) {
+        if (!val || !val.list) return;
+        this.items = [this.items[0]];
+        for (var i=0;i<val.list.length;i++)
+            this.items.push({label:val.list[i],value:val.list[i]});
+        this.items[0].element.detach();
+        this.refresh();
+        this._super(val.selected);
+    },
+    getValue: function () {
+        var selected = this.value;
+        var list = [];
+        for (var i=1;i<this.items.length;i++)
+            list.push(this.items[i].label);
+        return {list:list,selected:selected};
+    }
+})
 
 exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
-    get_url: function (what) { return FileApi.root+"/"+what.replace(/^\//,''); },
+    get_url: function (what) { 
+        return FileApi.root+"/"+(what ? what.replace(/\/$/,'') : ""); 
+    },
     events: teacss.ui.eventTarget(),
     instance: false
 },{
@@ -95,12 +160,12 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                 }
             })
         );
-        
+    
         var frame;
         var pageCombo = ui.editableCombo({change:function(){
             me.savePages(this.getValue());
             var url = me.Class.get_url(this.getValue().selected);
-            frame.attr("src",url);
+            if (me.url!=url) loadPreview(url);
         }});
         pageCombo.setValue(me.loadPages());
         
@@ -109,21 +174,67 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
         
         var previewTab = me.previewTab = ui.panel("Preview:").push(
             me.frame = frame = $("<iframe>")
-                .load(function(){
-                    me.Class.events.trigger("refresh",{plugin:me});
-                    var url = this.contentWindow.location.toString();
-                    var pages = pageCombo.getValue();
-                    pages.selected = false;
-                    for (var i=0;i<pages.list.length;i++) {
-                        var test_url = me.Class.get_url(pages.list[i]);
-                        if (test_url==url) pages.selected = pages.list[i];
-                    }
-                    pageCombo.setValue(pages);
-                })
                 .attr("id","preview_frame")
-                .attr("src", me.Class.get_url(initial_page))
+                .attr("src", dayside.url+"/plugins/live_preview/blank.htm")
                 .css({width: "100%", height: "100%"})
         );
+
+        function loadPreview(url) {
+            var pages = pageCombo.getValue();
+            pages.selected = false;
+            for (var i=0;i<pages.list.length;i++) {
+                var test_url = me.Class.get_url(pages.list[i]);
+                if (test_url==url) pages.selected = pages.list[i];
+            }
+            pageCombo.setValue(pages);
+            me.url = url;
+            
+            $.cookie("live_preview_request", "1", { path: "/" });
+            $.get(url,function(html){
+                var data = { plugin: me, html: html };
+                me.Class.events.trigger("beforeRefresh",data);
+                html = data.html;
+                var doc = me.frame[0].contentWindow.document;
+                
+                // replace all relative url to absolute 
+                // because we're inserting content to new addresss
+                html = html.replace(/(src|href)\s*=\s*('|")(.*?)('|")/gm,function(){
+                    var attr = arguments[1];
+                    var path = arguments[3];
+                    
+                    if (!teacss.path.isAbsoluteOrData(path)) {
+                        var parts = url.split("/");
+                        if (path && path[0]!="#") {
+                            parts.pop();
+                            var dir = parts.join("/");
+                            path = dir+"/"+path;
+                        } else {
+                            path = url + path;
+                        }
+                    }
+                    return attr+"='"+path+"'";
+                });
+                
+                doc.open();
+                doc.write(html);
+                doc.close();
+                
+                $(doc).off("click");
+                $(doc).on("click","a",function(e){
+                    e.preventDefault();
+                    var href = $(e.target).attr("href");
+                    if (!href) return;
+                    if (href[0]=="#") return;
+                    var link = doc.createElement("a");
+                    link.href = href;
+                    href = link.href.split("#")[0];
+                    if (href!=me.url) loadPreview(href);
+                });
+                me.Class.events.trigger("refresh",data);
+            });
+        }
+        loadPreview(me.Class.get_url(initial_page));
+
         previewTab.bind("select",function(){
             for (var t=0;t<ui.codeTab.tabs.length;t++) {
                 var tab = ui.codeTab.tabs[t];
@@ -136,6 +247,7 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
         }
         
         ed.tabs2.addTab(previewTab,0);
+        previewTab.element.parent().addClass("iframe-tab");
         if (dayside.storage.get("previewSelected")) ed.tabs2.selectTab(previewTab);
         ed.tabs2.bind("select",function(b,tab){
             dayside.storage.set("previewSelected",tab==previewTab);
@@ -146,7 +258,7 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
             pageCombo.element,
             $("<span class='ui-icon ui-icon-refresh'>").css({display:"inline-block",float:"none"})
             .click(function(e){
-                frame[0].contentWindow.location.reload(true);                
+                loadPreview(me.url);
                 ed.tabs2.selectTab(previewTab);
             })
         )
