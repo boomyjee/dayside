@@ -202,9 +202,9 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                     var attr = arguments[1];
                     var path = arguments[3];
                     
-                    if (!teacss.path.isAbsoluteOrData(path)) {
+                    if (!teacss.path.isAbsoluteOrData(path) && path[0]!="#") {
                         var parts = url.split("/");
-                        if (path && path[0]!="#") {
+                        if (path) {
                             parts.pop();
                             var dir = parts.join("/");
                             path = dir+"/"+path;
@@ -223,6 +223,7 @@ exports = dayside.plugins.live_preview = teacss.jQuery.Class.extend({
                 $(doc).on("click","a",function(e){
                     e.preventDefault();
                     var href = $(e.target).attr("href");
+                    
                     if (!href) return;
                     if (href[0]=="#") return;
                     var link = doc.createElement("a");
