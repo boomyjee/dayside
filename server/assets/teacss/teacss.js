@@ -9,7 +9,9 @@ window.teacss = window.teacss || (function(){
         // parsed cache
         parsed:{},
         // sheets registered on start
-        sheets:{}
+        sheets:{},
+        // events
+        onError: false
     };
 
     // Path utils
@@ -117,15 +119,47 @@ window.teacss = window.teacss || (function(){
                     
                     // Compile pass, evaluate js to function
                     try {
+                        if (teacss.onError) {
+                            try { 
+                                throw new Exception("lineNumber"); 
+                            } catch (e) { 
+                                teacss.evalLine = (e.lineNumber || 0) + 6;
+                            }
+                        }
                         parsed.func = eval(parsed.js);
                     } catch (e) {
-                        console.debug(path);
-                        console.debug(e);
-                        console.debug(parsed.js);
-                        throw e;
+                        if (teacss.onError) {
+                            teacss.onError({e:e,type:"parse",parsed:parsed,path:path,line:false});
+                        } else {
+                            console.debug(path);
+                            console.debug(e);
+                            console.debug(parsed.js);
+                            throw e;
+                        }
                     }
                 }
-                parsed.func.call(window);
+                if (parsed.func) {
+                    if (teacss.onError) {
+                        try {
+                            parsed.func.call(window);
+                        } catch (e) {
+                            var line = false;
+                            var guess_path = path;
+                            if (window.chrome) {
+                                var stack = e.stack;
+                                var matches = /\(([^:]*)\:([0-9]{1,100})\:[0-9]{1,100}/.exec(stack);
+                                
+                                guess_path = matches[1];
+                                line = parseInt(matches[2]) - 2;
+                            } else {
+                                line = e.lineNumber - teacss.evalLine;
+                            }
+                            teacss.onError({e:e,type:"run",parsed:parsed,path:guess_path,line:line});
+                        }
+                    } else {
+                        parsed.func.call(window);
+                    }
+                }
                 setPath(old_path);
             }
         };        
