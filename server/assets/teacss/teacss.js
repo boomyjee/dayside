@@ -121,7 +121,7 @@ window.teacss = window.teacss || (function(){
                     try {
                         if (teacss.onError) {
                             try { 
-                                throw new Exception("lineNumber"); 
+                                throw new Error("lineNumber"); 
                             } catch (e) { 
                                 teacss.evalLine = (e.lineNumber || 0) + 6;
                             }
