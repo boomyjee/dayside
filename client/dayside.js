@@ -12650,6 +12650,14 @@ teacss.ui.filePanel = (function($){
                             }
                             
                             if (path!=FileApi.root) {
+                                if (path.split(".").pop()=='zip') res['unzip'] = {label:"Unpack",action:function(){
+                                    if (confirm('Unpack to current folder?')) {
+                                        FileApi.unpack(path,function(answer){
+                                            me.tree.jstree("refresh",node.parent().parent());
+                                        });
+                                    }
+                                }}
+                                
                                 res["rename"] = {label: "Rename",separator_before:true, action:function(){
                                     me.tree.jstree("rename");
                                 }}
@@ -13325,6 +13333,12 @@ var FileApi = window.FileApi = window.FileApi || function () {
         });
     }
         
+    FileApi.unpack = function (path,callback) {
+        FileApi.request('unpack',{path:path},false,function(answer){
+            if (callback) callback(answer);
+        });        
+    }
+        
     for (var key in FileApi) {
         var f = FileApi[key];
         if (f && f.call && f.apply) {
@@ -13337,7 +13351,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
             })(f);
         }
     }
-        
+    
     return FileApi;
 }();;
 window.dayside = window.dayside || (function(){

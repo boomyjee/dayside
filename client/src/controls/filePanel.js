@@ -280,6 +280,14 @@ teacss.ui.filePanel = (function($){
                             }
                             
                             if (path!=FileApi.root) {
+                                if (path.split(".").pop()=='zip') res['unzip'] = {label:"Unpack",action:function(){
+                                    if (confirm('Unpack to current folder?')) {
+                                        FileApi.unpack(path,function(answer){
+                                            me.tree.jstree("refresh",node.parent().parent());
+                                        });
+                                    }
+                                }}
+                                
                                 res["rename"] = {label: "Rename",separator_before:true, action:function(){
                                     me.tree.jstree("rename");
                                 }}

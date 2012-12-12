@@ -252,6 +252,23 @@ class FileApi {
         echo json_encode($res);
     }
     
+    function unpack() {
+        $url = @$_REQUEST['path'];
+        $path = $this->_pathFromUrl($url);
+        
+        if (!$path || !file_exists($path)) { echo "ERROR: Invalid file path"; die(); }
+        
+        $zip = new ZipArchive;
+        $res = $zip->open($path);
+        if ($res === true) {
+            $zip->extractTo(dirname($path));
+            $zip->close();
+        } else {
+            echo "ERROR: Can't open archive"; die();
+        }
+        echo "ok";
+    }
+    
     function pixlr() {
         if (isset($_REQUEST['image'])) {
             $url = $_REQUEST['image'];
