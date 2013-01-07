@@ -167,6 +167,16 @@
 	background-position: bottom;
 }
 
+/*!
+ * jQuery UI CSS Framework 1.8.24
+ *
+ * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Theming/API
+ */
+
 /* Layout helpers
 ----------------------------------*/
 .teacss-ui .ui-helper-hidden { display: none; }
@@ -197,8 +207,8 @@
 .teacss-ui .ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
 
-/*
- * jQuery UI CSS Framework 1.8.19
+/*!
+ * jQuery UI CSS Framework 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -206,35 +216,35 @@
  *
  * http://docs.jquery.com/UI/Theming/API
  *
- * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Verdana,Arial,sans-serif&fwDefault=normal&fsDefault=1.1em&cornerRadius=4px&bgColorHeader=222222&bgTextureHeader=01_flat.png&bgImgOpacityHeader=75&borderColorHeader=555555&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=75&borderColorContent=aaaaaa&fcContent=222222&iconColorContent=222222&bgColorDefault=e6e6e6&bgTextureDefault=02_glass.png&bgImgOpacityDefault=75&borderColorDefault=d3d3d3&fcDefault=555555&iconColorDefault=888888&bgColorHover=dadada&bgTextureHover=02_glass.png&bgImgOpacityHover=75&borderColorHover=999999&fcHover=212121&iconColorHover=454545&bgColorActive=ffffff&bgTextureActive=02_glass.png&bgImgOpacityActive=65&borderColorActive=aaaaaa&fcActive=212121&iconColorActive=454545&bgColorHighlight=fbf9ee&bgTextureHighlight=02_glass.png&bgImgOpacityHighlight=55&borderColorHighlight=fcefa1&fcHighlight=363636&iconColorHighlight=2e83ff&bgColorError=fef1ec&bgTextureError=02_glass.png&bgImgOpacityError=95&borderColorError=cd0a0a&fcError=cd0a0a&iconColorError=cd0a0a&bgColorOverlay=aaaaaa&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=30&bgColorShadow=aaaaaa&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=30&thicknessShadow=8px&offsetTopShadow=-8px&offsetLeftShadow=-8px&cornerRadiusShadow=8px
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Arial,%20Helvetica,%20sans-serif;&fwDefault=normal&fsDefault=12px&cornerRadius=0&bgColorHeader=000000&bgTextureHeader=01_flat.png&bgImgOpacityHeader=75&borderColorHeader=aaaaaa&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=ffffff&bgTextureContent=01_flat.png&bgImgOpacityContent=75&borderColorContent=aaaaaa&fcContent=222222&iconColorContent=222222&bgColorDefault=e6e6e6&bgTextureDefault=01_flat.png&bgImgOpacityDefault=75&borderColorDefault=d3d3d3&fcDefault=555555&iconColorDefault=888888&bgColorHover=dadada&bgTextureHover=01_flat.png&bgImgOpacityHover=75&borderColorHover=999999&fcHover=212121&iconColorHover=454545&bgColorActive=ffffff&bgTextureActive=01_flat.png&bgImgOpacityActive=65&borderColorActive=aaaaaa&fcActive=212121&iconColorActive=454545&bgColorHighlight=fbf9ee&bgTextureHighlight=01_flat.png&bgImgOpacityHighlight=55&borderColorHighlight=fcefa1&fcHighlight=363636&iconColorHighlight=2e83ff&bgColorError=fef1ec&bgTextureError=01_flat.png&bgImgOpacityError=95&borderColorError=cd0a0a&fcError=cd0a0a&iconColorError=cd0a0a&bgColorOverlay=aaaaaa&bgTextureOverlay=01_flat.png&bgImgOpacityOverlay=0&opacityOverlay=70&bgColorShadow=aaaaaa&bgTextureShadow=01_flat.png&bgImgOpacityShadow=0&opacityShadow=0&thicknessShadow=0&offsetTopShadow=0&offsetLeftShadow=0&cornerRadiusShadow=0
  */
 
 
 /* Component containers
 ----------------------------------*/
-.teacss-ui .ui-widget { font-family: Verdana,Arial,sans-serif; font-size: 1.1em; }
+.teacss-ui .ui-widget { font-family: Arial, Helvetica, sans-serif;; font-size: 12px; }
 .teacss-ui .ui-widget .ui-widget { font-size: 1em; }
-.teacss-ui .ui-widget input, .teacss-ui .ui-widget select, .teacss-ui .ui-widget textarea, .teacss-ui .ui-widget button { font-family: Verdana,Arial,sans-serif; font-size: 1em; }
+.teacss-ui .ui-widget input, .teacss-ui .ui-widget select, .teacss-ui .ui-widget textarea, .teacss-ui .ui-widget button { font-family: Arial, Helvetica, sans-serif;; font-size: 1em; }
 .teacss-ui .ui-widget-content { border: 1px solid #aaaaaa; background: #ffffff url(images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x; color: #222222; }
 .teacss-ui .ui-widget-content a { color: #222222; }
-.teacss-ui .ui-widget-header { border: 1px solid #555555; background: #222222 url(images/ui-bg_flat_75_222222_40x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
+.teacss-ui .ui-widget-header { border: 1px solid #aaaaaa; background: #000000 url(images/ui-bg_flat_75_000000_40x100.png) 50% 50% repeat-x; color: #ffffff; font-weight: bold; }
 .teacss-ui .ui-widget-header a { color: #ffffff; }
 
 /* Interaction states
 ----------------------------------*/
-.teacss-ui .ui-state-default, .teacss-ui .ui-widget-content .ui-state-default, .teacss-ui .ui-widget-header .ui-state-default { border: 1px solid #d3d3d3; background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #555555; }
+.teacss-ui .ui-state-default, .teacss-ui .ui-widget-content .ui-state-default, .teacss-ui .ui-widget-header .ui-state-default { border: 1px solid #d3d3d3; background: #e6e6e6 url(images/ui-bg_flat_75_e6e6e6_40x100.png) 50% 50% repeat-x; font-weight: normal; color: #555555; }
 .teacss-ui .ui-state-default a, .teacss-ui .ui-state-default a:link, .teacss-ui .ui-state-default a:visited { color: #555555; text-decoration: none; }
-.teacss-ui .ui-state-hover, .teacss-ui .ui-widget-content .ui-state-hover, .teacss-ui .ui-widget-header .ui-state-hover, .teacss-ui .ui-state-focus, .teacss-ui .ui-widget-content .ui-state-focus, .teacss-ui .ui-widget-header .ui-state-focus { border: 1px solid #999999; background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
+.teacss-ui .ui-state-hover, .teacss-ui .ui-widget-content .ui-state-hover, .teacss-ui .ui-widget-header .ui-state-hover, .teacss-ui .ui-state-focus, .teacss-ui .ui-widget-content .ui-state-focus, .teacss-ui .ui-widget-header .ui-state-focus { border: 1px solid #999999; background: #dadada url(images/ui-bg_flat_75_dadada_40x100.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
 .teacss-ui .ui-state-hover a, .teacss-ui .ui-state-hover a:hover { color: #212121; text-decoration: none; }
-.teacss-ui .ui-state-active, .teacss-ui .ui-widget-content .ui-state-active, .teacss-ui .ui-widget-header .ui-state-active { border: 1px solid #aaaaaa; background: #ffffff url(images/ui-bg_glass_65_ffffff_1x400.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
+.teacss-ui .ui-state-active, .teacss-ui .ui-widget-content .ui-state-active, .teacss-ui .ui-widget-header .ui-state-active { border: 1px solid #aaaaaa; background: #ffffff url(images/ui-bg_flat_65_ffffff_40x100.png) 50% 50% repeat-x; font-weight: normal; color: #212121; }
 .teacss-ui .ui-state-active a, .teacss-ui .ui-state-active a:link, .teacss-ui .ui-state-active a:visited { color: #212121; text-decoration: none; }
 .teacss-ui .ui-widget :active { outline: none; }
 
 /* Interaction Cues
 ----------------------------------*/
-.teacss-ui .ui-state-highlight, .teacss-ui .ui-widget-content .ui-state-highlight, .teacss-ui .ui-widget-header .ui-state-highlight  {border: 1px solid #fcefa1; background: #fbf9ee url(images/ui-bg_glass_55_fbf9ee_1x400.png) 50% 50% repeat-x; color: #363636; }
+.teacss-ui .ui-state-highlight, .teacss-ui .ui-widget-content .ui-state-highlight, .teacss-ui .ui-widget-header .ui-state-highlight  {border: 1px solid #fcefa1; background: #fbf9ee url(images/ui-bg_flat_55_fbf9ee_40x100.png) 50% 50% repeat-x; color: #363636; }
 .teacss-ui .ui-state-highlight a, .teacss-ui .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a { color: #363636; }
-.teacss-ui .ui-state-error, .teacss-ui .ui-widget-content .ui-state-error, .teacss-ui .ui-widget-header .ui-state-error {border: 1px solid #cd0a0a; background: #fef1ec url(images/ui-bg_glass_95_fef1ec_1x400.png) 50% 50% repeat-x; color: #cd0a0a; }
+.teacss-ui .ui-state-error, .teacss-ui .ui-widget-content .ui-state-error, .teacss-ui .ui-widget-header .ui-state-error {border: 1px solid #cd0a0a; background: #fef1ec url(images/ui-bg_flat_95_fef1ec_40x100.png) 50% 50% repeat-x; color: #cd0a0a; }
 .teacss-ui .ui-state-error a, .teacss-ui .ui-widget-content .ui-state-error a, .teacss-ui .ui-widget-header .ui-state-error a { color: #cd0a0a; }
 .teacss-ui .ui-state-error-text, .teacss-ui .ui-widget-content .ui-state-error-text, .teacss-ui .ui-widget-header .ui-state-error-text { color: #cd0a0a; }
 .teacss-ui .ui-priority-primary, .teacss-ui .ui-widget-content .ui-priority-primary, .teacss-ui .ui-widget-header .ui-priority-primary { font-weight: bold; }
@@ -436,15 +446,15 @@
 ----------------------------------*/
 
 /* Corner radius */
-.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-top, .teacss-ui .ui-corner-left, .teacss-ui .ui-corner-tl { -moz-border-radius-topleft: 4px; -webkit-border-top-left-radius: 4px; -khtml-border-top-left-radius: 4px; border-top-left-radius: 4px; }
-.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-top, .teacss-ui .ui-corner-right, .teacss-ui .ui-corner-tr { -moz-border-radius-topright: 4px; -webkit-border-top-right-radius: 4px; -khtml-border-top-right-radius: 4px; border-top-right-radius: 4px; }
-.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-bottom, .teacss-ui .ui-corner-left, .teacss-ui .ui-corner-bl { -moz-border-radius-bottomleft: 4px; -webkit-border-bottom-left-radius: 4px; -khtml-border-bottom-left-radius: 4px; border-bottom-left-radius: 4px; }
-.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-bottom, .teacss-ui .ui-corner-right, .teacss-ui .ui-corner-br { -moz-border-radius-bottomright: 4px; -webkit-border-bottom-right-radius: 4px; -khtml-border-bottom-right-radius: 4px; border-bottom-right-radius: 4px; }
+.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-top, .teacss-ui .ui-corner-left, .teacss-ui .ui-corner-tl { -moz-border-radius-topleft: 0; -webkit-border-top-left-radius: 0; -khtml-border-top-left-radius: 0; border-top-left-radius: 0; }
+.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-top, .teacss-ui .ui-corner-right, .teacss-ui .ui-corner-tr { -moz-border-radius-topright: 0; -webkit-border-top-right-radius: 0; -khtml-border-top-right-radius: 0; border-top-right-radius: 0; }
+.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-bottom, .teacss-ui .ui-corner-left, .teacss-ui .ui-corner-bl { -moz-border-radius-bottomleft: 0; -webkit-border-bottom-left-radius: 0; -khtml-border-bottom-left-radius: 0; border-bottom-left-radius: 0; }
+.teacss-ui .ui-corner-all, .teacss-ui .ui-corner-bottom, .teacss-ui .ui-corner-right, .teacss-ui .ui-corner-br { -moz-border-radius-bottomright: 0; -webkit-border-bottom-right-radius: 0; -khtml-border-bottom-right-radius: 0; border-bottom-right-radius: 0; }
 
 /* Overlays */
-.teacss-ui .ui-widget-overlay { background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: .30;filter:Alpha(Opacity=30); }
-.teacss-ui .ui-widget-shadow { margin: -8px 0 0 -8px; padding: 8px; background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: .30;filter:Alpha(Opacity=30); -moz-border-radius: 8px; -khtml-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px; }/*
- * jQuery UI Resizable 1.8.19
+.teacss-ui .ui-widget-overlay { background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: .70;filter:Alpha(Opacity=70); }
+.teacss-ui .ui-widget-shadow { margin: 0 0 0 0; padding: 0; background: #aaaaaa url(images/ui-bg_flat_0_aaaaaa_40x100.png) 50% 50% repeat-x; opacity: 0;filter:Alpha(Opacity=0); -moz-border-radius: 0; -khtml-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }/*!
+ * jQuery UI Resizable 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -453,7 +463,7 @@
  * http://docs.jquery.com/UI/Resizable#theming
  */
 .teacss-ui .ui-resizable { position: relative;}
-.teacss-ui .ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block; }
+.teacss-ui .ui-resizable-handle { position: absolute;font-size: 0.1px; display: block; }
 .teacss-ui .ui-resizable-disabled .ui-resizable-handle, .teacss-ui .ui-resizable-autohide .ui-resizable-handle { display: none; }
 .teacss-ui .ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
 .teacss-ui .ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
@@ -462,8 +472,8 @@
 .teacss-ui .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
 .teacss-ui .ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
 .teacss-ui .ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
-.teacss-ui .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}/*
- * jQuery UI Selectable 1.8.19
+.teacss-ui .ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}/*!
+ * jQuery UI Selectable 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -472,8 +482,8 @@
  * http://docs.jquery.com/UI/Selectable#theming
  */
 .teacss-ui .ui-selectable-helper { position: absolute; z-index: 100; border:1px dotted black; }
-/*
- * jQuery UI Accordion 1.8.19
+/*!
+ * jQuery UI Accordion 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -491,8 +501,8 @@
 .teacss-ui .ui-accordion .ui-accordion-header .ui-icon { position: absolute; left: .5em; top: 50%; margin-top: -8px; }
 .teacss-ui .ui-accordion .ui-accordion-content { padding: 1em 2.2em; border-top: 0; margin-top: -2px; position: relative; top: 1px; margin-bottom: 2px; overflow: auto; display: none; zoom: 1; }
 .teacss-ui .ui-accordion .ui-accordion-content-active { display: block; }
-/*
- * jQuery UI Autocomplete 1.8.19
+/*!
+ * jQuery UI Autocomplete 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -506,7 +516,7 @@
 * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
 
 /*
- * jQuery UI Menu @VERSION
+ * jQuery UI Menu 1.8.24
  *
  * Copyright 2010, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -544,8 +554,8 @@
 	font-weight: normal;
 	margin: -1px;
 }
-/*
- * jQuery UI Button 1.8.19
+/*!
+ * jQuery UI Button 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -582,8 +592,8 @@ input.ui-button { padding: .4em 1em; }
 
 /* workarounds */
 button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra padding in Firefox */
-/*
- * jQuery UI Dialog 1.8.19
+/*!
+ * jQuery UI Dialog 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -603,8 +613,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .teacss-ui .ui-dialog .ui-dialog-buttonpane button { margin: .5em .4em .5em 0; cursor: pointer; }
 .teacss-ui .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
 .teacss-ui .ui-draggable .ui-dialog-titlebar { cursor: move; }
-/*
- * jQuery UI Slider 1.8.19
+/*!
+ * jQuery UI Slider 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -626,8 +636,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .teacss-ui .ui-slider-vertical .ui-slider-handle { left: -.3em; margin-left: 0; margin-bottom: -.6em; }
 .teacss-ui .ui-slider-vertical .ui-slider-range { left: 0; width: 100%; }
 .teacss-ui .ui-slider-vertical .ui-slider-range-min { bottom: 0; }
-.teacss-ui .ui-slider-vertical .ui-slider-range-max { top: 0; }/*
- * jQuery UI Tabs 1.8.19
+.teacss-ui .ui-slider-vertical .ui-slider-range-max { top: 0; }/*!
+ * jQuery UI Tabs 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -644,8 +654,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .teacss-ui .ui-tabs .ui-tabs-nav li a, .teacss-ui .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .teacss-ui .ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding: 1em 1.4em; background: none; }
 .teacss-ui .ui-tabs .ui-tabs-hide { display: none !important; }
-/*
- * jQuery UI Datepicker 1.8.19
+/*!
+ * jQuery UI Datepicker 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -702,8 +712,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 
 /* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
 .teacss-ui .ui-datepicker-cover {
-    display: none; /*sorry for IE5*/
-    display/**/: block; /*sorry for IE5*/
     position: absolute; /*must have*/
     z-index: -1; /*must have*/
     filter: mask(); /*must have*/
@@ -711,8 +719,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     left: -4px; /*must have*/
     width: 200px; /*must have*/
     height: 200px; /*must have*/
-}/*
- * jQuery UI Progressbar 1.8.19
+}/*!
+ * jQuery UI Progressbar 1.8.24
  *
  * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -899,7 +907,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     padding: 0;
 }
 .teacss-ui .ui-label {
-    padding: 5px;
+    padding: 5px 0;
 }
 .teacss-ui .ui-label.ui-disabled {
     opacity: 0.35;

@@ -3143,14 +3143,14 @@ teacss.ui.splitter = teacss.ui.Splitter = (function($){
             this._super($.extend({
                 value: 300,
                 align: 'left',
-                size: 3
+                size: 2
             },options));
             
             this.element = $("<div>")
                 .addClass("ui-splitter")
                 .css({
                     position:"absolute",
-                    background: "#aaa",
+                    background: "#888",
                     cursor: (this.options.align=='left' || this.options.align=='right') ? "e-resize" : "n-resize"
                 })
                 .draggable({
