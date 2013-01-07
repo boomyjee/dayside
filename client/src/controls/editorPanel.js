@@ -6,17 +6,17 @@ teacss.ui.dockPanel = (function($){
             var lc = ui.panel({items:[
                 this.leftPanel = ui.tabPanel(),
                 this.centerPanel = ui.tabPanel(),
-                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerPanel ],align:'left'})
+                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerPanel ],align:'left',size:2})
             ]});
             var lcr = ui.panel({items:[
                 lc,
                 this.rightPanel = ui.tabPanel(),
-                this.rightSplitter = ui.splitter({panels:[this.rightPanel,lc],align:'right'})
+                this.rightSplitter = ui.splitter({panels:[this.rightPanel,lc],align:'right',size:2})
             ]});
             this._super($.extend({},options,{margin:0,items:[
                 lcr,
                 this.bottomPanel = ui.tabPanel(),
-                this.bottomSplitter = ui.splitter({panels:[this.bottomPanel,lcr],align:'bottom'})
+                this.bottomSplitter = ui.splitter({panels:[this.bottomPanel,lcr],align:'bottom',size:2})
             ]}));
             
             this.linkSplitter(this.leftPanel,this.leftSplitter);

@@ -476,7 +476,6 @@
     white-space:nowrap;
     position: relative;
     border-bottom: none;
-    border-radius: 5px 5px 0 0;
 }
 .teacss-ui .ui-tabs .ui-tabs-nav li {
     float: none;

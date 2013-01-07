@@ -12765,9 +12765,9 @@ teacss.ui.optionsCombo = (function($){
             var panel,check;
             this.form = ui.form(function(){
                 panel = ui.panel({width:200,height:'auto',margin:0}).push(
-                    ui.label({template:'Font size: ${value}px',name:'fontSize'}),
+                    ui.label({template:'Font size: ${value}px',name:'fontSize',margin:"0 0 0 5px"}),
                     ui.slider({min:10,max:24,margin:"0px 15px 5px",name:'fontSize'}),
-                    ui.label({template:'Tab size: ${value}',name:'tabSize'}),
+                    ui.label({template:'Tab size: ${value}',name:'tabSize',margin:"0 0 0 5px"}),
                     ui.slider({min:1,max:16,margin:"0px 15px 5px",name:'tabSize'}),
                     check = ui.check({margin:"5px 15px 10px 10px",width:'auto',label:'Use tab character',name:'useTab'})
                 );
@@ -12798,17 +12798,17 @@ teacss.ui.dockPanel = (function($){
             var lc = ui.panel({items:[
                 this.leftPanel = ui.tabPanel(),
                 this.centerPanel = ui.tabPanel(),
-                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerPanel ],align:'left'})
+                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerPanel ],align:'left',size:2})
             ]});
             var lcr = ui.panel({items:[
                 lc,
                 this.rightPanel = ui.tabPanel(),
-                this.rightSplitter = ui.splitter({panels:[this.rightPanel,lc],align:'right'})
+                this.rightSplitter = ui.splitter({panels:[this.rightPanel,lc],align:'right',size:2})
             ]});
             this._super($.extend({},options,{margin:0,items:[
                 lcr,
                 this.bottomPanel = ui.tabPanel(),
-                this.bottomSplitter = ui.splitter({panels:[this.bottomPanel,lcr],align:'bottom'})
+                this.bottomSplitter = ui.splitter({panels:[this.bottomPanel,lcr],align:'bottom',size:2})
             ]}));
             
             this.linkSplitter(this.leftPanel,this.leftSplitter);
