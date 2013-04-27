@@ -140,8 +140,14 @@
             var result = [];
             
             for (var i=0;i<args.length;i++) {
-                var path = resolve(args[i]);
-                var ext = path.split(".").pop();
+                var path,ext;
+                if (args[i].ext) {
+                    path = resolve(args[i].path);
+                    ext = args[i].ext;
+                } else {
+                    path = resolve(args[i]);
+                    ext = path.split(".").pop();
+                }
                 pathes.push(path);
                 exts.push(ext);
             }

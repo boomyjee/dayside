@@ -2603,7 +2603,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
 
         var me = this;
         me.selected = options.selected || ((options.selectedIndex!=undefined)?me.items[options.selectedIndex]:undefined);
-        if (!this.value && this.selected) this.value = this.selected.value || this.selected;
+        if (!this.value && this.selected) this.value = (this.selected.value===undefined) ? this.selected : this.selected.value;
 
         this.panel = teacss.jQuery("<div>")
             .addClass('button-select-panel teacss-ui')
@@ -2662,6 +2662,11 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
             .click(function(e){
                 if (!me.enabled) return;
                 var $ = teacss.jQuery;
+                
+                if (me.panel.is(":visible")) {
+                    me.panel.hide();
+                    return;
+                }
 
                 me.itemsArray();
                 me.trigger("open");
@@ -2706,7 +2711,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
         if (options.panelClass) me.itemPanel.addClass(options.panelClass);
 
         me.panelClick = false;
-        me.panel.mousedown(function(e){
+        me.panel.add(me.element).mousedown(function(e){
             me.panelClick = true;
             var combo = me;
             var parent;
@@ -2747,7 +2752,18 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
     refresh : function () {
         var me = this;
         me.itemPanel.html("");
-        tpl = teacss.jQuery.template(null,me.options.itemTpl);
+        
+        if (me.options.itemTpl.call) {
+            tpl = me.options.itemTpl;
+        } else {
+            var cached = teacss.jQuery.template(null,me.options.itemTpl);
+            tpl = function (item,common) {
+                return teacss.jQuery(teacss.jQuery.tmpl(
+                    cached,
+                    teacss.jQuery.extend({},common,item)
+                ));
+            }
+        }
 
         for (var i=0;i<me.items.length;i++) {
             var item = me.items[i];
@@ -2759,7 +2775,8 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                 }
                 item.options.nested = true;
             } else {
-                var el = teacss.jQuery(teacss.jQuery.tmpl(tpl,teacss.jQuery.extend({},me.options.itemData,item)));
+                var el = tpl.call(this,item,me.options.itemData);
+                if (!el) continue;
                 el.data("item",item);
                 if (!item.disabled) {
                     var leaveTimeout = 0;
@@ -2787,7 +2804,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                     el.mousedown(function(e){
                         me.selected = teacss.jQuery(this).data("item");
                         me.element.button("option",{label:me.getLabel()});
-                        me.value = (me.selected.value==undefined) ? me.selected : me.selected.value;
+                        me.value = (me.selected.value===undefined) ? me.selected : me.selected.value;
                         me.selected_on_open = me.selected;
 
                         if (me.options.closeOnSelect)
