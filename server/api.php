@@ -131,16 +131,20 @@ class FileApi {
                 $path = $this->_pathFromUrl($path);
                 if ($path && file_exists($path)) {
                     if (is_dir($path)) {
-                        $iterator = new \RecursiveIteratorIterator(
-                            new \RecursiveDirectoryIterator($path,\RecursiveDirectoryIterator::SKIP_DOTS),
-                            \RecursiveIteratorIterator::CHILD_FIRST);
-                        foreach ($iterator as $sub) {
-                            if ($sub->isDir())
-                                rmdir($sub->__toString());
-                            else
-                                unlink($sub->__toString());
+                        if (!is_link($path)) {
+                            $iterator = new \RecursiveIteratorIterator(
+                                new \RecursiveDirectoryIterator($path,\RecursiveDirectoryIterator::SKIP_DOTS),
+                                \RecursiveIteratorIterator::CHILD_FIRST);
+                            foreach ($iterator as $sub) {
+                                if ($sub->isDir())
+                                    rmdir($sub->__toString());
+                                else
+                                    unlink($sub->__toString());
+                            }
+                            rmdir($path);
+                        } else {
+                            unlink($path);
                         }
-                        rmdir($path);
                     } elseif (is_file($path)) {
                         unlink($path);
                     }
