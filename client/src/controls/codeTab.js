@@ -109,7 +109,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='haml') mode = 'css';
             if (ext=='liquid') mode = 'liquid';
             if (ext=='coffee') mode = 'coffeescript';
-            if (ext=='htm' || ext=='html') mode = 'php';
+            if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'php';
             if (ext=="md") mode = "gfm";
             
             var editorOptions = {
