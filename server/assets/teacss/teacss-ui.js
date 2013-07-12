@@ -2621,9 +2621,11 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                 .addClass('button-select-panel inline')
                 .data("combo",this)
                 .css({
-                    width: this.options.width,
+                    width:this.options.width=='100%' ? 'auto' : this.options.width,
                     height: this.options.height,
-                    margin: this.options.margin
+                    margin: this.options.margin,
+                    'vertical-align':'bottom',
+                    display:this.options.width=='100%' ? 'block' : 'inline-block'
                 })
                 .append(this.itemPanel = teacss.jQuery("<div>"))
                 
@@ -3343,7 +3345,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
         this.element.tabs("add",'#'+id,tab.options.caption || tab.options.label || "Tab "+teacss.ui.tabPanel.tabIndex,index);
         this.element.find('#'+id).append(tab.element).data("tab",tab);
         
-        tab.element.css({width:'100%',height:'100%', margin: 0});
+        tab.element.css({width:'100%',height:'100%', margin: 0,display:'block'});
         
         tab.options.nested = true;
         tab.options.id = id;

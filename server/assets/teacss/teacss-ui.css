@@ -834,6 +834,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .teacss-ui .button-select-panel.inline {
     position: relative !important;
     display: inline-block;
+    vertical-align: top;
     border: none;
     overflow: auto;
 }
