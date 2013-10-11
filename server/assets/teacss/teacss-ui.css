@@ -936,3 +936,62 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     right: 0;
     left: 0;
 }
+.teacss-ui .ui-composite-label {
+    width: 50%;
+}
+.teacss-ui .pagination {
+    padding: 0.2em 0;
+}
+.teacss-ui .pagination a {
+    display: inline-block;
+    padding: 0.2em;
+    border: 1px solid #eee;
+    font-size: 1.2em;
+    width: 2em;
+    text-align: center;
+    text-decoration: none;
+}
+.teacss-ui .pagination a.selected {
+    background: #eee;
+    border: 1px solid #aaa;
+}
+.teacss-ui a.add-button {
+    padding: 0.2em 0.5em;
+    font-size: 1.2em;
+    border: 1px solid #eee;
+    width: auto;
+    border-radius: 1.0em;
+    text-decoration: none;
+    background: #f80;
+    color: white;
+}
+.teacss-ui .ui-repeater .add-button {
+    margin: 0;
+    display: inline-block;
+}
+.teacss-ui .ui-repeater > .pagination {
+    display: none;
+}
+.teacss-ui .ui-repeater-container {
+    clear: both;
+}
+.teacss-ui .ui-repeater-item {
+    border: 1px solid #EEEEEE;
+    border-bottom: none;
+}
+.teacss-ui .ui-repeater-item-title {
+    background: none repeat scroll 0 0 #EEEEEE;
+    overflow: hidden;
+    padding: 0.2em 0.3em;
+}
+.teacss-ui .ui-repeater-item-title .ui-icon-close {
+    float: right;
+}
+.teacss-ui .ui-repeater-item-content {
+    padding: 1em;
+}
+.teacss-ui .ui-repeater-footer {
+    border: 1px solid #eee;
+    padding: 1em;
+    text-align: right;
+}

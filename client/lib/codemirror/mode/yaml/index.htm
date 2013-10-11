@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>CodeMirror: YAML mode</title>
+    <link rel="stylesheet" href="../../lib/codemirror.css">
+    <script src="../../lib/codemirror.js"></script>
+    <script src="../htmlmixed/htmlmixed.js"></script>
+    <script src="../xml/xml.js"></script>
+    <script src="yaml.js"></script>
+    <style>.CodeMirror { border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; }</style>
+    <link rel="stylesheet" href="../../doc/docs.css">
+  </head>
+  <body class='teacss-ui'>
+    <h1>CodeMirror: YAML mode</h1>
+    <form><textarea id="code" name="code">
+---
+container#id1372953305672:
+    logo#id1372953305673: []
+    slider#id1375568711765:
+        title: test
+        slides:
+        -   slide:
+                type: image
+                image: /~boomyjee/templater/lib/server/upload/slides/525722e9615ab.jpg
+                html: |-
+                    <p style="text-align: center;"><img src="/~boomyjee/_other/lpcandy/upload/LPCandy/files/1/.thumbs/files/5129775_xlarge.jpg" height="64" width="100" /></p>
+                    <p style="text-align: center;">Some Slide Text</p>
+        -   slide:
+                type: image
+                image: /~boomyjee/templater/lib/server/upload/slides/525722e97d78e.jpg
+                html: '<p><img style="display: block; margin-left: auto; margin-right:
+                    auto;" src="/~boomyjee/_other/lpcandy/upload/LPCandy/files/1/.thumbs/files/5129714_large.jpg"
+                    height="71" width="100" /></p>'
+        -   slide:
+                type: image
+                html: '<h1 style="text-align: center;">Just text slide</h1>'
+                image: /~boomyjee/templater/lib/server/upload/slides/525722e989f5f.jpg
+    html#id1374615375247: <h1>Нужно сложное веб- или мобильное приложение?</h1>
+    liquid#id1381412235547:
+        template: '{{ description }}'
+    form#id1374247591651:
+        success: Спасибо за запрос!
+        form_text#id1374247591652:
+            label: Ваше имя
+            name: name
+        form_text#id1374247667768:
+            label: Телефон, скайп или почта
+            name: contact
+        form_text#id1374269616989:
+            label: Ссылка на ваш проект (если есть)
+            name: link
+        form_button#id1374247667769:
+            label: Хочу с вами работать!
+    html#id1372959623731: |-
+        <h3 style='color:#0a0'>АКЦИЯ – бесплатный прототип!
+        Для одного проекта в месяц мы доводим проект до стадии прототипа бесплатно!</h3>
+    container#id1372956874472:
+        html#id1372956874473: <h2>В чем отличия нашей компании:</h2>
+        html#id1372959623730: |-
+            <p><b>Опыт именно сложной разработки.</b></p>
+            <p>Мы уже давно находимся на рынке и всегда стремились брать качеством, а не количеством - больше 50 проектов написанных с нуля сложность более человеко-года.</p>
+        html#id1372959623727: "<p><b>Работа с клиентами.</b></p> \n<p>Мы общаемся
+            со своими заказчиками на понятном языке, вы можете свободно обсуждать
+            с нами проект на уровне бизнес-процессов без технических терминов.</p>"
+        html#id1372959623728: |-
+            <p><b>Поддержка и документирование.</b></p>
+            <p>Мы будем с вами и после окончания разработки. Поддержка и продвижение для нас - не пустой звук. В интересные проекты мы инвестируем сами и делимся связями и знакомствами, которые наработали за годы.</p>
+        html#id1372959623729: "<p><b>Создание прототипа.</b></p> \n<p>Наши проекты
+            начинают работать с первых дней разработки – мы создаем прототип, который
+            меняется прямо на ваших глазах, а не заставляем ждать месяцами первых
+            результатов.</p>"
+    container#id1374245710030:
+        testimonial#id1374245710031:
+            name: Сергей Гимгин
+            link: http://metalrus.ru
+            pic: ""
+            text: <p>С учетом всех пожеланий сайт был сделан за меньшие сроки, чем
+                рассчитывал. Получил удовольствие от работы, на всех этапах работы
+                ощущался профессионализм. Убедился в том, что лучше один раз хорошо
+                заплатить профессионалу, чем получить некачественный результат по
+                работе с дилетантами. В будущем планирую обращаться в бюро Алексея
+                не только по своему проекту, но и с абсолютной уверенностью советовать
+                своим друзьям.</p>
+        testimonial#id1374245847531:
+            name: Максим Крылов
+            link: ""
+            pic: ""
+            text: <p>Помимо высоких профессиональных знаний и умений очень понравилось
+                как ребята вникают в суть задачи и находят оптимальные решения. Поразила
+                и разносторонность знаний, особенно когда была задача с генетикой
+                и чудесным образом оказалось что в ней тоже разбираются. Также хочу
+                отметить скорость и энергию, с которой решаются задачи.</p>
+...
+</textarea></form>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+        mode: "text/x-yaml",
+      });
+    </script>
+
+    <p><strong>MIME types defined:</strong> <code>text/x-yaml</code>.</p>
+
+  </body>
+</html>

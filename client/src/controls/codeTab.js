@@ -108,6 +108,8 @@ teacss.ui.codeTab = (function($){
             if (ext=='js')  mode = 'javascript';
             if (ext=='haml') mode = 'css';
             if (ext=='liquid') mode = 'liquid';
+            if (ext=='xml') mode = 'xml';
+            if (ext=="yaml") mode = 'yaml';
             if (ext=='coffee') mode = 'coffeescript';
             if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'php';
             if (ext=="md") mode = "gfm";

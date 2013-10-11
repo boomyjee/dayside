@@ -23225,6 +23225,37 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         if (control) this.trigger("change",{control:control,name:name,value:value,silent:silent});
     }
 });;
+teacss.ui.formControl = function (sel,cls,config) {
+    var ctl;
+    var hidden = $(sel).first();
+    if (hidden.length) {
+        var val = $.parseJSON(hidden.val());
+        if (cls instanceof teacss.ui.control) {
+            ctl = cls;
+        } else {
+            ctl = new cls(config);
+        }
+        ctl.setValue(val);
+        
+        var layer = hidden.data("layer");
+        if (!layer) {
+            layer = $("<div class='teacss-ui'>").insertBefore(hidden);
+            hidden.data("layer",layer);
+        }
+        layer.children().hide();
+        if (ctl.element.parent()[0]!=layer[0]) layer.append(ctl.element);
+        ctl.element.show();
+        
+        var form = hidden.parents("form").first();
+        if (form.length) {
+            form.unbind("submit.formControl").bind("submit.formControl",function(){
+                var val = ctl.getValue();
+                hidden.val(JSON.stringify(val));
+            });
+        }
+    }
+    return ctl;
+};
 teacss.ui.colorPicker = teacss.ui.Colorpicker = teacss.ui.Control.extend("teacss.ui.Colorpicker",{},{
     setValue: function (value) {
         if (this.form && teacss.ui) value = teacss.ui.ref(this.form.value,value);
@@ -23341,6 +23372,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                         && me.selected_on_open
                         && value_equals(item.value,me.selected_on_open.value)
                      )
+                  || (item.default && me.selected_on_open.value===undefined)
                  )
                ) {
                 teacss.jQuery(this).addClass("selected");
@@ -24209,4 +24241,505 @@ teacss.ui.dialog = teacss.ui.Dialog = teacss.ui.panel.extend({
     isOpen: function () {
         this.element.dialog("isOpen");
     }
+});
+teacss.ui.select = teacss.ui.combo.extend({
+    init: function (options) {
+        var $ = teacss.jQuery;
+        options = $.extend({
+            buttonClass: 'icon-button centered',
+            comboDirection: 'bottom',
+            preview: true,
+            selectedIndex: 0
+        },options);
+        if (options.items && options.items.constructor==Object) {
+            var items = [];
+            for (var key in options.items) {
+                items.push({label:options.items[key],value:key});
+            }
+            options.items = items;
+        }
+        this._super(options);
+    }
+});;
+teacss.ui.text = teacss.ui.Control.extend({
+    init: function (o) {
+        o = $.extend({
+            width: 100
+        },o || {});
+        
+        this._super(o);
+        this.element = $("<div>");
+        this.element.css({
+            width: o.width=='100%' ? 'auto' : o.width,
+            height: o.height || 'auto',
+            display: o.width=='100%' ? 'block' : 'inline-block',
+            height: o.height,
+            margin: o.margin
+        });
+        
+        this.input = $("<input type='text'>").appendTo(this.element);
+        this.input.css({
+            width: '100%',
+            height: o.height ? '100%' : 'auto',
+            '-moz-box-sizing':'border-box',
+            '-wekit-box-sizing':'border-box',
+            margin: 0
+        });
+        var me = this;
+        this.input.bind("keyup change",function(){
+            me.trigger("change");
+        });
+    },
+    getValue: function () {
+        return this.input.val();
+    },
+    setValue: function (val) {
+        return this.input.val(val);
+    }
+});
+
+teacss.ui.textarea = teacss.ui.Control.extend({
+    init: function (o) {
+        o = $.extend({
+            height: 200
+        },o || {});
+        
+        this._super(o);
+        this.element = $("<div>");
+        this.element.css({
+            width: o.width=='100%' ? 'auto' : o.width,
+            display: o.width=='100%' ? 'block' : 'inline-block',
+            height: o.height,
+            margin: o.margin
+        });
+        
+        this.input = $("<textarea>").appendTo(this.element);
+        this.input.css({
+            width: '100%',
+            height: '100%',
+            '-moz-box-sizing':'border-box',
+            '-wekit-box-sizing':'border-box'
+        });
+        var me = this;
+        this.input.bind("keyup change",function(){
+            me.trigger("change");
+        });
+    },
+    getValue: function () {
+        return this.input.val();
+    },
+    setValue: function (val) {
+        return this.input.val(val);
+    }
+});;
+teacss.ui.switcher = teacss.ui.control.extend({
+    init: function (options) {
+        var me = this;
+        this._super($.extend({
+            skipForm: false,
+            cleanValue: false
+        },options));
+        
+        if (this.options.skipForm) {
+            createControls();
+        } else {
+            this.innerForm = new teacss.ui.form(createControls);
+            this.innerForm.bind("change",function(){
+                me.trigger("change");
+            });
+        }        
+            
+        function createControls() {
+            me.options.repository = me.options.repository || this.Class;
+            if (!me.options.types) {
+                me.options.types = [];
+                for (var key in me.options.repository) {
+                    if (me.options.repository.hasOwnProperty(key) && key!="shortName") {
+                        me.options.types.push(key);
+                    }
+                }
+            }
+            me.panels = {};
+            me.panelList = [];
+            for (var i=0;i<me.options.types.length;i++) {
+                var type = me.options.types[i];
+                var cls = me.options.repository[type];
+                var panel;
+                if (cls) {
+                    if (typeof(cls)=="string") {
+                        panel = teacss.ui.panel(cls);
+                    }
+                    if (cls.extend) {
+                        panel = new cls({});
+                    }
+                    if ($.isPlainObject(cls)) {
+                        var skipForm = (cls && cls.name) ? false : true;
+                        panel = new teacss.ui.composite($.extend(cls,{skipForm:skipForm}));
+                    }
+                }
+                if (panel) {
+                    panel.type = type;
+                    me.panels[type] = panel;
+                    me.panelList.push(panel);
+                }
+            }
+            
+            if (me.options.showSelect) {
+                me.tabPanel = teacss.ui.panel({
+                    width: me.options.width,
+                    height: me.options.height,
+                    margin: me.options.margin
+                });
+                
+                var items = [];
+                $.each(me.options.types,function(){
+                    var type = this.toString();
+                    items.push({
+                        label: me.panels[type].options.label,
+                        value: type
+                    })
+                });
+                me.select = teacss.ui.select({items:items,width:'100%',name:"type",preview:false});
+                
+                var selectChange = function() {
+                    $.each(me.panelList,function(){
+                        if (this.type==me.select.value)
+                            this.element.show();
+                        else
+                            this.element.hide();
+                    });
+                };
+                me.select.bind("change",selectChange);
+                me.select.bind("setValue",selectChange);
+                
+                me.tabPanel.push(me.select);
+                $.each(me.panelList,function(i){
+                    me.tabPanel.push(this);
+                    if (i!=0) this.element.hide();
+                });                
+                
+            } else {
+                me.tabPanel = panelCls({
+                    name:"type",
+                    width: me.options.width,
+                    height: me.options.height,
+                    margin: me.options.margin
+                });
+                me.tabPanel.bind("select",function(b,tab){
+                    if (me.setting) return;
+                    this.value = tab.type;
+                    this.trigger("change");
+                });
+                me.tabPanel.setValue = function (value) {
+                    var tab = me.panels[value];
+                    if (tab) {
+                        me.setting = true;
+                        this.selectTab(tab);
+                        me.setting = false;
+                    }                
+                }
+                $.each(me.panelList,function(){
+                    me.tabPanel.push(this);
+                });
+                if (me.options.types.length==1) me.tabPanel.showNavigation(false);
+            }
+        };
+        me.element = me.tabPanel.element;
+    },
+    getValue: function () {
+        if (!this.innerForm) return false;
+        var val = this.innerForm.getValue();
+        var type;
+        if (val) type = val.type;
+        if (!type && this.options.types.length) type = this.options.types[0];
+        val = teacss.jQuery.extend({type:type},val);
+        return val;
+    },
+    setValue: function (value) {
+        if (!this.innerForm) return;
+        value = teacss.jQuery.isPlainObject(value) ? value : {};
+        this.innerForm.setValue(value);
+    }
 })
+    
+teacss.ui.switcherCombo = teacss.ui.combo.extend({
+    init: function (options) {
+        var label = options.label;
+        delete options.label;
+        
+        if (options && options.inline && options.height) options.comboHeight = options.height;
+        this._super($.extend({
+            types: false,
+            repository: false,
+            labelPlain: label,
+            labelTpl: label + ": <span class='button-label'>${value?value.type:''}</span>",
+            items: function () {
+                var switcher = this.switcher = teacss.ui.switcher({
+                    types:this.options.types,
+                    repository: this.options.repository,
+                    width: '100%', height: this.options.comboHeight,
+                    margin: 0
+                });
+                var me = this;
+                this.switcher.setValue(this.value);
+                this.switcher.change(function(){
+                    me.trigger("change");
+                    this.getValue();
+                    teacss.ui.combo.prototype.setValue.call(me,this.getValue());
+                });
+                this.switcher.element.css("box-sizing","border-box");
+                return [switcher];
+            },
+            comboWidth: 400,
+            comboHeight: 400
+        },options));
+        
+        this.panel.children().eq(0).css("overflow-y","hidden");
+        this.options.repository = this.options.repository || this.Class;
+    },
+    getValue: function () {
+        if (this.switcher) 
+            this.value = this.switcher.getValue();
+        return this.value;
+    },
+    setValue: function (val) {
+        if (this.switcher)
+            this.switcher.setValue(val);
+        this._super(val);
+    },
+    getLabel: function() {
+        this.options.repository = this.options.repository || this.Class;
+        if (this.value && this.value.type 
+            && this.options.repository[this.value.type] 
+            && this.options.repository[this.value.type].switcherLabel) 
+        {
+            return this.options.labelPlain + ": " +
+                this.options.repository[this.value.type].switcherLabel(this.value,this);
+        }
+        return this._super();
+    },
+    updateLabel: function () {
+        this.element.button("option",{label:this.getLabel()});
+    }
+});
+teacss.ui.composite = teacss.ui.panel.extend({
+},{
+    init: function (o) {
+        this._super($.extend({
+            width: 'auto', margin: 0, table: false, skipForm: false
+        },o));
+        
+        this.element.css({width:'auto',display:'block'}).addClass("ui-composite");
+        
+        var me = this;
+        
+        if (me.options.table) {
+            me.table = $("<table>");
+            this.element.append(me.table).addClass("ui-composite-table");
+        }
+        
+        if (this.options.skipForm) {
+            createControls();
+        } else {
+            this.innerForm = new teacss.ui.form(createControls);
+            this.innerForm.bind("change",function(){
+                me.trigger("change");
+            });
+        }
+        
+        function createControls() {
+            $.each(me.options.items,function(){
+                var cls = teacss.ui[this.type];
+                if (cls) {
+                    var margin = me.table ? 0 : "0 0 10px 0";
+                    if (cls == teacss.ui.switcher && me.table) {
+                        if (!this.name) this.skipForm = true;
+                        if (this.repository) {
+                            var allObjs = true;
+                            for (var key in this.repository) {
+                                var item = this.repository[key];
+                                if ($.isPlainObject(item)) {
+                                    item.table = true;
+                                } else {
+                                    allObjs = false;
+                                }
+                            }
+                        }
+                    }
+                    
+                    var ctl = new cls($.extend({width:"100%",margin:margin},this));
+
+                    var label = false;
+                    if (this.label && !this.hideLabel) {
+                        label = teacss.ui.label({template:this.label,width:"100%"});
+                    }
+                    
+                    if (me.table) {
+                        me.table.append($("<tr>").append(
+                            $("<td class='ui-composite-label'>").append(label ? label.element : null),                        
+                            $("<td class='ui-composite-control'>").append(ctl.element)
+                        ));
+                        
+                        if (cls == teacss.ui.switcher && allObjs) {
+                            $.each(ctl.panelList,function(){
+                                var trs = this.table.find("tr").appendTo(me.table);
+                                this.table.remove();
+                                if (this.element.css("display")=="none") trs.hide();
+                                this.element = trs;
+                            });
+                        }
+                        
+                    } else {
+                        if (label)me.push(label);
+                        me.push(ctl);
+                    }
+                } else {
+                    console.debug("teacss.ui.composer, can't find type: ",this.type);
+                }
+            });
+        };
+    },
+    
+    getValue: function () {
+        if (!this.innerForm) return false;
+        return this.innerForm.getValue();
+    },
+    
+    setValue: function (value) {
+        if (!this.innerForm) return;
+        value = teacss.jQuery.isPlainObject(value) ? value : {};
+        this.innerForm.setValue(value);
+    }
+});;
+teacss.ui.repeater = teacss.ui.panel.extend({
+    init: function (o) {
+        var me = this;
+        this._super($.extend({
+            width: '100%',
+            addLabel: 'Add Element'
+        },o));
+        
+        this.element.addClass("ui-repeater");
+        if (this.options.repeaterClass)
+            this.element.addClass(this.options.repeaterClass);
+        
+        this.addButton = $("<a href='#'>").text(this.options.addLabel)
+            .addClass('add-button')
+            .click(function(e){ 
+                e.preventDefault();
+                me.newElement();
+                me.trigger("change");
+            });
+        
+        this.pagination = $("<div>").addClass("pagination");
+        this.container = $("<div>").addClass("ui-repeater-container");
+        this.footer = $("<div>").addClass("ui-repeater-footer").append(this.addButton);
+        
+        this.element.append(this.pagination, this.container, this.footer);
+    },
+    
+    itemTemplate: function (el) {
+        var me = this;
+        var closeLink = $("<a href='#' class='ui-icon ui-icon-close'>").click(function(e){
+            e.preventDefault();
+            me.removeElement(el);
+            me.trigger("change");
+        });
+        return $("<div class='ui-repeater-item'>")
+            .append(
+                $("<div class='ui-repeater-item-title'>").append(closeLink),
+                $("<div class='ui-repeater-item-content'>").append(el.element)
+            );
+    },
+    
+    push: function (el) {
+        if (!(el instanceof teacss.ui.Control)) return;
+        
+        var me = this;
+        this.container.append(el.itemContainer = me.itemTemplate(el));
+        var count = this.container.children().length;
+        el.page = $("<a href='#'>").text(count);
+        el.select = el.page.select = function (e) {
+            if (e) e.preventDefault();
+            me.select(el);
+        }
+        el.page.click(el.page.select);
+        el.page.data("element",el);
+        
+        this.pagination.append(el.page);
+        return el;
+    },
+    
+    select: function (el) {
+        var me = this;
+        me.pagination.find(".selected").removeClass("selected");
+        me.container.find("> .selected").removeClass("selected");
+        el.page.addClass("selected");
+        el.itemContainer.addClass("selected");
+        el.element.show();
+        return el;
+    },
+    
+    newElement: function () {
+        var el = this.addElement();
+        el.select();         
+        return el;
+    },
+    
+    addElement: function (val) {
+        val = val || {};
+        var el = teacss.ui.composite({items:this.options.items,table:this.options.table});
+        el.setValue(val);
+        var me = this;
+        el.bind("change",function(){
+            me.trigger("change");
+        });
+        this.push(el);
+        return el;
+    },
+    
+    removeElement: function (el) {
+        if (!el) {
+            var page = this.pagination.find(".selected");
+            var idx = page.index();
+            el = page.data("element");
+        }
+        
+        if (el) {
+            el.page.remove();
+            el.itemContainer.remove();
+            
+            var sel = this.pagination.children().eq(idx);
+            if (!sel.length) sel = this.pagination.children().last();
+            if (sel.length) {
+                sel.click();
+            }
+            
+            this.pagination.children().each(function(i){
+                $(this).text((i+1).toString());
+            });
+        }
+    },
+    
+    getValue: function () {
+        var val = [];
+        this.pagination.children().each(function(){
+            var el = $(this).data("element");
+            if (el) val.push(el.getValue());
+        });
+        return val;
+    },
+    
+    setValue: function (val) {
+        this.pagination.empty();
+        this.container.empty();
+        val = val || [];
+        var me = this;
+        var first;
+        $.each(val,function(i){
+            var el = me.addElement(this);
+            if (i==0) first = el;
+        });
+        if (first) first.select();
+    }
+});
