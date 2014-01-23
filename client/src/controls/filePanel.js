@@ -191,16 +191,30 @@ teacss.ui.filePanel = (function($){
                             res["link"] = {label:"Open web location",action:function(){
                                 window.open(path);
                             }}
-                                
+                            
+                            res["download"] = { label: 'Download', action: function(){
+                                window.open(window.FileApi.ajax_url + '?' + $.param({path : path, _type: 'download'}));
+                            }}                                
+                            
                             if (node.data("folder")) {
                                 res = $.extend(res,{
                                     "refresh": {label:"Refresh",separator_before:true,action:function(){
                                          me.tree.jstree('refresh',node);
                                     }},
                                     "upload": {label:"Upload",separator_before:true,action:function(){
+                                        
+                                        if (!me.uploadDialog) {
+                                            me.uploadDialog = teacss.ui.uploadDialog({
+                                                jupload: me.options.jupload,
+                                                jupload_data: me.options.jupload_data
+                                            });
+                                        }
+                                        
+                                        me.uploadDialog.open(path,me.tree,node);
+                                        return;
+                                        
                                         if (!me.uploadPanel) {
                                             if (me.options.jupload) {
-                                                
                                                 var formdata = me.options.jupload_data || {};
                                                 formdata = $.extend(formdata,{path:FileApi.root,_type:"upload"});
                                                 var inputs = "";
