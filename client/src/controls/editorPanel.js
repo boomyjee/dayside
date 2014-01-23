@@ -223,7 +223,7 @@ teacss.ui.editorPanel = (function($){
             // toolbar
             this.toolbar = new ui.panel({margin:0})
             this.toolbar.element
-                .css({position:'absolute',left:0,right:0,top:0})
+                .css({position:'absolute',left:0,right:0,top:0,padding:""})
                 .addClass("editorPanel-toolbar");
             
             // options combo with editor and layout options

@@ -235,6 +235,63 @@ class FileApi {
         return;
     }    
     
+    function download(){
+        $path = $this->_pathFromUrl(@$_REQUEST['path']);  
+        $output = false;
+        if (!$path) { echo "ERROR: Invalid download path"; die(); }
+        
+        if (filetype($path) == 'dir') {
+            $addDir = function(&$zip, $location, $name) use(&$addDir) {
+                $zip->addEmptyDir($name);
+                $name .= '/';
+                $location .= '/';
+        
+                // Read all Files in Dir
+                $dir = opendir ($location);
+                while ($file = readdir($dir))
+                {
+                    if ($file == '.' || $file == '..') continue;
+                    
+                    if (filetype($location . $file) == 'dir')
+                        $addDir($zip, $location . $file, $name . $file);
+                    else
+                        $zip->addFile($location . $file, $name . $file);
+                }
+            };
+      
+            $za = new \ZipArchive;
+            $dir = sys_get_temp_dir() .'/'. uniqid(); 
+            mkdir($dir);
+            $zip_file_name = $dir.'/'.basename($path).'.zip';
+            $res = $za->open($zip_file_name, ZipArchive::CREATE);
+            
+            if($res === TRUE) {
+                $addDir($za, $path, basename($path));
+                $za->close();
+                $output = $zip_file_name;
+            }
+            else  { echo 'Could not create a zip archive';}
+        } else {
+            $output = $path;
+        }
+        
+        if ($output) {
+            ob_get_clean();
+            header("Pragma: public");
+            header("Expires: 0");
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header("Cache-Control: private", false);
+            header("Content-Type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=" . basename($output) . ";" );
+            header("Content-Transfer-Encoding: binary");
+            header("Content-Length: " . filesize($output));
+            readfile($output);
+        }
+        
+        if ($zip_file_name)
+            unlink($zip_file_name);
+    }        
+    
     function batch() {
         $res = array();
         $url = @$_REQUEST['path'];
