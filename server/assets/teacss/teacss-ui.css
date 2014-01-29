@@ -830,6 +830,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     background: white;
     border: 1px solid #ccc;
     position: fixed !important;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
 }
 .teacss-ui .button-select-panel.inline {
     position: relative !important;
@@ -837,6 +838,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     vertical-align: top;
     border: none;
     overflow: auto;
+    box-shadow: none;
 }
 .teacss-ui .button-select-panel.inline > div {
     width: 100%;
@@ -931,7 +933,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .teacss-ui .ui-tabs.fixed > .ui-tabs-panel {
     position: absolute;
-    top: 30px;
+    top: 31px;
     bottom: 0;
     right: 0;
     left: 0;
@@ -971,6 +973,15 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 }
 .teacss-ui .ui-repeater > .pagination {
     display: none;
+}
+.teacss-ui .ui-repeater.ui-gallery > .pagination {
+    display: block;
+}
+.teacss-ui .ui-repeater.ui-gallery .ui-repeater-item {
+    display: none;
+}
+.teacss-ui .ui-repeater.ui-gallery .ui-repeater-item.selected {
+    display: block;
 }
 .teacss-ui .ui-repeater-container {
     clear: both;

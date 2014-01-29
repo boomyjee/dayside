@@ -381,4 +381,20 @@ class FileApi {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         echo json_encode(array('path'=>$path));
     }    
+    
+    function console($commands=false,$theme=false) {
+        $path = $this->_pathFromUrl(@$_REQUEST['path']);
+        if (!$path) { echo "ERROR: Invalid folder path"; die(); }
+        
+        define('DAYSIDE_CONSOLE',1);
+        
+        $currentDir = $path;
+        $commands = $commands ?:array(
+            'git*' => 'git $1',
+            'ls*' => 'ls $1'
+        );        
+        $theme = $theme ?:'ubuntu';
+        
+        require __DIR__."/../plugins/console/console.php";
+    }
 }
