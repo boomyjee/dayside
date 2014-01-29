@@ -50,7 +50,7 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
     
     buildUrl: function (opt) {
         var url = 'https://pixlr.com/' + opt.service + '/?s=c', attr;
-        for (attr in opt) {
+        for (var attr in opt) {
             if (opt.hasOwnProperty(attr) && attr !== 'service') {
                 url += "&" + attr + "=" + escape(opt[attr]);
             }

@@ -146,17 +146,18 @@ teacss.ui.dockPanel = (function($){
                 }
             }
         },
-        addTab: function (tab,id) {
+        addTab: function (tab,id,defaultPos) {
             id = id || tab.element.attr("id");
+            defaultPos = defaultPos || "left";
             
-            var panel = this.leftPanel;
+            var panel = this[defaultPos+"Panel"];
             this.value = this.getValue();
             if (id) {
                 if (this.value.tabs[id]) {
                     var name = this.value.tabs[id]+"Panel";
                     panel = this[name];
                 } else {
-                    this.value.tabs[id] = "left";
+                    this.value.tabs[id] = defaultPos;
                     this.trigger("change");
                 }
                 tab.dockId = id;
@@ -185,6 +186,23 @@ teacss.ui.dockPanel = (function($){
 
 teacss.ui.editorPanel = (function($){
     return teacss.ui.panel.extend({
+        
+        selectFile: function (file) {
+            var me = this;
+            var ui = teacss.ui;
+            var tab;
+            for (var i=0;i<ui.codeTab.tabs.length;i++) {
+                if (ui.codeTab.tabs[i].options.file==file)
+                    tab = ui.codeTab.tabs[i];
+            }
+            if (!tab) {
+                tab = ui.codeTab({file:file,closable:true,editorPanel:me});
+                me.tabsForFiles.addTab(tab);
+            }
+            me.tabsForFiles.selectTab(tab);
+            return tab;
+        },
+        
         init : function (options) {
             var me = this;
             var ui = teacss.ui;
@@ -206,16 +224,7 @@ teacss.ui.editorPanel = (function($){
             this.filePanel = ui.filePanel({
                 jupload: options.jupload,
                 onSelect: function (file) {
-                    var tab;
-                    for (var i=0;i<ui.codeTab.tabs.length;i++) {
-                        if (ui.codeTab.tabs[i].options.file==file)
-                            tab = ui.codeTab.tabs[i];
-                    }
-                    if (!tab) {
-                        tab = ui.codeTab({file:file,closable:true,editorPanel:me});
-                        me.tabsForFiles.addTab(tab);
-                    }
-                    me.tabsForFiles.selectTab(tab);
+                    me.selectFile(file);
                 }
             });
             this.filesTab.element.append(this.filePanel.element);

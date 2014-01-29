@@ -349,5 +349,36 @@ class FileApi {
             if ($newf) fclose($newf);
             echo "ok";
         }
+    }  
+    
+    function xdebug() {
+        $sock = socket_create(AF_INET, SOCK_STREAM, 0);
+        if (!@socket_connect($sock, "localhost", 9001)) {
+            // start daemon
+            $proxy_path = realpath(__DIR__."/../plugins/xdebug/proxy/proxy.php");
+            shell_exec(PHP_BINDIR."/php ".$proxy_path." start");
+            
+            echo "error";
+            return;
+        }
+
+        $key = $_REQUEST['key'];
+        $data = @$_REQUEST['data'] ?:'none';
+        
+        $json = json_encode(array(
+            'key' => $key,
+            'data' => $data,
+            'apiPath' => $this->apiPath ?:false
+        ));
+
+        socket_write($sock,$json);
+
+        $retdata = socket_read($sock,100000);
+        echo $retdata;
+    }
+    
+    function xdebug_path() {
+        $path = $this->_pathFromUrl(@$_REQUEST['path']);
+        echo json_encode(array('path'=>$path));
     }    
 }

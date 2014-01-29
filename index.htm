@@ -14,7 +14,8 @@
                 document.write('<link href="server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">');
                 document.write('<script src="client/dayside.js"><\/script>');
                 document.write('<link href="client/dayside.css" rel="stylesheet" type="text/css">');
-                document.write('<script>dayside({preview:false})<\/script>');
+                document.write('<script src="plugins/pixlr/pixlr.js"><\/script>');
+                document.write('<script>dayside({preview:false});dayside.plugins.pixlr();<\/script>');
             }
         </script>
     </head>

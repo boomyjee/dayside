@@ -562,7 +562,7 @@
 			// traverse
 			_get_node		: function (obj) { 
 				var $obj = $(obj, this.get_container()); 
-				if($obj.is(".jstree") || obj == -1) { return -1; } 
+				if(obj==-1 || $obj.is(".jstree")) { return -1; } 
 				$obj = $obj.closest("li", this.get_container()); 
 				return $obj.length ? $obj : false; 
 			},
@@ -1074,7 +1074,7 @@
 			_get_node : function (obj, allow_multiple) {
 				if(typeof obj === "undefined" || obj === null) { return allow_multiple ? this.data.ui.selected : this.data.ui.last_selected; }
 				var $obj = $(obj, this.get_container()); 
-				if($obj.is(".jstree") || obj == -1) { return -1; } 
+				if(obj==-1 || $obj.is(".jstree")) { return -1; } 
 				$obj = $obj.closest("li", this.get_container()); 
 				return $obj.length ? $obj : false; 
 			},

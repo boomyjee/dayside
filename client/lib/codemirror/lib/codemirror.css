@@ -18,7 +18,7 @@
   padding: 0 4px; /* Horizontal padding of content */
 }
 
-.teacss-ui .CodeMirror-scrollbar-filler {
+.teacss-ui .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
   background-color: white; /* The little square between H and V scrollbars */
 }
 
@@ -27,6 +27,7 @@
 .teacss-ui .CodeMirror-gutters {
   border-right: 1px solid #ddd;
   background-color: #f7f7f7;
+  white-space: nowrap;
 }
 .teacss-ui .CodeMirror-linenumbers {}
 .teacss-ui .CodeMirror-linenumber {
@@ -72,7 +73,6 @@
 .cm-s-default .cm-string {color: #a11;}
 .cm-s-default .cm-string-2 {color: #f50;}
 .cm-s-default .cm-meta {color: #555;}
-.cm-s-default .cm-error {color: #f00;}
 .cm-s-default .cm-qualifier {color: #555;}
 .cm-s-default .cm-builtin {color: #30a;}
 .cm-s-default .cm-bracket {color: #997;}
@@ -89,10 +89,12 @@
 .cm-em {font-style: italic;}
 .cm-link {text-decoration: underline;}
 
+.cm-s-default .cm-error {color: #f00;}
 .cm-invalidchar {color: #f00;}
 
 .teacss-ui div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
 .teacss-ui div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
+.CodeMirror-activeline-background {background: #e8f2ff;}
 
 /* STOP */
 
@@ -115,6 +117,8 @@
   height: 100%;
   outline: none; /* Prevent dragging from highlighting the element */
   position: relative;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
 }
 .teacss-ui .CodeMirror-sizer {
   position: relative;
@@ -123,7 +127,7 @@
 /* The fake, visible scrollbars. Used to force redraw during scrolling
    before actuall scrolling happens, thus preventing shaking and
    flickering artifacts. */
-.teacss-ui .CodeMirror-vscrollbar, .teacss-ui .CodeMirror-hscrollbar, .teacss-ui .CodeMirror-scrollbar-filler {
+.teacss-ui .CodeMirror-vscrollbar, .teacss-ui .CodeMirror-hscrollbar, .teacss-ui .CodeMirror-scrollbar-filler, .teacss-ui .CodeMirror-gutter-filler {
   position: absolute;
   z-index: 6;
   display: none;
@@ -140,17 +144,21 @@
 }
 .teacss-ui .CodeMirror-scrollbar-filler {
   right: 0; bottom: 0;
-  z-index: 6;
+}
+.teacss-ui .CodeMirror-gutter-filler {
+  left: 0; bottom: 0;
 }
 
 .teacss-ui .CodeMirror-gutters {
   position: absolute; left: 0; top: 0;
-  height: 100%;
   padding-bottom: 30px;
   z-index: 3;
 }
 .teacss-ui .CodeMirror-gutter {
+  white-space: normal;
   height: 100%;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
   padding-bottom: 30px;
   margin-bottom: -32px;
   display: inline-block;
@@ -188,6 +196,16 @@
   white-space: pre-wrap;
   word-break: normal;
 }
+.teacss-ui .CodeMirror-code pre {
+  border-right: 30px solid transparent;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+.teacss-ui .CodeMirror-wrap .CodeMirror-code pre {
+  border-right: none;
+  width: auto;
+}
 .teacss-ui .CodeMirror-linebackground {
   position: absolute;
   left: 0; right: 0; top: 0; bottom: 0;
@@ -200,9 +218,7 @@
   overflow: auto;
 }
 
-.teacss-ui .CodeMirror-widget {
-  display: inline-block;
-}
+.teacss-ui .CodeMirror-widget {}
 
 .teacss-ui .CodeMirror-wrap .CodeMirror-scroll {
   overflow-x: hidden;
@@ -210,7 +226,8 @@
 
 .teacss-ui .CodeMirror-measure {
   position: absolute;
-  width: 100%; height: 0px;
+  width: 100%;
+  height: 0;
   overflow: hidden;
   visibility: hidden;
 }
@@ -239,7 +256,7 @@
 
 @media print {
   /* Hide the cursor when printing */
-  .CodeMirror div.CodeMirror-cursor {
+  .teacss-ui .CodeMirror div.CodeMirror-cursor {
     visibility: hidden;
   }
 }
