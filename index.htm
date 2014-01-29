@@ -15,7 +15,14 @@
                 document.write('<script src="client/dayside.js"><\/script>');
                 document.write('<link href="client/dayside.css" rel="stylesheet" type="text/css">');
                 document.write('<script src="plugins/pixlr/pixlr.js"><\/script>');
-                document.write('<script>dayside({preview:false});dayside.plugins.pixlr();<\/script>');
+                document.write('<script src="plugins/xdebug/xdebug.js"><\/script>');
+                document.write('<link href="plugins/xdebug/xdebug.css" rel="stylesheet" type="text/css">');
+                document.write('<script src="plugins/console/console.js"><\/script>');
+            
+                document.write('<script>dayside({preview:false});<\/script>');
+                document.write('<script>dayside.plugins.pixlr();<\/script>');
+                document.write('<script>dayside.plugins.xdebug();<\/script>');
+                document.write('<script>dayside.plugins.console();<\/script>');
             }
         </script>
     </head>

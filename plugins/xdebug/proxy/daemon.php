@@ -98,8 +98,8 @@ class Daemon {
 		fclose(STDOUT);
 		fclose(STDERR);
 		$this->stdin  = fopen('/dev/null', 'r');
-		$this->stdout = fopen('log', 'a+');
-		$this->stderr = fopen('log.err', 'a+');
+		$this->stdout = fopen('/dev/null', 'a+');
+		$this->stderr = fopen('/dev/null', 'a+');
 		$this->debug("Reopened file descriptors");
 		$this->debug("Executing original script");
 		pcntl_signal(SIGTERM, function() { exit; });

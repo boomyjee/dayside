@@ -22999,8 +22999,9 @@ return'"'+string+'"';};var _escapeable=/["\\\x00-\x1f\x7f-\x9f]/g;var _meta={'\b
     };
 })(jQuery);
 ;
+(function ($,ui){
+
 $.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
-    
 	_mouseDrag: function(event) {
 
 		//Compute the helpers position
@@ -23107,7 +23108,9 @@ $.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
         }
         return true;
     }    
-}));;
+}));
+    
+})(jQuery);;
 (function (){
 if (typeof teacss=="undefined") teacss = {functions:{}};
 if (teacss.ui) return;
