@@ -22999,6 +22999,115 @@ return'"'+string+'"';};var _escapeable=/["\\\x00-\x1f\x7f-\x9f]/g;var _meta={'\b
     };
 })(jQuery);
 ;
+$.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
+    
+	_mouseDrag: function(event) {
+
+		//Compute the helpers position
+		this.position = this._generatePosition(event);
+		this.positionAbs = this._convertPositionTo("absolute");
+
+		if (!this.lastPositionAbs) {
+			this.lastPositionAbs = this.positionAbs;
+		}
+
+		//Do scrolling
+		if(this.options.scroll) {
+			var o = this.options, scrolled = false;
+			if(this.scrollParent[0] != document && this.scrollParent[0].tagName != 'HTML') {
+
+				if((this.overflowOffset.top + this.scrollParent[0].offsetHeight) - event.pageY < o.scrollSensitivity)
+					this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop + o.scrollSpeed;
+				else if(event.pageY - this.overflowOffset.top < o.scrollSensitivity)
+					this.scrollParent[0].scrollTop = scrolled = this.scrollParent[0].scrollTop - o.scrollSpeed;
+
+				if((this.overflowOffset.left + this.scrollParent[0].offsetWidth) - event.pageX < o.scrollSensitivity)
+					this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft + o.scrollSpeed;
+				else if(event.pageX - this.overflowOffset.left < o.scrollSensitivity)
+					this.scrollParent[0].scrollLeft = scrolled = this.scrollParent[0].scrollLeft - o.scrollSpeed;
+
+			} else {
+
+				if(event.pageY - $(document).scrollTop() < o.scrollSensitivity)
+					scrolled = $(document).scrollTop($(document).scrollTop() - o.scrollSpeed);
+				else if($(window).height() - (event.pageY - $(document).scrollTop()) < o.scrollSensitivity)
+					scrolled = $(document).scrollTop($(document).scrollTop() + o.scrollSpeed);
+
+				if(event.pageX - $(document).scrollLeft() < o.scrollSensitivity)
+					scrolled = $(document).scrollLeft($(document).scrollLeft() - o.scrollSpeed);
+				else if($(window).width() - (event.pageX - $(document).scrollLeft()) < o.scrollSensitivity)
+					scrolled = $(document).scrollLeft($(document).scrollLeft() + o.scrollSpeed);
+
+			}
+
+			if(scrolled !== false && $.ui.ddmanager && !o.dropBehaviour)
+				$.ui.ddmanager.prepareOffsets(this, event);
+		}
+
+		//Regenerate the absolute position used for position checks
+		this.positionAbs = this._convertPositionTo("absolute");
+
+		//Set the helper position
+		if(!this.options.axis || this.options.axis != "y") this.helper[0].style.left = this.position.left+'px';
+		if(!this.options.axis || this.options.axis != "x") this.helper[0].style.top = this.position.top+'px';
+
+		//Rearrange
+		for (var i = this.items.length - 1; i >= 0; i--) {
+
+			//Cache variables and intersection, continue if no intersection
+			var item = this.items[i], itemElement = item.item[0], intersection = this._getIntersection(item);
+			if (!intersection) continue;
+
+			if(itemElement != this.currentItem[0] //cannot intersect with itself
+				&&	this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
+				&&	!$.ui.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+				&& (this.options.type == 'semi-dynamic' ? !$.ui.contains(this.element[0], itemElement) : true)
+				//&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
+                && this._allowDrop(itemElement, (intersection == 1 ? "down" : "up"))
+			) {
+
+				this.direction = intersection == 1 ? "down" : "up";
+
+				if (this.options.tolerance == "pointer" || this._intersectsWithSides(item)) {
+					this._rearrange(event, item);
+				} else {
+					break;
+				}
+
+				this._trigger("change", event, this._uiHash());
+				break;
+			}
+		}
+
+		//Post events to containers
+		this._contactContainers(event);
+
+		//Interconnect with droppables
+		if($.ui.ddmanager) $.ui.ddmanager.drag(this, event);
+
+		//Call callbacks
+		this._trigger('sort', event, this._uiHash());
+
+		this.lastPositionAbs = this.positionAbs;
+		return false;
+
+	},
+    
+    _getIntersection: function (item) {
+        if (this.options.intersection) {
+            return this.options.intersection(item,this);
+        }
+        return this._intersectsWithPointer(item);
+    },
+    
+    
+    _allowDrop: function(itemElement, direction) {
+        if (this.options.allowDrop) {
+            return this.options.allowDrop(itemElement, direction);
+        }
+        return true;
+    }    
+}));;
 (function (){
 if (typeof teacss=="undefined") teacss = {functions:{}};
 if (teacss.ui) return;
@@ -23149,7 +23258,7 @@ teacss.ui.Control = teacss.ui.control = teacss.ui.eventTarget.extend("teacss.ui.
     }    
 });
 teacss.ui.Control.events.bind("init",function(data,item){ 
-    if (teacss.ui.form.activeForm) teacss.ui.form.activeForm.items.push(item); 
+    if (teacss.ui.form.activeForm) teacss.ui.form.activeForm.newItems.push(item); 
 });
 
 teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
@@ -23159,15 +23268,18 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         this._super();
         this.value = value || {};
         this.items = [];
-        var me = this;
-
+        this.registerItems(f);
+    },
+    
+    registerItems: function (f) {
+        this.newItems = [];
         var old_active = teacss.ui.form.activeForm;
         teacss.ui.form.activeForm = this;
         f.call(this);
         teacss.ui.form.activeForm = old_active;
         
-        for (var i=0;i<this.items.length;i++) {
-            var item = this.items[i];
+        for (var i=0;i<this.newItems.length;i++) {
+            var item = this.newItems[i];
             this.registerItem(item);
         }        
     },
@@ -23175,6 +23287,7 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
     registerItem: function(item) {
         if (item.form) return;
         var me = this;
+        me.items.push(item);
         item.form = me;
         item.trigger("formRegister");
         if (item.options.name!==undefined) {
@@ -23333,7 +23446,10 @@ function value_equals(y,x) {
 }
 
 teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
-    list:[]
+    list:[],
+    value_equals: function (y,x) {
+        return value_equals(y,x);
+    }
 },{
     setValue: function(value) {
         this.value = value;
@@ -23348,14 +23464,14 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                 found = true;
                 break;
             }
-            if (value===item || value_equals(value,item.value)) {
+            if (value===item || this.Class.value_equals(item.value,value)) {
                 this.selected = item;
                 found = true;
                 break;
             }
         }
         if (!found) this.selected = {value:value};
-        this.element.button("option",{label:this.getLabel()});
+        this.updateLabel();
         if (this.panel.css("display")!="none") {
             this.selected_on_open = this.selected;
             this.setSelected();
@@ -23370,7 +23486,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                  (item===me.selected_on_open
                   || (item.value!=undefined
                         && me.selected_on_open
-                        && value_equals(item.value,me.selected_on_open.value)
+                        && me.Class.value_equals(item.value,me.selected_on_open.value)
                      )
                   || (item.default && me.selected_on_open.value===undefined)
                  )
@@ -23496,7 +23612,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                   'vertical-align':'bottom',margin:this.options.margin,
                   display:this.options.width=='100%' ? 'block' : 'inline-block'
              })
-            .button({label:this.getLabel(),icons:this.options.icons})
+            .button({label:"-",icons:this.options.icons})
             .click(function(e){
                 if (!me.enabled) return;
                 var $ = teacss.jQuery;
@@ -23519,7 +23635,6 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                         if (z>maxZ) maxZ = z;
                     }
                 }
-                me.setSelected();
 
                 var panelPos;
                 if (me.options.comboDirection!='right')
@@ -23541,8 +23656,11 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                     display: "",
                     "z-index":maxZ + 1,
                     width: me.options.comboWidth || (me.element).width()
-                })
+                });
+                
+                me.setSelected();
             });
+        this.updateLabel();
 
         this.setEnabled(this.options.enabled);
         if (options.buttonClass) me.element.addClass(options.buttonClass);
@@ -23550,6 +23668,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
 
         me.panelClick = false;
         me.panel.add(me.element).mousedown(function(e){
+            if (e.which!=1) return;
             me.panelClick = true;
             var combo = me;
             var parent;
@@ -23562,7 +23681,8 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
         if (!teacss.jQuery.isFunction(me.items)) me.refresh();
         teacss.jQuery(function(){
             me.panel.appendTo(teacss.ui.layer);
-            teacss.jQuery(document).mousedown(function(){
+            teacss.jQuery(document).mousedown(function(e){
+                if (e.which!=1) return;
                 if (!me.panelClick) me.hide();
                 me.panelClick = false;
             });
@@ -23640,22 +23760,31 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                         },1);
                     })
                     el.mousedown(function(e){
-                        me.selected = teacss.jQuery(this).data("item");
-                        me.element.button("option",{label:me.getLabel()});
-                        me.value = (me.selected.value===undefined) ? me.selected : me.selected.value;
-                        me.selected_on_open = me.selected;
-
-                        if (me.options.closeOnSelect)
-                            me.hide();
-                        else
-                            me.setSelected();
-
-                        me.change();
+                        if (e.which!=1) return;
+                        me.selectItem(this);
                     })
                 }
             }
             me.itemPanel.append(el);
         }
+    },
+    selectItem: function (item) {
+        var me = this;
+        me.selected = teacss.jQuery(item).data("item");
+        me.value = (me.selected.value===undefined) ? me.selected : me.selected.value;
+        me.selected_on_open = me.selected;
+        
+        if (me.options.closeOnSelect)
+            me.hide();
+        else
+            me.setSelected();
+
+        me.change();
+        me.updateLabel();
+    },
+    updateLabel: function () {
+        if (this.options.inline) return;
+        this.element.find("> .ui-button-text").empty().append(this.getLabel());
     },
     getLabel : function() {
         if (this.options.label) return this.options.label;
@@ -23761,7 +23890,8 @@ teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{
         this._super(teacss.jQuery.extend({
             'text-align':'left',
             items: [],
-            elementTag: "div"
+            elementTag: "div",
+            padding: 0
         },options));
         this.element = teacss.jQuery("<"+this.options.elementTag+">")
             .css({
@@ -23769,7 +23899,12 @@ teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{
                 width: this.options.width,
                 height: this.options.height,
                 'text-align': this.options['text-align'],
-                margin: this.options.margin
+                margin: this.options.margin,
+                padding: this.options.padding,
+                verticalAlign: 'bottom',
+                '-moz-box-sizing':'border-box',
+                '-webkit-box-sizing':'border-box',
+                'box-sizing':'border-box'
             });
         
         if (this.options.width!='auto' && this.options.height!='auto') this.element.addClass("fixed");
@@ -23798,6 +23933,10 @@ teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{
             if (what instanceof teacss.ui.Control) {
                 this.element.append(what.element);
                 what.options.nested = true;
+                
+                if (this.options.layout) {
+                    what.element.css(this.options.layout);
+                }
             } else {
                 this.element.append(what);
             }
@@ -23919,9 +24058,9 @@ teacss.ui.html = teacss.ui.Html = teacss.ui.HTML = teacss.ui.Control.extend("tea
 teacss.ui.button = teacss.ui.Button = teacss.ui.Control.extend("teacss.ui.Button",{},{
     init : function(options) {
         var me = this;
-        this._super(options);
+        this._super(teacss.jQuery.extend({text:true},options));
         this.element = teacss.jQuery("<button>")
-            .html(options.label)
+            .text(me.options.label)
             .css({
                 display: (me.options.width=='100%') ? 'block' : 'inline-block',
                 'vertical-align':'bottom',
@@ -23929,7 +24068,8 @@ teacss.ui.button = teacss.ui.Button = teacss.ui.Control.extend("teacss.ui.Button
                 margin: me.options.margin
             })
             .button({
-                icons:this.options.icons
+                icons:this.options.icons,
+                text: me.options.text
             })
         if (options.click) this.element.click($.proxy(options.click,this));
     }
@@ -23949,7 +24089,8 @@ teacss.ui.fieldset = teacss.ui.Fieldset = teacss.ui.Panel.extend({
             var wrap = $("<div>")
                 .css({
                     display: 'inline-block',
-                    width: what.element[0].style.width || '100%'
+                    width: what.options.width || '100%',
+                    verticalAlign: 'bottom'
                 });
             
             wrap.append(what.element);
@@ -24142,7 +24283,7 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
         this.element.on("click","span.ui-icon-close", function(){
             var href = $(this).prev().attr("href");
             var tab = me.element.find(href).data("tab");
-            me.closeTab(tab);
+            if (tab) me.closeTab(tab);
         });
     },
     
@@ -24216,16 +24357,23 @@ teacss.ui.dialog = teacss.ui.Dialog = teacss.ui.panel.extend({
         var $ = teacss.jQuery;
         this._super($.extend({
             margin:0,
-            autoOpen: false
+            autoOpen: false,
+            padding: ""
         },o));
         
+        var me = this;
         this.element.css("display","");
         this.element.dialog($.extend({},this.options,{
             create: function(event, ui){
                 $(this).parent().appendTo(teacss.ui.layer);
+                $(this).parent().css("position","");
+                if (me.options.create)
+                    me.options.create.apply(this,arguments);
             },
             open: function(event, ui){
                 $('.ui-widget-overlay').appendTo(teacss.ui.layer);
+                if (me.options.open)
+                    me.options.open.apply(this,arguments);
             },
             title: this.options.label
         }));
@@ -24350,12 +24498,19 @@ teacss.ui.switcher = teacss.ui.control.extend({
         }        
             
         function createControls() {
-            me.options.repository = me.options.repository || this.Class;
+            me.options.repository = me.options.repository || me.Class;
             if (!me.options.types) {
                 me.options.types = [];
                 for (var key in me.options.repository) {
                     if (me.options.repository.hasOwnProperty(key) && key!="shortName") {
-                        me.options.types.push(key);
+                        var cls = me.options.repository[key];
+                        if (
+                            (cls && typeof(cls)=="string")
+                            || (cls && cls.extend)
+                            || (cls && $.isPlainObject(cls) && cls.items)
+                        ) {
+                            me.options.types.push(key);
+                        }
                     }
                 }
             }
@@ -24369,10 +24524,10 @@ teacss.ui.switcher = teacss.ui.control.extend({
                     if (typeof(cls)=="string") {
                         panel = teacss.ui.panel(cls);
                     }
-                    if (cls.extend) {
+                    else if (cls.extend) {
                         panel = new cls({});
                     }
-                    if ($.isPlainObject(cls)) {
+                    else if ($.isPlainObject(cls) && cls.items) {
                         var skipForm = (cls && cls.name) ? false : true;
                         panel = new teacss.ui.composite($.extend(cls,{skipForm:skipForm}));
                     }
@@ -24419,7 +24574,7 @@ teacss.ui.switcher = teacss.ui.control.extend({
                 });                
                 
             } else {
-                me.tabPanel = panelCls({
+                me.tabPanel = teacss.ui.tabPanel({
                     name:"type",
                     width: me.options.width,
                     height: me.options.height,
@@ -24461,6 +24616,7 @@ teacss.ui.switcher = teacss.ui.control.extend({
         this.innerForm.setValue(value);
     }
 })
+
     
 teacss.ui.switcherCombo = teacss.ui.combo.extend({
     init: function (options) {
@@ -24509,28 +24665,32 @@ teacss.ui.switcherCombo = teacss.ui.combo.extend({
     },
     getLabel: function() {
         this.options.repository = this.options.repository || this.Class;
-        if (this.value && this.value.type 
-            && this.options.repository[this.value.type] 
-            && this.options.repository[this.value.type].switcherLabel) 
+        
+        var type = 'default';
+        if (this.value && this.value.type) type = this.value.type;
+        
+        if (this.options.repository[type] 
+            && this.options.repository[type].switcherLabel) 
         {
-            return this.options.labelPlain + ": " +
-                this.options.repository[this.value.type].switcherLabel(this.value,this);
+            var ret = $(this.options.repository[type].switcherLabel(this.value,this));
+            if (this.options.labelPlain)
+                ret = $(document.createTextNode(this.options.labelPlain + ": ")).add(ret);
+            return ret;
         }
         return this._super();
-    },
-    updateLabel: function () {
-        this.element.button("option",{label:this.getLabel()});
     }
 });
 teacss.ui.composite = teacss.ui.panel.extend({
 },{
     init: function (o) {
+        
+        var items = o.items;
         this._super($.extend({
-            width: 'auto', margin: 0, table: false, skipForm: false
-        },o));
+            width: '100%', margin: 0, table: false, skipForm: false
+        },o,{items:[]}));
+        this.options.items = items;
         
-        this.element.css({width:'auto',display:'block'}).addClass("ui-composite");
-        
+        this.element.addClass("ui-composite");
         var me = this;
         
         if (me.options.table) {
@@ -24548,7 +24708,24 @@ teacss.ui.composite = teacss.ui.panel.extend({
         }
         
         function createControls() {
-            $.each(me.options.items,function(){
+            
+            if (!me.options.items) return;
+            if (me.options.items.call) 
+                me.options.items = me.options.items.call(this);
+            
+            $.each(me.options.items,function(i,val){
+                if (typeof(val)=="string" || val instanceof String) {
+                    me.push(
+                        teacss.ui.label({template:val,width:"100%",margin:0})
+                    );
+                    return;
+                }
+                
+                if (val instanceof teacss.ui.control) {
+                    me.push(val);    
+                    return;
+                }
+                
                 var cls = teacss.ui[this.type];
                 if (cls) {
                     var margin = me.table ? 0 : "0 0 10px 0";
@@ -24568,15 +24745,15 @@ teacss.ui.composite = teacss.ui.panel.extend({
                     }
                     
                     var ctl = new cls($.extend({width:"100%",margin:margin},this));
-
-                    var label = false;
-                    if (this.label && !this.hideLabel) {
-                        label = teacss.ui.label({template:this.label,width:"100%"});
+                    var tableLabel = false;
+                        
+                    if (this.tableLabel && me.table) {
+                        tableLabel = teacss.ui.label({template:this.tableLabel,width:"100%"});
                     }
                     
                     if (me.table) {
                         me.table.append($("<tr>").append(
-                            $("<td class='ui-composite-label'>").append(label ? label.element : null),                        
+                            $("<td class='ui-composite-label'>").append(tableLabel ? tableLabel.element : null),                        
                             $("<td class='ui-composite-control'>").append(ctl.element)
                         ));
                         
@@ -24590,11 +24767,10 @@ teacss.ui.composite = teacss.ui.panel.extend({
                         }
                         
                     } else {
-                        if (label)me.push(label);
                         me.push(ctl);
                     }
                 } else {
-                    console.debug("teacss.ui.composer, can't find type: ",this.type);
+                    console.debug("teacss.ui.composer, can't find type: ",this.type,this);
                 }
             });
         };
@@ -24616,7 +24792,8 @@ teacss.ui.repeater = teacss.ui.panel.extend({
         var me = this;
         this._super($.extend({
             width: '100%',
-            addLabel: 'Add Element'
+            addLabel: 'Add Element',
+            hashValue: false
         },o));
         
         this.element.addClass("ui-repeater");
@@ -24635,6 +24812,7 @@ teacss.ui.repeater = teacss.ui.panel.extend({
         this.container = $("<div>").addClass("ui-repeater-container");
         this.footer = $("<div>").addClass("ui-repeater-footer").append(this.addButton);
         
+        this.element.css({overflowY:"auto"});
         this.element.append(this.pagination, this.container, this.footer);
     },
     
@@ -24722,22 +24900,45 @@ teacss.ui.repeater = teacss.ui.panel.extend({
     },
     
     getValue: function () {
+        var me = this;
         var val = [];
+        if (me.options.hashValue) val = {};
         this.pagination.children().each(function(){
             var el = $(this).data("element");
-            if (el) val.push(el.getValue());
+            if (el) {
+                if (me.options.hashValue) {
+                    var sub = el.getValue() || {};
+                    var key = sub.key;
+                    if (key) {
+                        val[key] = sub.value;
+                    }
+                } else {
+                    val.push(el.getValue());
+                }
+            }
         });
         return val;
     },
     
     setValue: function (val) {
+        var me = this;
         this.pagination.empty();
         this.container.empty();
-        val = val || [];
+        
+        if (me.options.hashValue) {
+            val = val || [];
+        } else {
+            val = val || {};
+        }
+        
         var me = this;
         var first;
-        $.each(val,function(i){
-            var el = me.addElement(this);
+        $.each(val,function(i,sub){
+            if (me.options.hashValue) {
+                var el = me.addElement({key:i,value:sub});
+            } else {
+                var el = me.addElement(this);
+            }
             if (i==0) first = el;
         });
         if (first) first.select();

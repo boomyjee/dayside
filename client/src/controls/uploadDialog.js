@@ -28,7 +28,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
                 runtimes : 'html5',
                 url : "http://no-url-set",
                 max_file_size : '100mb',
-                chunk_size: '1mb',
+                chunk_size: '100mb',
                 views: {
                     list: true,
                     thumbs: true, // Show thumbs

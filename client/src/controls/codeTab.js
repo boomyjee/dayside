@@ -119,7 +119,7 @@ teacss.ui.codeTab = (function($){
                 lineNumbers:true,
                 mode: mode,
                 tabMode:"shift",
-                gutters: ["CodeMirror-linenumbers","fold-gutter"],
+                gutters: ["CodeMirror-linenumbers"],
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
                 theme:'default',
                 onKeyEvent: function (editor,e) {
@@ -144,6 +144,7 @@ teacss.ui.codeTab = (function($){
             function makeEditor() {
                 me.editor = CodeMirror(me.editorElement[0],editorOptions);
                 dayside.editor.trigger("editorCreated",{cm:me.editor,tab:me});
+                me.trigger("editorCreated",{cm:me.editor,tab:me});
                 me.editor.on("change",function(){ me.editorChange(); })
                 me.restoreState();
             }
@@ -213,6 +214,7 @@ teacss.ui.codeTab = (function($){
                 if (data=="ok") {
                     me.changed = false;
                     tab.removeClass("changed");
+                    me.editorPanel.trigger("codeSaved",me);
                     if (me.callback) me.callback();
                 } else {
                     alert(data);
