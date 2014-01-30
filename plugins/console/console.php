@@ -445,7 +445,7 @@ $autocomplete = array(
         }
     </style>
 <?php } ?>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     /**
      *  History of commands.
@@ -593,33 +593,38 @@ $autocomplete = array(
         form.submit(function () {
             var command = $.trim(input.val());
             if (command == '') {
-                return false;
+                // return false;
             }
 
             $("<code>" + window.currentDirName + "&nbsp;" + window.currentUser + "$&nbsp;" + command + "</code><br>").appendTo(screen);
             scroll();
             input.val('');
             form.hide();
-            input.addHistory(command);
 
-            $.get('', {'command': command, 'cd': window.currentDir}, function (output) {
-                var pattern = /^set current directory (.+?)$/i;
-                if (matches = output.match(pattern)) {
-                    window.currentDir = matches[1];
-                    window.currentDirName = window.currentDir.split('/').pop();
-                    $('#currentDirName').text(window.currentDirName);
-                    window.document.title = window.titlePattern.replace('*', window.currentDirName);
-                } else {
-                    screen.append(output);
-                }
-            })
-                .fail(function () {
-                    screen.append("<span class='error'>Command is sent, but due to an HTTP error result is not known.</span>\n");
+            if (command) {
+                input.addHistory(command);
+                $.get('', {'command': command, 'cd': window.currentDir}, function (output) {
+                    var pattern = /^set current directory (.+?)$/i;
+                    if (matches = output.match(pattern)) {
+                        window.currentDir = matches[1];
+                        window.currentDirName = window.currentDir.split('/').pop();
+                        $('#currentDirName').text(window.currentDirName);
+                        window.document.title = window.titlePattern.replace('*', window.currentDirName);
+                    } else {
+                        screen.append(output);
+                    }
                 })
-                .always(function () {
-                    form.show();
-                    scroll();
-                });
+                    .fail(function () {
+                        screen.append("<span class='error'>Command is sent, but due to an HTTP error result is not known.</span>\n");
+                    })
+                    .always(function () {
+                        form.show();
+                        scroll();
+                    });
+            } else {
+                form.show();
+                scroll();
+            }
             return false;
         });
 
