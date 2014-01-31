@@ -35,7 +35,7 @@ class Daemon {
 
 	private function __construct() {
 		// parse options
-		$this->pidfile = 'pid';
+		$this->pidfile = __DIR__.'/pid';
 		if ($_SERVER['argc'] < 2) {
 			self::showHelp();
 		}
