@@ -9,7 +9,7 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
                     dir: dir,
                     _type: 'pixlr'
                 };
-                return FileApi.ajax_url+"?"+teacss.jQuery.param(params);
+                return teacss.path.absolute(FileApi.ajax_url)+"?"+teacss.jQuery.param(params);
             }
         },options);
         
@@ -58,7 +58,7 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
         var frame_url = FileApi.ajax_url+"?"+teacss.jQuery.param({
             _type:'pixlr_frame',
             target: this.options.callback_url(dir,file),
-            path:file,
+            path:file || "",
             preload:this.options.preload ? 1:0
         });
         
