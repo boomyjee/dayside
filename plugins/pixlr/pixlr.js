@@ -2,6 +2,7 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
     init: function (options) {
         var me = this;
         this.options = teacss.jQuery.extend({
+            preload: false,
             callback_url: function (dir,file) {
                 var params = {
                     auth_token: teacss.jQuery.cookie('editor_auth'),
@@ -48,32 +49,18 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
         })        
     },
     
-    buildUrl: function (opt) {
-        var url = 'https://pixlr.com/' + opt.service + '/?s=c', attr;
-        for (var attr in opt) {
-            if (opt.hasOwnProperty(attr) && attr !== 'service') {
-                url += "&" + attr + "=" + escape(opt[attr]);
-            }
-        }
-        return url;
-    },
-    
     openForDir: function(dir,file,codeTab) {
         var root = FileApi.root.replace(/\/$/,'');
         var dir = dir.replace(/\/$/,'');
-        
         var dir_short = (dir==root) ? "/" : dir.split("/").pop();
         var title = "Pixrl: " + dir_short;
-        var options = {
-            service:'editor',
-            locktarget: true,
-            referrer: "UXCandy",
-            target: this.options.callback_url(dir,file)
-        };
-        if (file) {
-            options.title = file.split("/").pop();
-            options.image = file;
-        }
+        
+        var frame_url = FileApi.ajax_url+"?"+teacss.jQuery.param({
+            _type:'pixlr_frame',
+            target: this.options.callback_url(dir,file),
+            path:file,
+            preload:this.options.preload ? 1:0
+        });
         
         var frame,loaded;    
         var tab = teacss.ui.panel({label:title,closable:true}).push(
@@ -95,7 +82,7 @@ dayside.plugins.pixlr = teacss.jQuery.Class.extend({
                         },1);
                     }
                 })
-                .attr("src", this.buildUrl(options))
+                .attr("src", frame_url)
                 .css({width: "100%", height: "100%"})
         );
         dayside.editor.contentTabs.addTab(tab);
