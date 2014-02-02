@@ -330,6 +330,40 @@ class FileApi {
         echo "ok";
     }
     
+    function pixlr_frame() {
+        
+        $url = @$_REQUEST['path'];
+        $path = false;
+        
+        if ($url) $path = $this->_pathFromUrl($url);
+        
+        if ($path) {
+            if (@$_REQUEST['preload']) {
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, array('image' => '@'.$path));
+                curl_setopt($ch, CURLOPT_URL, 'http://pixlr.com/store/');
+                $res = curl_exec($ch);
+                curl_close($ch);            
+
+                if ($res && substr($res,0,4)=='http') {
+                    $url = $res;
+                } else {
+                    echo "ERROR: Error preloading file"; die();
+                }
+            }
+            $title = basename($path);
+            $params = '&image='.urlencode($url)."&title=".urlencode($title);
+        } else {
+            $params = '';
+        }
+        
+        $params .= "&target=".urlencode($_REQUEST['target']);
+        $red = 'https://pixlr.com/editor/?s=c&locktarget=true&referrer=dayside'.$params;
+        header("Location:$red");
+    }
+    
     function pixlr() {
         if (isset($_REQUEST['image'])) {
             $url = $_REQUEST['image'];
