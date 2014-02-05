@@ -1,5 +1,8 @@
 <?php
 
+require __DIR__."/../../../server/lib/Daemon.php";
+Daemon::daemonize(__DIR__."/proxy.pid");
+
 function debug($what1,$what2=false) {
     echo $what1.": ";
     echo $what2; 
@@ -229,11 +232,6 @@ class XDebugServer {
         $this->loop();
     }
 }
-
-if (PHP_SAPI!=='cli') die();
-
-require "daemon.php";
-Daemon::run();
 
 $server = new XDebugServer();
 $server->run();

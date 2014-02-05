@@ -13925,7 +13925,7 @@ jQuery.cookie = function(name, value, options) {
 
 			var special = jQuery.hotkeys.specialKeys[ event.keyCode ],
 				// character codes are available only in keypress
-				character = event.type === "keypress" && String.fromCharCode( event.which ).toLowerCase(),
+				character = String.fromCharCode( event.which ).toLowerCase(),
 				modif = "", possible = {};
 
 			// check combinations (alt|ctrl|shift+anything)
@@ -15717,25 +15717,28 @@ teacss.ui.codeTab = (function($){
                 tabMode:"shift",
                 gutters: ["CodeMirror-linenumbers"],
                 extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
-                theme:'default',
-                onKeyEvent: function (editor,e) {
-                    var event = $.event.fix(e);
-                    if (event.type=='keydown' && event.ctrlKey && event.which == 83) {
-                        event.preventDefault();
-                        if (me.changed) {
-                            setTimeout(function(){
-                                me.saveFile();
-                            },100);
-                        }
-                        return true;
-                    }
-                    return false;
-                }
+                theme:'default'
             };
             
             var args = {options:editorOptions,tab:me};
             dayside.editor.trigger("editorOptions",args);
             editorOptions = args.options;
+            
+            var old_event = editorOptions.onKeyEvent;
+            editorOptions.onKeyEvent = function (editor,e) {
+                var event = $.event.fix(e);
+                if (event.type=='keydown' && event.ctrlKey && event.which == 83) {
+                    event.preventDefault();
+                    if (me.changed) {
+                        setTimeout(function(){
+                            me.saveFile();
+                        },100);
+                    }
+                    return true;
+                }
+                if (old_event && old_event.call(this,editor,event)) return true;
+                return false;
+            }
             
             function makeEditor() {
                 me.editor = CodeMirror(me.editorElement[0],editorOptions);
@@ -15800,7 +15803,7 @@ teacss.ui.codeTab = (function($){
                 tab.addClass("changed");
             this.editorPanel.trigger("codeChanged",this);
         },
-        saveFile: function() {
+        saveFile: function(cb) {
             var me = this;
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
@@ -15812,8 +15815,12 @@ teacss.ui.codeTab = (function($){
                     tab.removeClass("changed");
                     me.editorPanel.trigger("codeSaved",me);
                     if (me.callback) me.callback();
+                    if (cb) cb(true);
                 } else {
-                    alert(data);
+                    if (cb) 
+                        cb(false);
+                    else
+                        alert(data);
                 }
             });
         },

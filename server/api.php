@@ -5,9 +5,7 @@ class FileApi {
     function __construct() {
         $fileapi_hash = false;
         $password_path = __DIR__."/password.php";
-        
-        if (file_exists($password_path))
-            include $password_path;
+        if (file_exists($password_path)) include $password_path;
         
         if (!$fileapi_hash) {
             if (isset($_POST['password'])) {
@@ -27,7 +25,6 @@ class FileApi {
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
         $this->{$_REQUEST['_type']}();
-        die();                
     }
     
     function _pathFromUrl($url) {
@@ -430,5 +427,25 @@ class FileApi {
         $theme = $theme ?:'ubuntu';
         
         require __DIR__."/../plugins/console/console.php";
+    }
+    
+    static function realtime_auth($cookies) {
+        $password_path = __DIR__."/password.php";
+        $fileapi_hash = false;
+        if (file_exists($password_path)) include $password_path;
+        if (!$fileapi_hash) return false;
+        $test = @$cookies['editor_auth'];
+        return $test==$fileapi_hash;
+    }
+    
+    function realtime_start() {
+        $server_path = realpath(__DIR__."/../plugins/realtime/server/server.php"); 
+        $params = @$this->realtimeParams ?: array(
+            'authInclude' =>  __FILE__,
+            'authFunction' => array('\FileApi','realtime_auth')
+        );
+        $params['ip'] = $_SERVER['SERVER_ADDR'];
+        $params = escapeshellarg(json_encode($params));
+        echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
     }
 }
