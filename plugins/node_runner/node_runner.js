@@ -62,6 +62,11 @@ dayside.plugins.node_runner = $.Class.extend({
                         me.needFrameReload = false;
                     }
                 }
+            },
+            onclose: function () {
+                if (me.loaded) {
+                    alert('Console socket was killed. Refresh IDE.');
+                }
             }
         });
         
