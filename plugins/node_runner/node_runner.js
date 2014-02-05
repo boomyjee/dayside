@@ -17,7 +17,7 @@ dayside.plugins.node_runner = $.Class.extend({
         });
         FileApi._async = true;
         
-        me.nodeCommand = "echo Restarting node... ; killall -9 node ; node "+me.root+"server.js 2>&1";
+        me.nodeCommand = "echo Starting node... ; killall -9 node ; node "+me.root+"server.js 2>&1";
         me.nodeUrl = "http://"+teacss.path.absolute(FileApi.ajax_url).split("/")[2]+":8888";
         
         this.consoleClient = new dayside.realtime.client({
@@ -70,20 +70,26 @@ dayside.plugins.node_runner = $.Class.extend({
             }
         });
         
+        var needRun = false;
         dayside.editor.bind("editorOptions",function(b,ev){
             ev.options.onKeyEvent = function (editor,e) {
                 // ctrl+r in editor
                 if (e.which==82 && e.ctrlKey) {
                     e.originalEvent.preventDefault();
-                    me.run();
+                    needRun = true;
                     return true;
                 }
+                if (e.type=="keyup" && needRun) { me.run(); needRun = false; }
             }
         });
         $(document).bind("keydown","ctrl+r",function(e){
             e.preventDefault();
             e.stopPropagation();
-            me.run();
+            needRun = true;
+            return false;
+        });
+        $(document).bind("keyup",function(e){
+            if (needRun) { me.run(); needRun = false; }
             return false;
         });
     },
