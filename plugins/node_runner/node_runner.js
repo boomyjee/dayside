@@ -1,4 +1,39 @@
 (function($,ui){
+
+if (window.phpdesktop) {
+	// desktop version
+    dayside.realtime = {};
+	dayside.realtime.client = function (o) {
+		var me = this;
+		me.process = window.phpdesktop.CreateProcess();
+        
+        function read() {
+            var res = me.process.read_stdout();
+			if (o.onmessage) {
+				if (res.buffer) o.onmessage.call(this,{type:"shell",result:res.buffer});
+				if (res.count==-1) o.onmessage.call(this,{type:"shell",finished:true});
+			}
+            if (res.count!=-1) me.timeout = setTimeout(read,100);
+        }
+
+		this.send = function (data) {
+			if (data.type=="shell" && data.cmd) {
+                clearTimeout(me.timeout);
+                var killres = me.process.kill();
+                console.debug('kill process',killres);
+                setTimeout(function(){
+                    var res = me.process.spawn(data.cmd);
+                    if (res) {
+                        me.timeout = setTimeout(read,100);
+                    } else {
+                        console.debug('process spawn failed');
+                    }
+                },1);
+			}
+		}
+		if (o.onopen) o.onopen.call(this);
+	};
+}
     
 dayside.plugins.node_runner = $.Class.extend({
     init: function (o) {
@@ -10,16 +45,42 @@ dayside.plugins.node_runner = $.Class.extend({
         
     ready: function() {
         var me = this;
-
+        
         FileApi._async = false;
+        
+        var package = false;
+        FileApi.file(FileApi.root+"/package.json",function(res){
+            if (res && res.data) {
+                try {
+                    var data = $.parseJSON(res.data);
+                    package = data.scripts.start;
+                } catch (e) {}
+            }
+        });
+        
+        if (!package) {
+            console.debug('No package.json found');
+            return;
+        } else {
+            package = package.replace(/node[ ]*/g,'');
+        }
+        
         FileApi.request('xdebug_path',{path:FileApi.root},true,function(res){
             me.root = res.data.path;
+            if (me.root.indexOf("win://")==0)
+                me.root = me.root.substring("win://".length);
+            me.root = me.root.replace(/\/$/, "");
         });
         FileApi._async = true;
         
-        me.nodeCommand = "echo Starting node... ; killall -9 node ; node "+me.root+"server.js 2>&1";
-        me.nodeUrl = "http://"+teacss.path.absolute(FileApi.ajax_url).split("/")[2]+":8888";
-        
+        me.nodePort = 8888;
+        if (window.phpdesktop)
+            me.nodeCommand = "cmd /C (echo Starting node... & taskkill /F /IM node.exe & set PORT="+me.nodePort+" & node "+me.root+"/"+package+") 2>&1";
+        else
+            me.nodeCommand = "echo Starting node... ; killall -9 node ; export PORT="+me.nodePort+" ; node "+me.root+"/"+package+" 2>&1";
+
+        me.nodeUrl = "http://"+teacss.path.absolute(FileApi.ajax_url).split("/")[2].split(":")[0]+":"+me.nodePort;
+
         this.consoleClient = new dayside.realtime.client({
             onopen: function () {
                 me.consoleTab = ui.panel("Console");
@@ -58,6 +119,7 @@ dayside.plugins.node_runner = $.Class.extend({
                     el.scrollTop(el[0].scrollHeight);
                     
                     if (me.needFrameReload) {
+                        if (data.result.indexOf("Starting")==0) return;
                         me.frame[0].src = me.frame[0].src;
                         me.needFrameReload = false;
                     }
@@ -121,4 +183,3 @@ dayside.plugins.node_runner = $.Class.extend({
 
     
 })(teacss.jQuery,teacss.ui);
-
