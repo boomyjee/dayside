@@ -632,7 +632,7 @@ window.teacss = window.teacss || (function(){
         return path;
     }    
         
-    teacss.getFile = function(path,callback,remote=false) {
+    teacss.getFile = function(path,callback,remote) {
         if (teacss.files[path]) {
             callback(teacss.files[path]);
             return;
