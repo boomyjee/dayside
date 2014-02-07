@@ -632,7 +632,7 @@ window.teacss = window.teacss || (function(){
         return path;
     }    
         
-    teacss.getFile = function(path,callback) {
+    teacss.getFile = function(path,callback,remote=false) {
         if (teacss.files[path]) {
             callback(teacss.files[path]);
             return;
@@ -642,7 +642,13 @@ window.teacss = window.teacss || (function(){
             if (xhr.readyState === 4) {
                 var text = teacss.files[path] = xhr.status==200 ? xhr.responseText:false;
                 try {
-                    callback(text);
+                    if (text!==false || remote) {
+                        callback(text);
+                    } else {
+                        teacss.getFile("?remote="+encodeURIComponent(path),function(text){
+                            callback(text);
+                        },true);
+                    }
                 } catch (e) {
                     setTimeout(function(){ throw e; },1);
                 }
@@ -716,7 +722,7 @@ window.teacss = window.teacss || (function(){
         processFile(path,wrap);
     }
         
-    teacss.sheets = function () {
+    teacss.getSheets = function () {
         var sheets = [];
         if (typeof document=='undefined') return [];
         var links_css = document.getElementsByTagName('link');
@@ -731,7 +737,7 @@ window.teacss = window.teacss || (function(){
             }
         }
         return sheets;
-    }();    
+    }
     
     teacss.update = function() {
         if (teacss.updating) {
@@ -741,6 +747,8 @@ window.teacss = window.teacss || (function(){
         
         teacss.updating = true;
         teacss.refresh = false;
+        
+        teacss.sheets = teacss.getSheets();
         
         var q = queue(1);
         for (var i=0;i<teacss.sheets.length;i++) {
@@ -1744,6 +1752,7 @@ teacss.build = (function () {
         div.style.position = 'fixed';
         div.style.right = '3px';
         div.style.top = '3px';
+        div.style.zIndex = 100000;
         
         body.appendChild(div);
         
