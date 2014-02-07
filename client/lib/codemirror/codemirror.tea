@@ -7,6 +7,9 @@ Script {
     @append 'addon/fold/foldcode.js';
     @append 'addon/mode/overlay.js';
     @append 'addon/runmode/runmode.js';    
+    @append 'addon/lint/lint.js';    
+    @append 'addon/lint/javascript-lint.js';    
+    @append 'addon/hint/show-hint.js';    
     
     @append 'mode/css/css.js';
     @append 'mode/javascript/javascript.js';
@@ -16,12 +19,19 @@ Script {
     @append 'mode/teacss/teacss.js';
     @append 'mode/liquid/liquid.js';
     @append 'mode/yaml/yaml.js';
+    @append 'mode/htmlmixed/htmlmixed.js';
 }
 
+@append 'addon/lint/lint.css';
 @append 'addon/dialog/dialog.css';
+@append 'addon/hint/show-hint.css';
 @append 'lib/codemirror.css';
 @append 'mode/teacss/teacss.css';
 @append 'mode/liquid/liquid.css';
+
+.CodeMirror-hints {
+    font-size: 15px;
+}
 
 .teacss-ui .CodeMirror {
     font-size: 16px;
