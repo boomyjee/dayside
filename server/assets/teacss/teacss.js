@@ -645,7 +645,9 @@ window.teacss = window.teacss || (function(){
                     if (text!==false || remote) {
                         callback(text);
                     } else {
-                        teacss.getFile("?remote="+encodeURIComponent(path),function(text){
+                        var _url = location.href;
+                        _url += (_url.split('?')[1] ? '&':'?') + "remote="+encodeURIComponent(path)
+                        teacss.getFile(_url,function(text){
                             callback(text);
                         },true);
                     }

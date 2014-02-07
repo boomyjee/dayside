@@ -2,7 +2,7 @@
 
 class FileApi {
     
-    function __construct() {
+    function __construct($_type=false) {
         $fileapi_hash = false;
         $password_path = __DIR__."/password.php";
         if (file_exists($password_path)) include $password_path;
@@ -24,7 +24,8 @@ class FileApi {
             $test = @$_COOKIE['editor_auth'];
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
-        $this->{$_REQUEST['_type']}();
+        $_type = $_type ? : $_REQUEST['_type'];
+        $this->{$_type}();
     }
     
     function _pathFromUrl($url) {
@@ -41,6 +42,10 @@ class FileApi {
             return $path;
         }
         return false;
+    }
+    
+    function pass() {
+        return 'ok';
     }
     
     function dir($ret=false) {

@@ -1,14 +1,4 @@
-<?
-if (isset($_REQUEST['remote'])) {
-    echo file_get_contents($_REQUEST['remote']); die();
-}
-if (isset($_POST['css'])) {
-    file_put_contents(realpath(__DIR__)."/tern.js",$_POST['js']);
-    file_put_contents(realpath(__DIR__)."/tern.css",$_POST['css']);
-    echo 'ok';
-    die();
-}
-?>
+<? include __DIR__."/../../server/build.php" ?>
 <!doctype html>
 <html>
     <head>
@@ -23,32 +13,13 @@ if (isset($_POST['css'])) {
         <script src="../../client/dayside.js"></script>
         <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
         
-        <? if (@$_GET['dev']): ?>
-        
-            <script tea="makefile.tea"></script>
-            <script>teacss.update()</script>
-            <script>
-                teacss.buildCallback = function (files) {
-                    teacss.jQuery.post(location.href,{css:files['/default.css'],js:files['/default.js']},function(data){
-                        alert(data);
-                    });
-                }
-            </script>
-        
-        <? else: ?>
-        
-            <script src="tern.js"></script>
-            <link href="tern.css" rel="stylesheet" type="text/css">
+        <? if (build("makefile.tea","tern.css","tern.js",__DIR__)!='dev'): ?>
             <script>
                 dayside({
                     root: teacss.path.absolute("./")
                 });
                 dayside.plugins.tern();
             </script>
-        
         <? endif ?>
-        
     </head>
-    <body>
-    </body>
-</html>
+</html>      
