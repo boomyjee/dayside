@@ -1,0 +1,23 @@
+@append "http://marijnhaverbeke.nl/acorn/acorn.js";
+@append "http://marijnhaverbeke.nl/acorn/acorn_loose.js";
+@append "http://marijnhaverbeke.nl/acorn/util/walk.js";
+@append "http://ternjs.net/doc/demo/polyfill.js";
+@append "http://ternjs.net/lib/signal.js";
+@append "http://ternjs.net/lib/tern.js";
+@append "http://ternjs.net/lib/def.js";
+@append "http://ternjs.net/lib/comment.js";
+@append "http://ternjs.net/lib/infer.js";
+@append "http://ternjs.net/plugin/doc_comment.js";
+
+@append "lib/tern.js";
+@append "lib/tern.css";
+@append "lib/addon.js";
+
+Script "run.js" {
+    @append {
+        dayside({
+            root: teacss.path.absolute("./")
+        });
+        dayside.plugins.tern();
+    }
+}
