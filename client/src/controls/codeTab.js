@@ -104,15 +104,16 @@ teacss.ui.codeTab = (function($){
             var mode = undefined;
             if (ext=='css') mode = 'css';
             if (ext=='tea') mode = 'teacss';
-            if (ext=='php') mode = 'php';
+            if (ext=='php') mode = 'application/x-httpd-php';
             if (ext=='js')  mode = 'javascript';
             if (ext=='haml') mode = 'css';
             if (ext=='liquid') mode = 'liquid';
             if (ext=='xml') mode = 'xml';
             if (ext=="yaml") mode = 'yaml';
             if (ext=='coffee') mode = 'coffeescript';
-            if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'php';
+            if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'application/x-httpd-php';
             if (ext=="md") mode = "gfm";
+            if (ext=="java") mode = "text/x-java";
             
             var editorOptions = {
                 value:data,
@@ -120,29 +121,24 @@ teacss.ui.codeTab = (function($){
                 mode: mode,
                 tabMode:"shift",
                 gutters: ["CodeMirror-linenumbers"],
-                extraKeys: {"Tab": "indentMore", "Shift-Tab": "indentLess"},
+                extraKeys: {
+                    "Tab": "indentMore", 
+                    "Shift-Tab": "indentLess",
+                    "Ctrl-Space": "autocomplete",
+                    "Ctrl-S": function () {
+                        if (me.changed) {
+                            setTimeout(function(){
+                                me.saveFile();
+                            },100);
+                        }
+                    }
+                },
                 theme:'default'
             };
             
             var args = {options:editorOptions,tab:me};
             dayside.editor.trigger("editorOptions",args);
             editorOptions = args.options;
-            
-            var old_event = editorOptions.onKeyEvent;
-            editorOptions.onKeyEvent = function (editor,e) {
-                var event = $.event.fix(e);
-                if (event.type=='keydown' && event.ctrlKey && event.which == 83) {
-                    event.preventDefault();
-                    if (me.changed) {
-                        setTimeout(function(){
-                            me.saveFile();
-                        },100);
-                    }
-                    return true;
-                }
-                if (old_event && old_event.call(this,editor,event)) return true;
-                return false;
-            }
             
             function makeEditor() {
                 me.editor = CodeMirror(me.editorElement[0],editorOptions);

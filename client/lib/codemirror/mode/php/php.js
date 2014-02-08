@@ -11,6 +11,7 @@
       return "string";
     };
   }
+    
   var phpConfig = {
     name: "clike",
     keywords: keywords("abstract and array as break case catch class clone const continue declare default " +
@@ -50,9 +51,9 @@
     }
   };
 
-  CodeMirror.defineMode("php", function(config, parserConfig) {
+  CodeMirror.defineMode("phpmixed", function(config, parserConfig) {
     var htmlMode = CodeMirror.getMode(config, "text/html");
-    var phpMode = CodeMirror.getMode(config, phpConfig);
+    var phpMode = CodeMirror.getMode(config, phpConfig); phpMode.name = "php";
 
     function dispatch(stream, state) {
       var isPHP = state.curMode == phpMode;
@@ -125,7 +126,7 @@
     };
   }, "htmlmixed", "clike");
 
-  CodeMirror.defineMIME("application/x-httpd-php", "php");
-  CodeMirror.defineMIME("application/x-httpd-php-open", {name: "php", startOpen: true});
+  CodeMirror.defineMIME("application/x-httpd-php", "phpmixed");
+  CodeMirror.defineMIME("application/x-httpd-php-open", {name: "phpmixed", startOpen: true});
   CodeMirror.defineMIME("text/x-php", phpConfig);
 })();
