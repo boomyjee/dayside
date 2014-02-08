@@ -6127,7 +6127,7 @@ G=function(b,c,a){a=F(b,c,a);a===e?delete b[c]:b[c]=a},F=function(b,c,a){var d=b
 
     complete: function(cm) {
       var self = this;
-      CodeMirror.showHint(cm, function(cm, c) { return hint(self, cm, c); }, {async: true,closeOnUnfocus:false});
+      CodeMirror.showHint(cm, function(cm, c) { return hint(self, cm, c); }, {async: true});
     },
 
     getHint: function(cm, c) { return hint(this, cm, c); },
