@@ -546,7 +546,7 @@ $autocomplete = array(
                 }
                 guess.text(found);
             };
-            var update = function () {
+            var update = function (e) {
                 var command = input.val();
                 repeat.text(command);
                 search(command);
@@ -628,7 +628,8 @@ $autocomplete = array(
             return false;
         });
 
-        $(document).keydown(function () {
+        $(document).keydown(function (e) {
+            if (e.ctrlKey || e.altKey) { return; }
             input.focus();
         });
     });
