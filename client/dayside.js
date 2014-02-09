@@ -17467,7 +17467,7 @@ teacss.ui.codeTab = (function($){
                         }
                     }
                 },
-                theme:'default'
+                theme:'no-direct-theme'
             };
             
             var args = {options:editorOptions,tab:me};
@@ -17964,45 +17964,61 @@ teacss.ui.filePanel = (function($){
         }
     });
 })(teacss.jQuery);;
-teacss.ui.optionsCombo = (function($){
-    return teacss.ui.Combo.extend({},{
-        init: function (options) {
-            this.defaults = {
-                fontSize: 14,
-                tabSize: 4,
-                useTab: false
-            }
-            
-            var ui = teacss.ui;
-            var me = this;
-            var panel,check;
-            this.form = ui.form(function(){
-                panel = ui.panel({width:200,height:'auto',margin:0}).push(
-                    ui.label({template:'Font size: ${value}px',name:'fontSize',margin:"0 0 0 5px"}),
-                    ui.slider({min:10,max:24,margin:"0px 15px 5px",name:'fontSize'}),
-                    ui.label({template:'Tab size: ${value}',name:'tabSize',margin:"0 0 0 5px"}),
-                    ui.slider({min:1,max:16,margin:"0px 15px 5px",name:'tabSize'}),
-                    check = ui.check({margin:"5px 15px 10px 10px",width:'auto',label:'Use tab character',name:'useTab'})
-                );
-            });
-            check.element.css("font-size",10);
-            this._super($.extend(options,{items:[panel]}));
-            this.loadValue();
-            this.form.bind("change",function(){
-                me.value = me.form.value;
-                me.trigger("change");
-                me.saveValue();
-            });
-        },
-        saveValue: function () {
-            dayside.storage.set("options",this.value);
-        },
-        loadValue: function () {
-            this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
-            this.form.setValue(this.value);
+(function($,ui){
+    
+var themes = [
+    'default','3024-day','3024-night','ambiance','base16-dark','base16-light',
+    'blackboard','cobalt','eclipse','elegant','erlang-dark','lesser-dark','mbo','midnight',
+    'monokai','neat','night','paraiso-dark','paraiso-light','pastel-on-dark','rubyblue',
+    'solarized','the-matrix','tomorrow-night-eighties','twilight',
+    'vibrant-ink','xq-dark','xq-light'
+];    
+    
+ui.optionsCombo = teacss.ui.Combo.extend({
+    init: function (options) {
+        this.defaults = {
+            fontSize: 14,
+            tabSize: 4,
+            useTab: false
         }
-    });
-})(teacss.jQuery);;
+
+        var ui = teacss.ui;
+        var me = this;
+        var panel,check;
+        
+        var themeOptions = {};
+        $.each(themes,function(t,theme){ themeOptions[theme] = theme; });
+        
+        this.form = ui.form(function(){
+            panel = ui.panel({width:200,height:'auto',margin:0,padding:"5px 10px 10px"}).push(
+                ui.label({template:'Font size: ${value}px',name:'fontSize',margin:"0"}),
+                ui.slider({min:10,max:24,margin:"0px 15px 0px",name:'fontSize'}),
+                ui.label({template:'Tab size: ${value}',name:'tabSize',margin:"0 0 0 0"}),
+                ui.slider({min:1,max:16,margin:"0px 15px 0px",name:'tabSize'}),
+                check = ui.check({margin:"10px 15px 5px 15px",width:'100%',label:'Use tab character',name:'useTab'}),
+                ui.label({template:'Theme:',margin:"0 0 0 0"}),
+                ui.select({name: 'theme', items: themeOptions,width:"100%", comboDirection: 'right', comboHeight: 1000, margin: "-3px 0 0 0" })
+            );
+        });
+        check.element.css("font-size",10);
+        this._super($.extend(options,{items:[panel]}));
+        this.loadValue();
+        this.form.bind("change",function(){
+            me.value = me.form.value;
+            me.trigger("change");
+            me.saveValue();
+        });
+    },
+    saveValue: function () {
+        dayside.storage.set("options",this.value);
+    },
+    loadValue: function () {
+        this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
+        this.form.setValue(this.value);
+    }
+});
+    
+})(teacss.jQuery,teacss.ui);;
 teacss.ui.dockPanel = (function($){
     return teacss.ui.panel.extend({
         init: function (options) {
@@ -18050,7 +18066,7 @@ teacss.ui.dockPanel = (function($){
             function hide() {
                 splitter.hidden = false;
                 var val = splitter.getValue();
-                splitter.setValue(0);
+                splitter.setValue(-splitter.options.size);
                 splitter.value = val;
                 splitter.element.hide();
                 splitter.hidden = true;
@@ -18327,6 +18343,9 @@ teacss.ui.editorPanel = (function($){
             var ui = teacss.ui;
             var value = this.optionsCombo.value;
             
+            var theme = value.theme || 'default';
+            $("body").attr("class","cm-s-"+theme);
+            
             // apply indent settings to CodeMirror defaults and opened editors
             CodeMirror.defaults.tabSize = value.tabSize;
             CodeMirror.defaults.indentUnit = value.tabSize;
@@ -18346,7 +18365,7 @@ teacss.ui.editorPanel = (function($){
             if (styles.length==0) {
                 styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
             }
-            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; line-height:"+(value.fontSize)+"px !important;}");
+            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; }");
             for (var t=0;t<ui.codeTab.tabs.length;t++) {
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();

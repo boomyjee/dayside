@@ -45,7 +45,7 @@ teacss.ui.dockPanel = (function($){
             function hide() {
                 splitter.hidden = false;
                 var val = splitter.getValue();
-                splitter.setValue(0);
+                splitter.setValue(-splitter.options.size);
                 splitter.value = val;
                 splitter.element.hide();
                 splitter.hidden = true;
@@ -322,6 +322,9 @@ teacss.ui.editorPanel = (function($){
             var ui = teacss.ui;
             var value = this.optionsCombo.value;
             
+            var theme = value.theme || 'default';
+            $("body").attr("class","cm-s-"+theme);
+            
             // apply indent settings to CodeMirror defaults and opened editors
             CodeMirror.defaults.tabSize = value.tabSize;
             CodeMirror.defaults.indentUnit = value.tabSize;
@@ -341,7 +344,7 @@ teacss.ui.editorPanel = (function($){
             if (styles.length==0) {
                 styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
             }
-            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; line-height:"+(value.fontSize)+"px !important;}");
+            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; }");
             for (var t=0;t<ui.codeTab.tabs.length;t++) {
                 var e = ui.codeTab.tabs[t].editor;
                 if (e) e.refresh();
