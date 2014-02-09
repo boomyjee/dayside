@@ -39,7 +39,7 @@
 
 /* CURSOR */
 
-.teacss-ui .CodeMirror div.CodeMirror-cursor {
+.CodeMirror div.CodeMirror-cursor {
   border-left: 1px solid black;
   z-index: 3;
 }
@@ -101,12 +101,15 @@
 /* The rest of this file contains styles related to the mechanics of
    the editor. You probably shouldn't touch them. */
 
+.CodeMirror {
+    background: white;
+    color: black;
+}
+
 .teacss-ui .CodeMirror {
-  line-height: 1;
+  line-height: 1em;
   position: relative;
   overflow: hidden;
-  background: white;
-  color: black;
 }
 
 .teacss-ui .CodeMirror-scroll {

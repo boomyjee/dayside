@@ -133,7 +133,7 @@ teacss.ui.codeTab = (function($){
                         }
                     }
                 },
-                theme:'default'
+                theme:'no-direct-theme'
             };
             
             var args = {options:editorOptions,tab:me};
