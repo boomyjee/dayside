@@ -386,9 +386,8 @@ dayside.plugins.xdebug = teacss.jQuery.Class.extend({
         for (var key in me.tabs) {
             var $ = teacss.jQuery;
             var tab = me.tabs[key];
-            var sel = $("#"+tab.options.id);
             tab.element.detach();
-            sel.parent().tabs("remove","#"+tab.options.id);
+            tab.tabPanel.closeTab(tab);
         }
         me.status = "stop";
         me.send("stop");

@@ -43,7 +43,7 @@
                 
                 js += "\n"+"return exports;";
                 js += "})();";
-                js += "//@ sourceURL="+path;
+                js += "//# sourceURL="+path;
                 
                 try {
                     var res = eval(js);

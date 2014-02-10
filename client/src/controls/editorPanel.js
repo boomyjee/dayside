@@ -69,9 +69,9 @@ teacss.ui.dockPanel = (function($){
             splitter.change(function(){me.trigger("change")});
             
             hide();
-            panel.element.on("tabsadd tabsremove",function(){
-                if ($(this).tabs("length")) show(); else hide();
-            });
+            panel.bind("refresh",function(){
+                if (this.count()) show(); else hide();
+            })
             
             var cls = 'dock-nav';
             panel.element.find(".ui-tabs-nav").addClass(cls).sortable("destroy").sortable({
@@ -126,7 +126,7 @@ teacss.ui.dockPanel = (function($){
                 var sel = $("#"+tab.options.id);
                 setTimeout(function(){
                     tab.element.detach();
-                    sel.parent().tabs("remove","#"+tab.options.id);
+                    if (tab.tabPanel) tab.tabPanel.closeTab(tab,true);
                     panel.addTab(tab,idx);
                     panel.selectTab(tab);
                     
@@ -258,8 +258,9 @@ teacss.ui.editorPanel = (function($){
                 setTimeout(me.saveTabs,1);
                 tab.bind("close",function(){setTimeout(me.saveTabs,1)});
             });
-            $(".ui-tabs").bind("tabsselect",function(){setTimeout(me.saveTabs,1)});
-            $(".ui-tabs-nav").bind("sortstop",me.saveTabs);
+            
+            this.tabsForFiles.bind("select",function(){ me.saveTabs() });
+            this.tabsForFiles.bind("sortstop",function(){ me.saveTabs() });
             
             // context menu for tabs
             $(document).on("contextmenu",".ui-tabs-nav > li",function(e){
@@ -351,29 +352,29 @@ teacss.ui.editorPanel = (function($){
             }            
         },
         saveTabs: function () {
-            var hash = {};
+            var list = [];
             teacss.jQuery(".ui-tabs-panel").each(function(){
                 var tab = teacss.jQuery(this).data("tab");
                 var id = tab.options.id;
-                var active_href = $(this).parent().find("> .ui-tabs-nav .ui-tabs-selected a").attr("href");
+                var active_href = $(this).parent().find("> .ui-tabs-nav .ui-tabs-active a").attr("href");
                 var selected = ("#"+id)==active_href;
                 
                 if (tab && tab.Class==teacss.ui.codeTab) {
-                    hash[tab.options.file] = selected;
+                    list.push({file:tab.options.file,selected:selected});
                 }
             });
-            dayside.storage.set("tabs",hash);
+            dayside.storage.set("tabs",list);
         },
         loadTabs: function () {
             var me = this;
-            var hash = dayside.storage.get("tabs");
-            if (hash) setTimeout(function () {
-                for (var file in hash) {
-                    var tab = new teacss.ui.codeTab({file:file,closable:true,editorPanel:me});
+            var list = dayside.storage.get("tabs");
+            if (list && $.isArray(list)) setTimeout(function () {
+                $.each(list,function(){
+                    var tab = new teacss.ui.codeTab({file:this.file,closable:true,editorPanel:me});
                     me.tabsForFiles.push(tab);
-                    if (hash[file])
+                    if (this.selected)
                         me.tabsForFiles.selectTab(tab);
-                }
+                });
             },1);
         }
         
