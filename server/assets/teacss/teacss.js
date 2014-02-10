@@ -113,7 +113,7 @@ window.teacss = window.teacss || (function(){
                             output += parsed.ast.children[i].getJS(teacss.tea.Style);
                 
                         output = "(function(){with (teacss.functions){\n" + output;
-                        output += "\n}})"+"//@ sourceURL="+path;
+                        output += "\n}})"+"//# sourceURL="+path;
                         
                         parsed.js = output;
                     }
@@ -1054,7 +1054,7 @@ window.teacss = window.teacss || (function(){
         if (ext=="js") {
             var output = "";
             output = "(function(){with (teacss.functions){\n" + code;
-            output += "\n}})"+"//@ sourceURL="+path;
+            output += "\n}})"+"//# sourceURL="+path;
             
             return {
                 js: output,
