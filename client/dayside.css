@@ -600,6 +600,73 @@
 
 */
 
+.cm-s-base16-dark {background:#151515;}
+.cm-s-base16-dark > .teacss-ui {background:#151515;}
+.cm-s-base16-dark .teacss-ui .ui-tabs-nav li.changed a { color: #ccc; }
+
+.cm-s-base16-dark .jstree-default.jstree-focused {background:#151515;}
+.cm-s-base16-dark .jstree-default.jstree-focused > ul { background: transparent; }
+.cm-s-base16-dark .ui-splitter { background: #333 !important; }
+.cm-s-base16-dark .jstree-default a { color: #e0e0e0; }
+.cm-s-base16-dark .jstree-default .jstree-clicked { background: #6A9FB5; border-color: transparent; }
+.cm-s-base16-dark .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
+.cm-s-base16-dark .jstree-default ins {
+    background-image: url(lib/codemirror/theme/../../jstree/themes/default/d-dark.png);
+}
+
+.cm-s-base16-dark .jstree li.hidden > a, 
+.cm-s-base16-dark .jstree li.hidden > a > .jstree-icon:after
+{
+    color: #ccc;
+}
+
+.cm-s-base16-dark .teacss-ui .ui-state-default, 
+.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, 
+.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #333;
+    border-color: #333;
+}
+
+.cm-s-base16-dark .teacss-ui .ui-state-default a {
+    color: #999;
+}
+
+.cm-s-base16-dark .teacss-ui .ui-state-default, 
+.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, 
+.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+    color: #e0e0e0;
+}
+
+.cm-s-base16-dark .teacss-ui .ui-state-active, 
+.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-active, 
+.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active {
+    background: #151515;
+    border-color: #151515;
+    color: #e0e0e0;
+}
+
+.cm-s-base16-dark .teacss-ui .ui-state-active a {
+    color: #e0e0e0;
+}
+
+.cm-s-base16-dark .teacss-ui .editorPanel-toolbar {
+    background: #222;
+}
+
+.cm-s-base16-dark .teacss-ui .button-select-panel {
+    background: #151515;
+    color: #e0e0e0;
+    border-color: transparent;
+}
+
+.cm-s-base16-dark .teacss-ui .icon-button span.ui-button-text {
+    background:  transparent;
+}
+
+.cm-s-base16-dark .teacss-ui .combo-item.selected {
+    background: rgba(255,119,0,0.3) !important;
+}
+
 .cm-s-base16-dark .CodeMirror {background: #151515; color: #e0e0e0;}
 .cm-s-base16-dark div.CodeMirror-selected {background: #202020 !important;}
 .cm-s-base16-dark .CodeMirror-gutters {background: #151515; border-right: 0px;}
