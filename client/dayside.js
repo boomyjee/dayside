@@ -18410,8 +18410,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
             width: 650, 
             height: 'auto',
             modal: true,
-            title: "Upload files",
-            position: "center"
+            title: "Upload files"
         },o));
         
         this.panel = teacss.ui.panel({label:"Upload"});
