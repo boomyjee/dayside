@@ -90,7 +90,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
     },
     
     initParams: function () {
-        var data = this.panel.element.data("plupload");
+        var data = this.panel.element.data("uiPlupload");
         if (data) {
             data.uploader.setOption("url",
                 FileApi.ajax_url+"?"+teacss.jQuery.param({path:this.path,_type:"upload"})
