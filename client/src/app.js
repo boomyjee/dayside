@@ -48,43 +48,6 @@ window.dayside = window.dayside || (function(){
             preview: true
         }
         dayside.options = options = $.extend(defaults,options);
-        dayside.storage = {
-            key: function (key) {
-                return "dayside_"+location.href;
-            },
-            get: function (key,def) {
-                if (typeof(localStorage)!='undefined') {
-                    var gkey = this.key();
-                    var item = localStorage.getItem(gkey);
-                    if (item) {
-                        try {
-                            item = eval('('+item+')');
-                        } catch (e) {
-                            return def;
-                        }
-                        return item[key];
-                    }
-                }
-                return def;
-            },
-            set: function (key,value) {
-                if (typeof(localStorage)!='undefined') {
-                    var gkey = this.key();
-                    var item = localStorage.getItem(gkey);
-                    if (item) {
-                        try {
-                            item = eval('('+item+')'); 
-                        } catch (e) {
-                            item = {};
-                        }
-                    } else {
-                        item = {};
-                    }
-                    item[key] = value;
-                    localStorage.setItem(gkey,JSON.stringify(item));
-                }
-            }
-        }
         
         teacss.jQuery(function ($){
             FileApi.root = options.root;
@@ -99,6 +62,44 @@ window.dayside = window.dayside || (function(){
             onLoaded();
         });        
     }
+    
+    dayside.storage = {
+        key: function (key) {
+            return "dayside_"+location.href;
+        },
+        get: function (key,def) {
+            if (typeof(localStorage)!='undefined') {
+                var gkey = this.key();
+                var item = localStorage.getItem(gkey);
+                if (item) {
+                    try {
+                        item = eval('('+item+')');
+                    } catch (e) {
+                        return def;
+                    }
+                    return item[key];
+                }
+            }
+            return def;
+        },
+        set: function (key,value) {
+            if (typeof(localStorage)!='undefined') {
+                var gkey = this.key();
+                var item = localStorage.getItem(gkey);
+                if (item) {
+                    try {
+                        item = eval('('+item+')'); 
+                    } catch (e) {
+                        item = {};
+                    }
+                } else {
+                    item = {};
+                }
+                item[key] = value;
+                localStorage.setItem(gkey,JSON.stringify(item));
+            }
+        }
+    }    
         
     var load_list = [];
     function onLoaded() {

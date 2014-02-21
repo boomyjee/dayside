@@ -202,72 +202,14 @@ teacss.ui.filePanel = (function($){
                                          me.tree.jstree('refresh',node);
                                     }},
                                     "upload": {label:"Upload",separator_before:true,action:function(){
-                                        
                                         if (!me.uploadDialog) {
                                             me.uploadDialog = teacss.ui.uploadDialog({
                                                 jupload: me.options.jupload,
                                                 jupload_data: me.options.jupload_data
                                             });
                                         }
-                                        
                                         me.uploadDialog.open(path,me.tree,node);
-                                        return;
-                                        
-                                        if (!me.uploadPanel) {
-                                            if (me.options.jupload) {
-                                                var formdata = me.options.jupload_data || {};
-                                                formdata = $.extend(formdata,{path:FileApi.root,_type:"upload"});
-                                                var inputs = "";
-                                                for (var key in formdata)
-                                                    inputs += '<input type="hidden" name="'+key+'" value="'+formdata[key]+'">';
-                                                me.uploadPanel = $([
-                                                    '<div>',
-                                                        '<form id="uploadForm">',
-                                                            inputs,
-                                                        '</form>',
-                                                        '<APPLET',
-                                                        '        CODE="wjhk.jupload2.JUploadApplet"',
-                                                        '        NAME="JUpload"',
-                                                        '        ARCHIVE="'+me.options.jupload+'"',
-                                                        '        WIDTH="100%"',
-                                                        '        HEIGHT="400px"',
-                                                        '        MAYSCRIPT="true"',
-                                                        '        ALT="The java pugin must be installed.">',
-                                                        '    <param name="postURL" value="'+FileApi.ajax_url+'" />',
-                                                        '    <param name="lookAndFeel" value="system" />',
-                                                        '    <param name="formdata" value="uploadForm" />',
-                                                        '    <param name="afterUploadURL" value="javascript:window.afterJUpload()" />',
-                                                        '    <param name="showLogWindow" value="false" />',
-                                                        '    <param name="debugLevel" value="100" />',
-                                                        '    <param name="lang" value="en" />',
-                                                        '    Java 1.5 or higher plugin required.',
-                                                        '</APPLET>',
-                                                    '</div>'
-                                                ].join("\n"));
-                                            } else {
-                                                me.uploadPanel = $("<div>Set jupload param in options</div>");
-                                            }
-                                            me.uploadPanel.dialog({
-                                                autoOpen: false,
-                                                resizable: false,
-                                                width: 650, 
-                                                height: 'auto',
-                                                modal: true,
-                                                title: "Upload files",
-                                                position: "center",
-                                                create: function(event, ui){
-                                                    $(this).parent().appendTo(teacss.ui.layer);
-                                                },
-                                                open: function(event, ui){
-                                                    $('.ui-widget-overlay').appendTo(teacss.ui.layer);
-                                                }
-                                            });
-                                        }
-                                        me.uploadPanel.find("input[name=path]").val(path);
-                                        me.uploadPanel.dialog("open");
-                                        window.afterJUpload = function () {
-                                            me.tree.jstree('refresh',node);
-                                        }
+
                                     }},
                                     "create": {
                                         label: 'Create',
