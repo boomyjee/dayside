@@ -239,13 +239,11 @@ teacss.ui.editorPanel = (function($){
             this.optionsCombo = new ui.optionsCombo({
                 label:"Config",
                 icons:{primary:'ui-icon-gear'},
-                margin: 0, comboWidth: 200,
-                change: $.proxy(this.updateOptions,this)
+                margin: 0
             });
             this.optionsCombo.element
                 .appendTo(this.toolbar.element);
             
-            this.updateOptions();
             this.loadTabs();
             
             this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
@@ -317,39 +315,6 @@ teacss.ui.editorPanel = (function($){
                     e.preventDefault();
                 }
             });
-        },
-        // triggered when optionsCombo value changes
-        updateOptions: function () {
-            var ui = teacss.ui;
-            var value = this.optionsCombo.value;
-            
-            var theme = value.theme || 'default';
-            $("body").attr("class","cm-s-"+theme);
-            
-            // apply indent settings to CodeMirror defaults and opened editors
-            CodeMirror.defaults.tabSize = value.tabSize;
-            CodeMirror.defaults.indentUnit = value.tabSize;
-            CodeMirror.defaults.indentWithTabs = value.useTab;
-            
-            for (var t=0;t<ui.codeTab.tabs.length;t++) {
-                var e = ui.codeTab.tabs[t].editor;
-                if (e) {
-                    e.setOption("tabSize",value.tabSize);
-                    e.setOption("indentUnit",value.tabSize);
-                    e.setOption("indentWithTabs",value.useTab);
-                }
-            }             
-            
-            // create dynamic CSS node to reflect fontSize changes for CodeMirror
-            var styles = $("#ideStyles");
-            if (styles.length==0) {
-                styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
-            }
-            styles.html(".CodeMirror {font-size:"+value.fontSize+"px !important; }");
-            for (var t=0;t<ui.codeTab.tabs.length;t++) {
-                var e = ui.codeTab.tabs[t].editor;
-                if (e) e.refresh();
-            }            
         },
         saveTabs: function () {
             var list = [];

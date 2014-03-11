@@ -5,8 +5,10 @@ teacss.ui.codeTab = (function($){
         init: function (options) {
             this._super(options);
 
-            var caption = this.options.file.split("/").pop().split("\\").pop();
-            this.options.caption = caption;
+            if (!this.options.label) {
+                var label = this.options.file.split("/").pop().split("\\").pop();
+                this.options.label = label;
+            }
             
             this.tabs = new teacss.ui.tabPanel({width:'100%',height:'100%'});
             this.tabs.element
@@ -114,6 +116,10 @@ teacss.ui.codeTab = (function($){
             if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'application/x-httpd-php';
             if (ext=="md") mode = "gfm";
             if (ext=="java") mode = "text/x-java";
+            if (ext=="h") mode = "text/x-c++hdr";
+            if (ext=="c") mode = "text/x-c++src";
+            if (ext=="cc") mode = "text/x-c++src";
+            if (ext=="cpp") mode = "text/x-c++src";
             
             var editorOptions = {
                 value:data,
@@ -214,6 +220,7 @@ teacss.ui.codeTab = (function($){
                     me.changed = false;
                     tab.removeClass("changed");
                     me.editorPanel.trigger("codeSaved",me);
+                    me.trigger("codeSaved");
                     if (me.callback) me.callback();
                     if (cb) cb(true);
                 } else {

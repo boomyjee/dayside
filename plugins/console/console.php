@@ -28,7 +28,7 @@ $realm = 'Console';
 
 // Start with this dir.
 //$currentDir = __DIR__;
-$allowChangeDir = true;
+$allowChangeDir = false;
 
 // Allowed and denied commands.
 $allow = array();
