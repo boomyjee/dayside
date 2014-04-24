@@ -120,6 +120,7 @@ teacss.ui.codeTab = (function($){
             if (ext=="c") mode = "text/x-c++src";
             if (ext=="cc") mode = "text/x-c++src";
             if (ext=="cpp") mode = "text/x-c++src";
+            if (ext=="py") mode = "python";
             
             var editorOptions = {
                 value:data,
