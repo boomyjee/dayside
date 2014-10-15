@@ -59,7 +59,7 @@ class Listener implements SocketListener {
     public function auth($cookies) {
         global $params;
         $authInclude = @$params['authInclude'] ? : __DIR__."/../../../server/api.php";
-        $authFunction = @$params['authFunction'] ? : array('\FileApi','realtime_auth');
+        $authFunction = @$params['authFunction'] ? : array('\FileApi','remote_auth');
         
         require_once $authInclude;
         return call_user_func($authFunction,$cookies);

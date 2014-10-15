@@ -413,9 +413,13 @@ class FileApi {
         echo $retdata;
     }
     
-    function xdebug_path() {
+    function real_path() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         echo json_encode(array('path'=>$path));
+    }    
+    
+    function xdebug_path() {
+        $this->real_path();
     }    
     
     function console($commands=false,$theme=false) {
@@ -434,7 +438,7 @@ class FileApi {
         require __DIR__."/../plugins/console/console.php";
     }
     
-    static function realtime_auth($cookies) {
+    static function remote_auth($cookies) {
         $password_path = __DIR__."/password.php";
         $fileapi_hash = false;
         if (file_exists($password_path)) include $password_path;
@@ -447,10 +451,20 @@ class FileApi {
         $server_path = realpath(__DIR__."/../plugins/realtime/server/server.php"); 
         $params = @$this->realtimeParams ?: array(
             'authInclude' =>  __FILE__,
-            'authFunction' => array('\FileApi','realtime_auth')
+            'authFunction' => array('\FileApi','remote_auth')
         );
         $params['ip'] = $_SERVER['SERVER_ADDR'];
         $params = escapeshellarg(json_encode($params));
         echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
+    }
+    
+    function codeintel_start() {
+        $server_path = realpath(__DIR__."/../../daysideCodeintel/server/server.py"); 
+        $params = @$this->codeintelParams ?: array(
+            'authInclude' =>  __FILE__,
+            'authFunction' => array('\FileApi','remote_auth')
+        );
+        $params = escapeshellarg(json_encode($params));
+        echo shell_exec("python ".$server_path." restart ".$params." 2>&1");
     }
 }
