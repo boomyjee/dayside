@@ -40,7 +40,7 @@ class XDebugServer {
         $this->lastClient = time();
         
         $this->apiPaths = array();
-        $this->apiPaths[realpath(__DIR__."/../../../")] = 1;
+        $this->apiPaths[realpath(__DIR__."/../../../")."/"] = 1;
     }
     
     function loop() {
@@ -157,6 +157,8 @@ class XDebugServer {
         $sock = socket_accept($server_sock);
         $buf = socket_read($sock,5000);
         
+        echo $buf;
+        
         if (strstr($buf, "<init ")===false)
         {
             debug("PROXY", "Not an init packet?");
@@ -179,7 +181,6 @@ class XDebugServer {
         }
         list(,$k) = explode(' fileuri="', $buf, 2);
         list($uri,) = explode('"', $k, 2);
-        
         
         $uri = realpath(substr($uri,strlen("file://")));
         foreach ($this->apiPaths as $path=>$flag) {

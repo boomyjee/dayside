@@ -115,7 +115,7 @@ var watchPanel = ui.panel.extend({
         function json_data(list,data,depth) {
             depth = depth || 0;
             var res = {};
-            if (data) {
+            if (data && data.fullname) {
                 res.data = data.fullname;
                 res.attr = { id: 'id_'+data.fullname.replace(/[^0-9a-zA-Z]/g, "__") };
                 if (data.value) {
@@ -393,7 +393,7 @@ dayside.plugins.xdebug = teacss.jQuery.Class.extend({
         me.send("stop");
         me.disconnect();
         me.setReadOnly(false);
-        teacss.jQuery(".xdebug-current").removeClass("xdebug-current");
+        me.clearCurrent();
         me.debugCurrent = false;
         teacss.jQuery.cookie('XDEBUG_SESSION', null, { path: '/' });
         me.controlButtons.hide();
@@ -545,14 +545,21 @@ dayside.plugins.xdebug = teacss.jQuery.Class.extend({
         });                
     },
     
+    clearCurrent: function () {
+        var me = this;
+        if (me.debugCurrent) {
+            me.debugCurrent.editor.removeLineClass(me.debugCurrent.line,"background","xdebug-current");
+        }
+    },
+    
     breakOn: function (file,line,debug) {
         var me = this;
         var tab = dayside.editor.selectFile(file);
         function selectLine() {
             if (debug) {
-                teacss.jQuery(".xdebug-current").removeClass("xdebug-current");
-                teacss.jQuery(tab.editor.getWrapperElement()).find(".CodeMirror-code").children().eq(line).addClass("xdebug-current");
-                me.debugCurrent = {file:file,line:line};
+                me.clearCurrent();
+                tab.editor.addLineClass(line,"background","xdebug-current");
+                me.debugCurrent = {file:file,line:line,editor:tab.editor};
                 me.send("stack_get");
                 me.send("context_get");
             }
