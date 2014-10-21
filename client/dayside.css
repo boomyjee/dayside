@@ -1736,6 +1736,18 @@ THE SOFTWARE.
 #teacss-layer {
     position: absolute;
 }
+.teacss-ui .file-search-tab {
+    overflow: auto;
+}
+.teacss-ui .file-search-tab a {
+    display: block;
+    text-decoration: none;
+    padding: 3px 5px;
+    outline: none;
+}
+.teacss-ui .file-search-tab a:hover {
+    background: #eee;
+}
 .teacss-ui .ui-drop-icons {
     position: absolute;
     left: 50%;
