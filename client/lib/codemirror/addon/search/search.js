@@ -60,10 +60,11 @@
   }
   var queryDialog =
     'Search: <input type="text" style="width: 10em"/> <span style="color: #888">(Use /re/ syntax for regexp search)</span>';
-  function doSearch(cm, rev) {
+  function doSearch(cm, rev, query) {
     var state = getSearchState(cm);
     if (state.query) return findNext(cm, rev);
-    dialog(cm, queryDialog, "Search for:", cm.getSelection(), function(query) {
+      
+    function f(query) {
       cm.operation(function() {
         if (!query || state.query) return;
         state.query = parseQuery(query);
@@ -73,7 +74,9 @@
         state.posFrom = state.posTo = cm.getCursor();
         findNext(cm, rev);
       });
-    });
+    }
+    if (query) return f(query);
+    dialog(cm, queryDialog, "Search for:", cm.getSelection(), f);
   }
   function findNext(cm, rev) {cm.operation(function() {
     var state = getSearchState(cm);

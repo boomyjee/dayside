@@ -201,6 +201,17 @@ teacss.ui.filePanel = (function($){
                                     "refresh": {label:"Refresh",separator_before:true,action:function(){
                                          me.tree.jstree('refresh',node);
                                     }},
+                                    "search": {
+                                        label:'Search files',
+                                        separator_before: false,
+                                        action: function () {
+                                            if (!me.searchDialog) {
+                                                me.searchDialog = teacss.ui.searchDialog();
+                                            }
+                                            me.searchDialog.open(path,me.tree,node);                                            
+                                        }
+                                    },
+
                                     "upload": {label:"Upload",separator_before:true,action:function(){
                                         if (!me.uploadDialog) {
                                             me.uploadDialog = teacss.ui.uploadDialog({

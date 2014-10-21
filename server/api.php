@@ -294,6 +294,54 @@ class FileApi {
             unlink($zip_file_name);
     }        
     
+    function fileSearch() {
+        $url = @$_REQUEST['path'];
+        $path = $this->_pathFromUrl($url);
+        $mask = @$_REQUEST['mask'];
+        $text = @$_REQUEST['text'];
+        
+        if (!$path || !is_dir($path)) { echo "ERROR: Invalid directory path"; die(); }
+        
+        $res = array();
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
+            $path,\RecursiveDirectoryIterator::SKIP_DOTS),\RecursiveIteratorIterator::CHILD_FIRST);
+        
+        foreach ($iterator as $sub) {
+            if (!$sub->isDir()) {
+                $basename = $sub->getBasename();
+                if (!$mask || fnmatch($mask,$basename)) {
+                    $sub_path = $sub->__toString();
+                    if ($text) {
+                        $valid = false;
+                        $handle = fopen($sub_path, 'r');
+                        while (($buffer = fgets($handle,4096)) !== false) {
+                            if (strpos($buffer, $text) !== false) {
+                                $valid = true;
+                                break;
+                            }      
+                        }
+                        fclose($handle);                           
+                    } else {
+                        $valid = true;
+                    }
+                    
+                    if ($valid) {
+                        $sub_url = str_replace($path,$url,$sub_path);
+                        $res[] = $sub_url;
+                    }
+                }
+            }
+        }
+        echo json_encode(array(
+            'files' => $res,
+            'finished' => true,
+            'from' => array(
+                'file' => 'a/b/c',
+                'pos' => 222
+            )
+        ));        
+    }
+    
     function batch() {
         $res = array();
         $url = @$_REQUEST['path'];

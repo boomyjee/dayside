@@ -27096,7 +27096,7 @@ return $.widget( "ui.tooltip", {
 			inAction,
 			charMin = 65,
 			visible,
-			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue"><div></div></div><div class="colorpicker_new_color"></div><div class="colorpicker_current_color"></div><div class="colorpicker_hex"><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_g colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_h colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_s colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_a colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_submit"></div></div>',
+			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue"><div></div></div><div class="colorpicker_new_color"></div><div class="colorpicker_current_color"></div><div class="colorpicker_hex"><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_g colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_h colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_s colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_hsb_b colorpicker_field"><input type="text" maxlength="3" size="3" /><span></span></div><div class="colorpicker_rgb_a colorpicker_field"><input type="text" maxlength="4" size="3" /><span></span></div><div class="colorpicker_submit"></div></div>',
 			defaults = {
 				eventName: 'click',
 				onShow: function () {},
@@ -27248,6 +27248,8 @@ return $.widget( "ui.tooltip", {
 				current.preview = current.cal.data('colorpicker').livePreview;
 				$(document).bind('mouseup', current, upHue);
 				$(document).bind('mousemove', current, moveHue);
+                ev.data = current;
+                moveHue(ev);
 			},
 			moveHue = function (ev) {
 				change.apply(
@@ -27486,9 +27488,11 @@ return $.widget( "ui.tooltip", {
 				fillRGBFields(col, cal.get(0));
 				fillHexFields(col, cal.get(0));
 				fillHSBFields(col, cal.get(0));
-				setSelector(col, cal.get(0));
+				setSelector(col, cal.get(0),alpha);
 				setHue(col, cal.get(0));
 				setNewColor(col, cal.get(0),alpha);
+                
+                change.apply(cal.data('colorpicker').fields.eq(0)[0],[true]);
 			};
 		return {
 			init: function (opt) {
@@ -27544,7 +27548,7 @@ return $.widget( "ui.tooltip", {
 						fillHexFields(options.color, cal.get(0));
                         fillAlphaField(options.alpha, cal.get(0));
 						setHue(options.color, cal.get(0));
-						setSelector(options.color, cal.get(0));
+						setSelector(options.color, cal.get(0),options.alpha);
 						setCurrentColor(options.color, cal.get(0),options.alpha);
 						setNewColor(options.color, cal.get(0),options.alpha);
 						if (options.flat) {
@@ -27586,14 +27590,17 @@ return $.widget( "ui.tooltip", {
 					if ($(this).data('colorpickerId')) {
 						var cal = $('#' + $(this).data('colorpickerId'));
 						cal.data('colorpicker').color = col;
+                        cal.data('colorpicker').alpha = alpha;
 						cal.data('colorpicker').origColor = col;
                         cal.data('colorpicker').origAlpha = alpha;
 
 						fillRGBFields(col, cal.get(0));
 						fillHSBFields(col, cal.get(0));
 						fillHexFields(col, cal.get(0));
+                        fillAlphaField(alpha,cal.get(0));
+                        
 						setHue(col, cal.get(0));
-						setSelector(col, cal.get(0));
+						setSelector(col, cal.get(0),alpha);
 						setCurrentColor(col, cal.get(0),alpha);
 						setNewColor(col, cal.get(0),alpha);
 					}
@@ -27881,8 +27888,8 @@ $.widget("ui.sortable", $.extend({}, $.ui.sortable.prototype, {
 
 			if(itemElement != this.currentItem[0] //cannot intersect with itself
 				&&	this.placeholder[intersection == 1 ? "next" : "prev"]()[0] != itemElement //no useless actions that have been done before
-				&&	!$.ui.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
-				&& (this.options.type == 'semi-dynamic' ? !$.ui.contains(this.element[0], itemElement) : true)
+				&&	!$.contains(this.placeholder[0], itemElement) //no action if the item moved is the parent of the item checked
+				&& (this.options.type == 'semi-dynamic' ? !$.contains(this.element[0], itemElement) : true)
 				//&& itemElement.parentNode == this.placeholder[0].parentNode // only rearrange items within the same container
                 && this._allowDrop(itemElement, (intersection == 1 ? "down" : "up"))
 			) {
@@ -28094,7 +28101,7 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         this.registerItems(f);
     },
     
-    registerItems: function (f) {
+    registerItems: function (f,skipSetValue) {
         this.newItems = [];
         var old_active = teacss.ui.form.activeForm;
         teacss.ui.form.activeForm = this;
@@ -28103,11 +28110,11 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         
         for (var i=0;i<this.newItems.length;i++) {
             var item = this.newItems[i];
-            this.registerItem(item);
+            this.registerItem(item,skipSetValue);
         }        
     },
     
-    registerItem: function(item) {
+    registerItem: function(item,skipSetValue) {
         if (item.form) return;
         var me = this;
         me.items.push(item);
@@ -28115,7 +28122,7 @@ teacss.ui.form = teacss.ui.Form = teacss.ui.eventTarget.extend({
         item.trigger("formRegister");
         if (item.options.name!==undefined) {
             item.change(function(){ me.itemChanged(this); });
-            item.setValue(me.prop(item.options.name));
+            if (!skipSetValue) item.setValue(me.prop(item.options.name));
         }
         if (item.options.formChange) {
             item.options.formChange.call(item,false,'',me.value);
@@ -28228,7 +28235,7 @@ teacss.ui.colorPicker = teacss.ui.Colorpicker = teacss.ui.Control.extend("teacss
                     me.setValue(me.value);
                 },
                 onChange: function (hsb, hex, rgb, alpha) {
-                    el = teacss.jQuery(this).data("colorpicker").el;
+                    var el = teacss.jQuery(this).data("colorpicker").el;
                     var color = teacss.Color.functions.rgba(rgb.r,rgb.g,rgb.b,alpha);
                     var s_color = color.toString();
                     teacss.jQuery(el).css("background",s_color);
@@ -28237,9 +28244,12 @@ teacss.ui.colorPicker = teacss.ui.Colorpicker = teacss.ui.Control.extend("teacss
                     me.value = s_color;
                     me.change();
                 }
-            })
-            teacss.jQuery('#' + teacss.jQuery(me.colorDiv).data('colorpickerId')).mousedown(function(e){
+            });
+            
+            var cid = teacss.jQuery(me.colorDiv).data('colorpickerId');
+            teacss.jQuery('#' + cid).mousedown(function(e){
                 e.stopPropagation();
+                if ($(e.target).is("input")) return;
                 return false;
             })
         })
@@ -28410,8 +28420,10 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
             if (options.panelClass) me.itemPanel.addClass(options.panelClass);
 
             setTimeout(function(){
+                if (!teacss.jQuery.isFunction(me.items)) me.refresh();
                 me.itemsArray();
                 me.trigger("open");
+                me.trigger("opened");
                 me.selected_on_open = me.selected;
                 me.setSelected();
                 me.bind("setValue",function(value){
@@ -28482,6 +28494,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
                 });
                 
                 me.setSelected();
+                me.trigger("opened");
             });
         this.updateLabel();
 
@@ -28623,6 +28636,7 @@ teacss.ui.combo = teacss.ui.Combo = teacss.ui.Control.extend("teacss.ui.Combo",{
     },
     hide : function(e) {
         this.panel.css("display","none");
+        this.trigger("hide");
     }
 });
 // TODO: Tick marks for slider
@@ -28714,11 +28728,12 @@ teacss.ui.panel = teacss.ui.Panel = teacss.ui.Control.extend("teacss.ui.Panel",{
             'text-align':'left',
             items: [],
             elementTag: "div",
-            padding: 0
+            padding: 0,
+            display: "inline-block"
         },options));
         this.element = teacss.jQuery("<"+this.options.elementTag+">")
             .css({
-                display: 'inline-block',
+                display: this.options.display,
                 width: this.options.width,
                 height: this.options.height,
                 'text-align': this.options['text-align'],
@@ -28838,26 +28853,44 @@ teacss.ui.check = teacss.ui.Check = teacss.ui.Control.extend("teacss.ui.Check",{
     },
     init : function(options) {
         var me = this;
-        this._super(options);
+        var $ = teacss.jQuery;
+        this._super($.extend({
+            showCheckbox: true
+        },options));
         this.value = options.value || false;
 
-        this.element = teacss.jQuery("<label>")
+        this.element = teacss.jQuery("<label for='check_input'>")
             .css({
                 display: (me.options.width=='100%') ? 'block' : 'inline-block',
                 'vertical-align':'bottom',
                 width: me.options.width=='100%' ? 'auto' : me.options.width,
+                height: me.options.height,
                 margin: me.options.margin
             })
             .append(
-                teacss.jQuery("<input type='checkbox'>"),
-                '&nbsp;',
                 me.options.label
-            )
-            .button({
-                icons:this.options.icons
-            })
+            );
+        
 
-        me.input = this.element.find("input")
+        me.checkbox = teacss.jQuery("<input type='checkbox' id='check_input'>");
+        
+        var cnt = this.Class.cnt = (this.Class.cnt || 0)+1;
+        
+        me.element.appendTo("body").attr("for","check_input_"+cnt);
+        me.checkbox.appendTo("body").attr("id","check_input_"+cnt);
+        
+        me.checkbox.button({
+            icons:this.options.icons
+        });
+
+        me.element.detach();
+        
+        if (me.options.showCheckbox) {
+            me.checkbox.attr("class","")        
+            me.element.find(".ui-button-text").prepend(me.checkbox,"&nbsp;");
+        }
+
+        me.input = me.checkbox
             .change(function(){
                 me.value = this.checked;
                 me.trigger("change");
@@ -28871,6 +28904,50 @@ teacss.ui.check = teacss.ui.Check = teacss.ui.Control.extend("teacss.ui.Check",{
         }
     }
 });
+teacss.ui.radio =  teacss.ui.Radio = teacss.ui.control.extend({
+    init: function (o) {
+        var me = this;
+        this._super($.extend({
+            width: 'auto',
+            height: 'auto',
+            margin: 0,
+            items: []
+        },o));
+        
+        this.element = $("<div>").css({
+            margin: this.options.margin,
+            width: this.options.width,
+            height: this.options.height
+        });
+        
+        var cnt = me.Class.cnt = (me.Class.cnt || 0)+1;
+        var name = me.name = 'radio_input_'+cnt;
+        
+        $.each(this.options.items,function(i,item){
+            me.element.append(
+                $("<label>").append(
+                    $("<input type='radio'>").attr({name:name,value:item.value}).change(function(){
+                        me.trigger("change")
+                    }),
+                    item.label
+                )
+            )
+        });
+    },
+    setValue: function (val) {
+        this._super(val);
+        this.element.find("input").each(function(){
+            if ($(this).val()==val) this.checked = true;
+        });
+    },
+    getValue: function () {
+        var val = undefined;
+        this.element.find("input").each(function(){
+            if (this.checked) val = $(this).val();
+        });
+        return val;
+    }
+});;
 teacss.ui.html = teacss.ui.Html = teacss.ui.HTML = teacss.ui.Control.extend("teacss.ui.Html",{},{
     init : function(options) {
         this._super(teacss.jQuery.extend({html:""},options));
@@ -28883,11 +28960,12 @@ teacss.ui.button = teacss.ui.Button = teacss.ui.Control.extend("teacss.ui.Button
         var me = this;
         this._super(teacss.jQuery.extend({text:true},options));
         this.element = teacss.jQuery("<button>")
-            .text(me.options.label)
+            .html(me.options.label)
             .css({
                 display: (me.options.width=='100%') ? 'block' : 'inline-block',
                 'vertical-align':'bottom',
                 width: me.options.width=='100%' ? 'auto' : me.options.width,
+                height: me.options.height || 'auto',
                 margin: me.options.margin
             })
             .button({
@@ -29134,10 +29212,10 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
     },
     
     push: function (what) {
-        if (what instanceof teacss.ui.Control) {
+        if (arguments.length==1 && what instanceof teacss.ui.Control) {
             this.addTab(what);
         } else {
-            this._super(what);
+            this._super.apply(this,arguments);
         }
         return this;
     },
@@ -29163,6 +29241,8 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
     addTab: function (tab,index) {
         if (!(tab instanceof teacss.ui.Control)) tab = teacss.ui.panel(tab);
         var id = 'tab' + teacss.ui.tabPanel.tabIndex++;
+        
+        if (tab.tabPanel) tab.tabPanel.closeTab(tab);
         
         if (tab.options.closable) {
             tabTemplate = "<li><a href='#{href}'>#{label}</a><span class='ui-icon ui-icon-close'>Close</span></li>"
@@ -29257,6 +29337,7 @@ teacss.ui.select = teacss.ui.combo.extend({
 });;
 teacss.ui.text = teacss.ui.Control.extend({
     init: function (o) {
+        var $ = teacss.jQuery;
         o = $.extend({
             width: 100
         },o || {});
@@ -29294,6 +29375,7 @@ teacss.ui.text = teacss.ui.Control.extend({
 
 teacss.ui.textarea = teacss.ui.Control.extend({
     init: function (o) {
+        var $ = teacss.jQuery;
         o = $.extend({
             height: 200
         },o || {});
@@ -29400,7 +29482,7 @@ teacss.ui.switcher = teacss.ui.control.extend({
                         value: type
                     })
                 });
-                me.select = teacss.ui.select({items:items,width:'100%',name:"type",preview:false});
+                me.select = teacss.ui.select({items:items,width:'100%',name:"type",preview:false,margin:0});
                 
                 var selectChange = function() {
                     $.each(me.panelList,function(){
@@ -29474,7 +29556,7 @@ teacss.ui.switcherCombo = teacss.ui.combo.extend({
             types: false,
             repository: false,
             labelPlain: label,
-            labelTpl: label + ": <span class='button-label'>${value?value.type:''}</span>",
+            labelTpl: label + ": <span class='button-label'>${value?value.type:'default'}</span>",
             items: function () {
                 var switcher = this.switcher = teacss.ui.switcher({
                     types:this.options.types,
@@ -29532,7 +29614,7 @@ teacss.ui.composite = teacss.ui.panel.extend({
         
         var items = o.items;
         this._super($.extend({
-            width: '100%', margin: 0, table: false, skipForm: false
+            width: '100%', margin: 0, table: false, skipForm: false, tableLabelWidth: false
         },o,{items:[]}));
         this.options.items = items;
         
@@ -29598,10 +29680,13 @@ teacss.ui.composite = teacss.ui.panel.extend({
                     }
                     
                     if (me.table) {
+                        var labelTd;
                         me.table.append($("<tr>").append(
-                            $("<td class='ui-composite-label'>").append(tableLabel ? tableLabel.element : null),                        
+                            labelTd = $("<td class='ui-composite-label'>").append(tableLabel ? tableLabel.element : null),                        
                             $("<td class='ui-composite-control'>").append(ctl.element)
                         ));
+                        if (me.options.tableLabelWidth)
+                            labelTd.css({width:me.options.tableLabelWidth});
                         
                         if (cls == teacss.ui.switcher && allObjs) {
                             $.each(ctl.panelList,function(){
@@ -29712,7 +29797,7 @@ teacss.ui.repeater = teacss.ui.panel.extend({
     
     addElement: function (val) {
         val = val || {};
-        var el = teacss.ui.composite({items:this.options.items,table:this.options.table});
+        var el = teacss.ui.composite({items:this.options.items,table:this.options.table,layout:this.options.layout});
         el.setValue(val);
         var me = this;
         el.bind("change",function(){
@@ -29789,4 +29874,46 @@ teacss.ui.repeater = teacss.ui.panel.extend({
         });
         if (first) first.select();
     }
+});
+
+teacss.ui.tableRepeater = teacss.ui.repeater.extend({
+    init: function (o) {
+        var $ = teacss.jQuery;
+        this._super($.extend({
+            layout: { margin: 0, width:"100%"}
+        },o));
+        
+        var table = $("<table>").addClass('ui-repeater-container');
+        this.container.replaceWith(table);
+        
+        var tr = $("<tr>").addClass('ui-repeater-item-row').appendTo(table);
+        $.each(this.options.items,function(i,item){
+            tr.append(
+                $("<th>").text(item.tableLabel || "")
+            )
+        });
+        tr.append("<th></th>");
+        
+        this.container = $("<tbody>").appendTo(table);
+    },
+    itemTemplate: function (el) {
+        var $ = teacss.jQuery;
+        var me = this;
+        var closeLink = $("<a href='#' class='ui-icon ui-icon-close'>").click(function(e){
+            e.preventDefault();
+            me.removeElement(el);
+            me.trigger("change");
+        });        
+        
+        var ret = $("<tr>").addClass('ui-repeater-item-row');
+        $.each(el.items,function(){
+            ret.append(
+                $("<td>").append(this.element)
+            );
+        });
+        ret.append(
+            $("<td>").append(closeLink)
+        );
+        return ret;
+    }    
 });
