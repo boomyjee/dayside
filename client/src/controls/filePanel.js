@@ -310,7 +310,7 @@ teacss.ui.filePanel = (function($){
                         },
                         "del": function () {
                             if (confirm('Sure to delete files?')) {
-                                this.remove(this.data.ui.hovered || this._get_node(null));
+                                me.tree.jstree("remove");
                             }
                         }
                     },
