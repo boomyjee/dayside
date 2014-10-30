@@ -6,30 +6,44 @@
     
     var extensions = {
         js: {
+            proxy: false,
             pre: function (path,callback,async) {
-                getFile(path,function(text){
-                    if (text===false) {
-                        throw "Could not load module on path "+path;
-                        callback(false);
-                        return;
-                    }
-                    var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
-                    var deps = {}, count = 0;
-                    
-                    while (m=r.exec(text)) {
-                        deps[resolve(m[2],path)] = 1;
-                        count++;
-                    }
-                    
-                    var loaded = 0;
-                    for (var key in deps) {
-                        extensions.js.pre(key,function(){
-                            loaded++;
-                            if (loaded==count) callback(text);
-                        },async);
-                    }
-                    if (count==0) callback(text);
-                },async);                
+                if (cache.files[path]) return callback();
+                if (extensions.js.proxy) {
+                    getFile(extensions.js.proxy+"?url="+encodeURIComponent(path),function(text){
+                        var ret = JSON.parse(text);
+                        for (var key in ret) {
+                            var text = ret[key];
+                            if (text===false) throw "Proxy could not load module on path "+path;
+                            cache.files[key] = text;
+                        }
+                        callback();
+                    });
+                } else {
+                    getFile(path,function(text){
+                        if (text===false) {
+                            throw "Could not load module on path "+path;
+                            callback(false);
+                            return;
+                        }
+                        var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
+                        var deps = {}, count = 0;
+
+                        while (m=r.exec(text)) {
+                            deps[resolve(m[2],path)] = 1;
+                            count++;
+                        }
+
+                        var loaded = 0;
+                        for (var key in deps) {
+                            extensions.js.pre(key,function(){
+                                loaded++;
+                                if (loaded==count) callback(text);
+                            },async);
+                        }
+                        if (count==0) callback(text);
+                    },async);
+                }
             },
             get: function (path,callback) {
                 var js = "";

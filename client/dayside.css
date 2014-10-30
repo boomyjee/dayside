@@ -444,6 +444,62 @@
   color: #29739b;
   background: rgba(194,224,240,0.5);
 }
+.dark-ui .teacss-ui .ui-tabs-nav li.changed a { color: #ccc; }
+
+.dark-ui .jstree-default.jstree-focused > ul { background: transparent; }
+.dark-ui .jstree-default a { color: #e0e0e0; }
+.dark-ui .jstree-default .jstree-clicked { background: #6A9FB5; border-color: transparent; }
+.dark-ui .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
+.dark-ui .jstree-default ins {
+    background-image: url(lib/codemirror/theme/../../jstree/themes/default/d-dark.png);
+}
+
+.dark-ui .jstree li.hidden > a, 
+.dark-ui .jstree li.hidden > a > .jstree-icon:after
+{
+    color: #ccc;
+}
+
+.dark-ui .teacss-ui .ui-state-default a {
+    color: #999;
+}
+
+.dark-ui .teacss-ui .ui-widget-content a {
+    color: #aaa;
+}
+
+.dark-ui .teacss-ui .file-search-tab a:hover {
+    color: #333;
+}
+
+.dark-ui .teacss-ui .ui-state-default, 
+.dark-ui .teacss-ui .ui-widget-content .ui-state-default, 
+.dark-ui .teacss-ui .ui-widget-header .ui-state-default {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .ui-state-active, 
+.dark-ui .teacss-ui .ui-widget-content .ui-state-active, 
+.dark-ui .teacss-ui .ui-widget-header .ui-state-active {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .ui-state-active a {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .button-select-panel {
+    color: #e0e0e0;
+    border-color: transparent;
+}
+
+.dark-ui .teacss-ui .icon-button span.ui-button-text {
+    background:  transparent;
+}
+
+.dark-ui .teacss-ui .combo-item.selected {
+    background: rgba(255,119,0,0.3) !important;
+}
 /*
 
     Name:       3024 day
@@ -453,6 +509,11 @@
     Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16)
 
 */
+
+.cm-s-3024-day .jstree-default.jstree-focused > ul, 
+.cm-s-3024-day .jstree-default.jstree-focused {
+    background-color: #F7F7F7;
+}
 
 .cm-s-3024-day .CodeMirror {background: #f7f7f7; color: #3a3432;}
 .cm-s-3024-day div.CodeMirror-selected {background: #d6d5d4 !important;}
@@ -466,7 +527,7 @@
 
 .cm-s-3024-day span.cm-property, .cm-s-3024-day span.cm-attribute {color: #01a252;}
 .cm-s-3024-day span.cm-keyword {color: #db2d20;}
-.cm-s-3024-day span.cm-string {color: #fded02;}
+.cm-s-3024-day span.cm-string {color: #7E6E00;}
 
 .cm-s-3024-day span.cm-variable {color: #01a252;}
 .cm-s-3024-day span.cm-variable-2 {color: #01a0e4;}
@@ -600,73 +661,6 @@
 
 */
 
-.cm-s-base16-dark {background:#151515;}
-.cm-s-base16-dark > .teacss-ui {background:#151515;}
-.cm-s-base16-dark .teacss-ui .ui-tabs-nav li.changed a { color: #ccc; }
-
-.cm-s-base16-dark .jstree-default.jstree-focused {background:#151515;}
-.cm-s-base16-dark .jstree-default.jstree-focused > ul { background: transparent; }
-.cm-s-base16-dark .ui-splitter { background: #333 !important; }
-.cm-s-base16-dark .jstree-default a { color: #e0e0e0; }
-.cm-s-base16-dark .jstree-default .jstree-clicked { background: #6A9FB5; border-color: transparent; }
-.cm-s-base16-dark .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
-.cm-s-base16-dark .jstree-default ins {
-    background-image: url(lib/codemirror/theme/../../jstree/themes/default/d-dark.png);
-}
-
-.cm-s-base16-dark .jstree li.hidden > a, 
-.cm-s-base16-dark .jstree li.hidden > a > .jstree-icon:after
-{
-    color: #ccc;
-}
-
-.cm-s-base16-dark .teacss-ui .ui-state-default, 
-.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, 
-.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
-    background: #333;
-    border-color: #333;
-}
-
-.cm-s-base16-dark .teacss-ui .ui-state-default a {
-    color: #999;
-}
-
-.cm-s-base16-dark .teacss-ui .ui-state-default, 
-.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, 
-.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
-    color: #e0e0e0;
-}
-
-.cm-s-base16-dark .teacss-ui .ui-state-active, 
-.cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-active, 
-.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active {
-    background: #151515;
-    border-color: #151515;
-    color: #e0e0e0;
-}
-
-.cm-s-base16-dark .teacss-ui .ui-state-active a {
-    color: #e0e0e0;
-}
-
-.cm-s-base16-dark .teacss-ui .editorPanel-toolbar {
-    background: #222;
-}
-
-.cm-s-base16-dark .teacss-ui .button-select-panel {
-    background: #151515;
-    color: #e0e0e0;
-    border-color: transparent;
-}
-
-.cm-s-base16-dark .teacss-ui .icon-button span.ui-button-text {
-    background:  transparent;
-}
-
-.cm-s-base16-dark .teacss-ui .combo-item.selected {
-    background: rgba(255,119,0,0.3) !important;
-}
-
 .cm-s-base16-dark .CodeMirror {background: #151515; color: #e0e0e0;}
 .cm-s-base16-dark div.CodeMirror-selected {background: #202020 !important;}
 .cm-s-base16-dark .CodeMirror-gutters {background: #151515; border-right: 0px;}
@@ -702,6 +696,11 @@
 
 */
 
+.cm-s-3024-day .jstree-default.jstree-focused > ul, 
+.cm-s-3024-day .jstree-default.jstree-focused {
+    background-color: #F5F5F5;
+}
+
 .cm-s-base16-light .CodeMirror {background: #f5f5f5; color: #202020;}
 .cm-s-base16-light div.CodeMirror-selected {background: #e0e0e0 !important;}
 .cm-s-base16-light .CodeMirror-gutters {background: #f5f5f5; border-right: 0px;}
@@ -714,7 +713,7 @@
 
 .cm-s-base16-light span.cm-property, .cm-s-base16-light span.cm-attribute {color: #90a959;}
 .cm-s-base16-light span.cm-keyword {color: #ac4142;}
-.cm-s-base16-light span.cm-string {color: #f4bf75;}
+.cm-s-base16-light span.cm-string {color: #8E590F;}
 
 .cm-s-base16-light span.cm-variable {color: #90a959;}
 .cm-s-base16-light span.cm-variable-2 {color: #6a9fb5;}
@@ -1102,7 +1101,7 @@ Ported to CodeMirror by Peter Kroon
 
 .cm-s-paraiso-light span.cm-property, .cm-s-paraiso-light span.cm-attribute {color: #48b685;}
 .cm-s-paraiso-light span.cm-keyword {color: #ef6155;}
-.cm-s-paraiso-light span.cm-string {color: #fec418;}
+.cm-s-paraiso-light span.cm-string {color: #B27800;}
 
 .cm-s-paraiso-light span.cm-variable {color: #48b685;}
 .cm-s-paraiso-light span.cm-variable-2 {color: #06b6ef;}
@@ -1574,7 +1573,7 @@ THE SOFTWARE.
 .cm-s-xq-light span.cm-operator {}
 .cm-s-xq-light span.cm-comment {color: #0080FF; font-style: italic;}
 .cm-s-xq-light span.cm-string {color: red;}
-.cm-s-xq-light span.cm-meta {color: yellow;}
+.cm-s-xq-light span.cm-meta {color: #777700;}
 .cm-s-xq-light span.cm-qualifier {color: grey}
 .cm-s-xq-light span.cm-builtin {color: #7EA656;}
 .cm-s-xq-light span.cm-bracket {color: #cc7;}
@@ -1657,7 +1656,307 @@ THE SOFTWARE.
 .jstree-default .jstree-undetermined a .jstree-checkbox { _background-position:-20px -19px; }
 .jstree-default .jstree-checked a .jstree-checkbox { _background-position:-38px -19px; }
 .jstree-default .jstree-unchecked a .jstree-checkbox { _background-position:-2px -19px; }
-/* IE6 END */.CodeMirror-hints {
+/* IE6 END */.cm-s-base16-dark {
+    background: #151515;
+}
+.cm-s-base16-dark > .teacss-ui, .cm-s-base16-dark .jstree-default.jstree-focused, .cm-s-base16-dark .jstree-default.jstree-focused > ul, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #151515;
+}
+.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #151515;
+}
+.cm-s-base16-dark .teacss-ui .button-select-panel, .cm-s-base16-dark .teacss-ui .editorPanel-toolbar {
+    background: #222222;
+}
+.cm-s-base16-dark .ui-splitter {
+    background: #222222 !important;
+}
+.cm-s-ambiance {
+    background: #202020;
+}
+.cm-s-ambiance > .teacss-ui, .cm-s-ambiance .jstree-default.jstree-focused, .cm-s-ambiance .jstree-default.jstree-focused > ul, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
+    background: #202020;
+}
+.cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #202020;
+}
+.cm-s-ambiance .teacss-ui .button-select-panel, .cm-s-ambiance .teacss-ui .editorPanel-toolbar {
+    background: #2d2d2d;
+}
+.cm-s-ambiance .ui-splitter {
+    background: #2d2d2d !important;
+}
+.cm-s-3024-night {
+    background: #090300;
+}
+.cm-s-3024-night > .teacss-ui, .cm-s-3024-night .jstree-default.jstree-focused, .cm-s-3024-night .jstree-default.jstree-focused > ul, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
+    background: #090300;
+}
+.cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #090300;
+}
+.cm-s-3024-night .teacss-ui .button-select-panel, .cm-s-3024-night .teacss-ui .editorPanel-toolbar {
+    background: #100700;
+}
+.cm-s-3024-night .ui-splitter {
+    background: #100700 !important;
+}
+.cm-s-blackboard {
+    background: #0C1021;
+}
+.cm-s-blackboard > .teacss-ui, .cm-s-blackboard .jstree-default.jstree-focused, .cm-s-blackboard .jstree-default.jstree-focused > ul, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
+    background: #0C1021;
+}
+.cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #0C1021;
+}
+.cm-s-blackboard .teacss-ui .button-select-panel, .cm-s-blackboard .teacss-ui .editorPanel-toolbar {
+    background: #131934;
+}
+.cm-s-blackboard .ui-splitter {
+    background: #131934 !important;
+}
+.cm-s-cobalt {
+    background: #002240;
+}
+.cm-s-cobalt > .teacss-ui, .cm-s-cobalt .jstree-default.jstree-focused, .cm-s-cobalt .jstree-default.jstree-focused > ul, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
+    background: #002240;
+}
+.cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #002240;
+}
+.cm-s-cobalt .teacss-ui .button-select-panel, .cm-s-cobalt .teacss-ui .editorPanel-toolbar {
+    background: #00305a;
+}
+.cm-s-cobalt .ui-splitter {
+    background: #00305a !important;
+}
+.cm-s-erlang-dark {
+    background: #002240;
+}
+.cm-s-erlang-dark > .teacss-ui, .cm-s-erlang-dark .jstree-default.jstree-focused, .cm-s-erlang-dark .jstree-default.jstree-focused > ul, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #002240;
+}
+.cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #002240;
+}
+.cm-s-erlang-dark .teacss-ui .button-select-panel, .cm-s-erlang-dark .teacss-ui .editorPanel-toolbar {
+    background: #00305a;
+}
+.cm-s-erlang-dark .ui-splitter {
+    background: #00305a !important;
+}
+.cm-s-lesser-dark {
+    background: #262626;
+}
+.cm-s-lesser-dark > .teacss-ui, .cm-s-lesser-dark .jstree-default.jstree-focused, .cm-s-lesser-dark .jstree-default.jstree-focused > ul, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #262626;
+}
+.cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #262626;
+}
+.cm-s-lesser-dark .teacss-ui .button-select-panel, .cm-s-lesser-dark .teacss-ui .editorPanel-toolbar {
+    background: #333333;
+}
+.cm-s-lesser-dark .ui-splitter {
+    background: #333333 !important;
+}
+.cm-s-mbo {
+    background: #2C2C2C;
+}
+.cm-s-mbo > .teacss-ui, .cm-s-mbo .jstree-default.jstree-focused, .cm-s-mbo .jstree-default.jstree-focused > ul, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
+    background: #2C2C2C;
+}
+.cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #2C2C2C;
+}
+.cm-s-mbo .teacss-ui .button-select-panel, .cm-s-mbo .teacss-ui .editorPanel-toolbar {
+    background: #393939;
+}
+.cm-s-mbo .ui-splitter {
+    background: #393939 !important;
+}
+.cm-s-midnight {
+    background: #0F192A;
+}
+.cm-s-midnight > .teacss-ui, .cm-s-midnight .jstree-default.jstree-focused, .cm-s-midnight .jstree-default.jstree-focused > ul, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
+    background: #0F192A;
+}
+.cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #0F192A;
+}
+.cm-s-midnight .teacss-ui .button-select-panel, .cm-s-midnight .teacss-ui .editorPanel-toolbar {
+    background: #16243d;
+}
+.cm-s-midnight .ui-splitter {
+    background: #16243d !important;
+}
+.cm-s-monokai {
+    background: #272822;
+}
+.cm-s-monokai > .teacss-ui, .cm-s-monokai .jstree-default.jstree-focused, .cm-s-monokai .jstree-default.jstree-focused > ul, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
+    background: #272822;
+}
+.cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #272822;
+}
+.cm-s-monokai .teacss-ui .button-select-panel, .cm-s-monokai .teacss-ui .editorPanel-toolbar {
+    background: #34362e;
+}
+.cm-s-monokai .ui-splitter {
+    background: #34362e !important;
+}
+.cm-s-night {
+    background: #0A001F;
+}
+.cm-s-night > .teacss-ui, .cm-s-night .jstree-default.jstree-focused, .cm-s-night .jstree-default.jstree-focused > ul, .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
+    background: #0A001F;
+}
+.cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #0A001F;
+}
+.cm-s-night .teacss-ui .button-select-panel, .cm-s-night .teacss-ui .editorPanel-toolbar {
+    background: #120039;
+}
+.cm-s-night .ui-splitter {
+    background: #120039 !important;
+}
+.cm-s-paraiso-dark {
+    background: #2F1E2E;
+}
+.cm-s-paraiso-dark > .teacss-ui, .cm-s-paraiso-dark .jstree-default.jstree-focused, .cm-s-paraiso-dark .jstree-default.jstree-focused > ul, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #2F1E2E;
+}
+.cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #2F1E2E;
+}
+.cm-s-paraiso-dark .teacss-ui .button-select-panel, .cm-s-paraiso-dark .teacss-ui .editorPanel-toolbar {
+    background: #3f283d;
+}
+.cm-s-paraiso-dark .ui-splitter {
+    background: #3f283d !important;
+}
+.cm-s-paraiso-light {
+    background: #E7E9DB;
+}
+.cm-s-paraiso-light > .teacss-ui, .cm-s-paraiso-light .jstree-default.jstree-focused, .cm-s-paraiso-light .jstree-default.jstree-focused > ul, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
+    background: #E7E9DB;
+}
+.cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #E7E9DB;
+}
+.cm-s-paraiso-light .teacss-ui .button-select-panel, .cm-s-paraiso-light .teacss-ui .editorPanel-toolbar {
+    background: #f2f3eb;
+}
+.cm-s-paraiso-light .ui-splitter {
+    background: #f2f3eb !important;
+}
+.cm-s-pastel-on-dark {
+    background: #2C2827;
+}
+.cm-s-pastel-on-dark > .teacss-ui, .cm-s-pastel-on-dark .jstree-default.jstree-focused, .cm-s-pastel-on-dark .jstree-default.jstree-focused > ul, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #2C2827;
+}
+.cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #2C2827;
+}
+.cm-s-pastel-on-dark .teacss-ui .button-select-panel, .cm-s-pastel-on-dark .teacss-ui .editorPanel-toolbar {
+    background: #3a3433;
+}
+.cm-s-pastel-on-dark .ui-splitter {
+    background: #3a3433 !important;
+}
+.cm-s-rubyblue {
+    background: #112435;
+}
+.cm-s-rubyblue > .teacss-ui, .cm-s-rubyblue .jstree-default.jstree-focused, .cm-s-rubyblue .jstree-default.jstree-focused > ul, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
+    background: #112435;
+}
+.cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #112435;
+}
+.cm-s-rubyblue .teacss-ui .button-select-panel, .cm-s-rubyblue .teacss-ui .editorPanel-toolbar {
+    background: #173148;
+}
+.cm-s-rubyblue .ui-splitter {
+    background: #173148 !important;
+}
+.cm-s-the-matrix {
+    background: #000000;
+}
+.cm-s-the-matrix > .teacss-ui, .cm-s-the-matrix .jstree-default.jstree-focused, .cm-s-the-matrix .jstree-default.jstree-focused > ul, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
+    background: #000000;
+}
+.cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #000000;
+}
+.cm-s-the-matrix .teacss-ui .button-select-panel, .cm-s-the-matrix .teacss-ui .editorPanel-toolbar {
+    background: #0d0d0d;
+}
+.cm-s-the-matrix .ui-splitter {
+    background: #0d0d0d !important;
+}
+.cm-s-tomorrow-night-eighties {
+    background: #000000;
+}
+.cm-s-tomorrow-night-eighties > .teacss-ui, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused > ul, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
+    background: #000000;
+}
+.cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #000000;
+}
+.cm-s-tomorrow-night-eighties .teacss-ui .button-select-panel, .cm-s-tomorrow-night-eighties .teacss-ui .editorPanel-toolbar {
+    background: #0d0d0d;
+}
+.cm-s-tomorrow-night-eighties .ui-splitter {
+    background: #0d0d0d !important;
+}
+.cm-s-twilight {
+    background: #141414;
+}
+.cm-s-twilight > .teacss-ui, .cm-s-twilight .jstree-default.jstree-focused, .cm-s-twilight .jstree-default.jstree-focused > ul, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
+    background: #141414;
+}
+.cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #141414;
+}
+.cm-s-twilight .teacss-ui .button-select-panel, .cm-s-twilight .teacss-ui .editorPanel-toolbar {
+    background: #212121;
+}
+.cm-s-twilight .ui-splitter {
+    background: #212121 !important;
+}
+.cm-s-vibrant-ink {
+    background: #002240;
+}
+.cm-s-vibrant-ink > .teacss-ui, .cm-s-vibrant-ink .jstree-default.jstree-focused, .cm-s-vibrant-ink .jstree-default.jstree-focused > ul, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
+    background: #002240;
+}
+.cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #002240;
+}
+.cm-s-vibrant-ink .teacss-ui .button-select-panel, .cm-s-vibrant-ink .teacss-ui .editorPanel-toolbar {
+    background: #00305a;
+}
+.cm-s-vibrant-ink .ui-splitter {
+    background: #00305a !important;
+}
+.cm-s-xq-dark {
+    background: #0A001F;
+}
+.cm-s-xq-dark > .teacss-ui, .cm-s-xq-dark .jstree-default.jstree-focused, .cm-s-xq-dark .jstree-default.jstree-focused > ul, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
+    background: #0A001F;
+}
+.cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
+    border-color: #0A001F;
+}
+.cm-s-xq-dark .teacss-ui .button-select-panel, .cm-s-xq-dark .teacss-ui .editorPanel-toolbar {
+    background: #120039;
+}
+.cm-s-xq-dark .ui-splitter {
+    background: #120039 !important;
+}
+.CodeMirror-hints {
     font-size: 15px;
 }
 .teacss-ui .CodeMirror {

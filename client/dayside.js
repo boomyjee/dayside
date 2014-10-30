@@ -16189,30 +16189,44 @@ jQuery.cookie = function(name, value, options) {
     
     var extensions = {
         js: {
+            proxy: false,
             pre: function (path,callback,async) {
-                getFile(path,function(text){
-                    if (text===false) {
-                        throw "Could not load module on path "+path;
-                        callback(false);
-                        return;
-                    }
-                    var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
-                    var deps = {}, count = 0;
-                    
-                    while (m=r.exec(text)) {
-                        deps[resolve(m[2],path)] = 1;
-                        count++;
-                    }
-                    
-                    var loaded = 0;
-                    for (var key in deps) {
-                        extensions.js.pre(key,function(){
-                            loaded++;
-                            if (loaded==count) callback(text);
-                        },async);
-                    }
-                    if (count==0) callback(text);
-                },async);                
+                if (cache.files[path]) return callback();
+                if (extensions.js.proxy) {
+                    getFile(extensions.js.proxy+"?url="+encodeURIComponent(path),function(text){
+                        var ret = JSON.parse(text);
+                        for (var key in ret) {
+                            var text = ret[key];
+                            if (text===false) throw "Proxy could not load module on path "+path;
+                            cache.files[key] = text;
+                        }
+                        callback();
+                    });
+                } else {
+                    getFile(path,function(text){
+                        if (text===false) {
+                            throw "Could not load module on path "+path;
+                            callback(false);
+                            return;
+                        }
+                        var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
+                        var deps = {}, count = 0;
+
+                        while (m=r.exec(text)) {
+                            deps[resolve(m[2],path)] = 1;
+                            count++;
+                        }
+
+                        var loaded = 0;
+                        for (var key in deps) {
+                            extensions.js.pre(key,function(){
+                                loaded++;
+                                if (loaded==count) callback(text);
+                            },async);
+                        }
+                        if (count==0) callback(text);
+                    },async);
+                }
             },
             get: function (path,callback) {
                 var js = "";
@@ -18277,7 +18291,7 @@ teacss.ui.filePanel = (function($){
                         },
                         "del": function () {
                             if (confirm('Sure to delete files?')) {
-                                this.remove(this.data.ui.hovered || this._get_node(null));
+                                me.tree.jstree("remove");
                             }
                         }
                     },
@@ -18319,11 +18333,34 @@ teacss.ui.filePanel = (function($){
 (function($,ui){
     
 var themes = [
-    'default','3024-day','3024-night','ambiance','base16-dark','base16-light',
-    'blackboard','cobalt','eclipse','elegant','erlang-dark','lesser-dark','mbo','midnight',
-    'monokai','neat','night','paraiso-dark','paraiso-light','pastel-on-dark','rubyblue',
-    'solarized','the-matrix','tomorrow-night-eighties','twilight',
-    'vibrant-ink','xq-dark','xq-light'
+    'default',
+    '3024-day',
+    '3024-night dark-ui',
+    'ambiance dark-ui',
+    'base16-dark dark-ui',
+    'base16-light',
+    'blackboard dark-ui',
+    'cobalt dark-ui',
+    'eclipse',
+    'elegant',
+    'erlang-dark dark-ui',
+    'lesser-dark dark-ui',
+    'mbo dark-ui',
+    'midnight dark-ui',
+    'monokai dark-ui',
+    'neat',
+    'night dark-ui',
+    'paraiso-dark dark-ui',
+    'paraiso-light',
+    'pastel-on-dark dark-ui',
+    'rubyblue dark-ui',
+    'solarized',
+    'the-matrix dark-ui',
+    'tomorrow-night-eighties dark-ui',
+    'twilight dark-ui',
+    'vibrant-ink dark-ui',
+    'xq-dark dark-ui',
+    'xq-light'
 ];    
     
 ui.optionsCombo = teacss.ui.Combo.extend({
@@ -18339,7 +18376,7 @@ ui.optionsCombo = teacss.ui.Combo.extend({
         var panel,check;
         
         var themeOptions = {};
-        $.each(themes,function(t,theme){ themeOptions[theme] = theme; });
+        $.each(themes,function(t,theme){ themeOptions[theme] = theme.split(" ")[0]; });
         
         this.form = ui.form(function(){
             panel = ui.panel({width:"100%",height:'auto',margin:0,padding:"5px 10px 10px"}).push(
@@ -18892,11 +18929,22 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
             }
         },o));
         
-        this.push(
-            teacss.ui.label({value:"Search mask:",width:"100%",margin:"10px 0 5px"}),
-            me.maskInput = teacss.ui.text({width:"100%",margin:"0px 0"}),
-            teacss.ui.label({value:"Contains text:",width:"100%",margin:"10px 0 5px"}),
-            me.textInput = teacss.ui.text({width:"100%",margin:"0px 0"})
+        me.maskInput = teacss.ui.text({width:"100%",margin:"0px 0"});
+        me.textInput = teacss.ui.text({width:"100%",margin:"0px 0"});
+        
+        this.element.append(
+            me.form = $("<form>").append(
+                teacss.ui.label({value:"Search mask:",width:"100%",margin:"10px 0 5px"}).element,
+                me.maskInput.element,
+                teacss.ui.label({value:"Contains text:",width:"100%",margin:"10px 0 5px"}).element,
+                me.textInput.element,
+                $("<input type='submit'>").css({display:"none"})
+            )
+            .submit(function(e){
+                e.preventDefault();
+                me.search();
+                return false;
+            })
         );
         
         me.maskInput.setValue(dayside.storage.get("file-search-mask")||"*.php");
@@ -18921,7 +18969,9 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
             
             $(document).on("click",".file-search-tab a",function(e){
                 e.preventDefault();
-                var link = $(this).text();
+                var link = $(this).attr("data-url");
+                if (!link) return;
+                
                 var tab = dayside.editor.selectFile(link);
                 var text = me.currentParams.text;
                 
@@ -18941,7 +18991,13 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
         }
         me.close();
         
-        me.searchTab.element.empty();  
+        me.searchTab.element.empty();
+        me.searchTab.element.append($("<a>").text("-- Searching --"));
+        
+        var rel = this.path.substring(FileApi.root.length);
+        if (rel[0]=='/') rel = rel.substring(1);
+        me.searchTab.options.label = "Search: /" + rel;
+        
         dayside.editor.mainPanel.addTab(me.searchTab,"file_search","bottom");
         
         dayside.storage.set("file-search-text",me.textInput.getValue());
@@ -18963,12 +19019,19 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
             
             var res = data.data;
             
+            me.searchTab.element.empty();
             $.each(res.files,function(){
-                me.searchTab.element.append($("<a href='#'>").text(this));
+                var rel = this.substring(me.path.length);
+                if (rel[0]=='/') rel = rel.substring(1);
+                me.searchTab.element.append($("<a href='#'>").attr("data-url",this).text(rel));
             });
             
             if (!res.finished) {
                 me.searchRequest($.extend(params,{from:res.from}));
+            } else {
+                if (me.searchTab.element.children().length==0) {
+                    me.searchTab.element.append($("<a>").text("-- Nothing found --"));
+                }
             }
         });
 

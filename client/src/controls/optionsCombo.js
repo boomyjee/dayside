@@ -1,11 +1,34 @@
 (function($,ui){
     
 var themes = [
-    'default','3024-day','3024-night','ambiance','base16-dark','base16-light',
-    'blackboard','cobalt','eclipse','elegant','erlang-dark','lesser-dark','mbo','midnight',
-    'monokai','neat','night','paraiso-dark','paraiso-light','pastel-on-dark','rubyblue',
-    'solarized','the-matrix','tomorrow-night-eighties','twilight',
-    'vibrant-ink','xq-dark','xq-light'
+    'default',
+    '3024-day',
+    '3024-night dark-ui',
+    'ambiance dark-ui',
+    'base16-dark dark-ui',
+    'base16-light',
+    'blackboard dark-ui',
+    'cobalt dark-ui',
+    'eclipse',
+    'elegant',
+    'erlang-dark dark-ui',
+    'lesser-dark dark-ui',
+    'mbo dark-ui',
+    'midnight dark-ui',
+    'monokai dark-ui',
+    'neat',
+    'night dark-ui',
+    'paraiso-dark dark-ui',
+    'paraiso-light',
+    'pastel-on-dark dark-ui',
+    'rubyblue dark-ui',
+    'solarized',
+    'the-matrix dark-ui',
+    'tomorrow-night-eighties dark-ui',
+    'twilight dark-ui',
+    'vibrant-ink dark-ui',
+    'xq-dark dark-ui',
+    'xq-light'
 ];    
     
 ui.optionsCombo = teacss.ui.Combo.extend({
@@ -21,7 +44,7 @@ ui.optionsCombo = teacss.ui.Combo.extend({
         var panel,check;
         
         var themeOptions = {};
-        $.each(themes,function(t,theme){ themeOptions[theme] = theme; });
+        $.each(themes,function(t,theme){ themeOptions[theme] = theme.split(" ")[0]; });
         
         this.form = ui.form(function(){
             panel = ui.panel({width:"100%",height:'auto',margin:0,padding:"5px 10px 10px"}).push(

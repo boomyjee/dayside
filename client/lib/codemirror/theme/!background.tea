@@ -1,0 +1,52 @@
+.bg_color(cls,bg,sec) {
+    @ var color = "#"+bg;
+    @ sec = sec ? "#"+sec : lighten(color,5);
+    
+    .@{'cm-s-'+cls} {
+        background: @color;
+        
+         > .teacss-ui,
+        .jstree-default.jstree-focused,
+        .jstree-default.jstree-focused > ul,
+        .teacss-ui .ui-widget-header .ui-state-active,
+        .teacss-ui .ui-state-default, 
+        .teacss-ui .ui-widget-content .ui-state-default, 
+        .teacss-ui .ui-widget-header .ui-state-default {
+            background: @color;
+        }
+        .teacss-ui .ui-widget-header .ui-state-active,
+        .teacss-ui .ui-state-default, 
+        .teacss-ui .ui-widget-content .ui-state-default, 
+        .teacss-ui .ui-widget-header .ui-state-default {
+            border-color: @color;
+        }
+        .teacss-ui .button-select-panel,
+        .teacss-ui .editorPanel-toolbar {
+            background: @sec;
+        }
+        .ui-splitter { 
+            background: @sec !important; 
+        }
+    }
+}
+
+.bg_color('base16-dark','151515');
+.bg_color('ambiance','202020');
+.bg_color('3024-night','090300','100700');
+.bg_color('blackboard','0C1021');
+.bg_color('cobalt','002240');
+.bg_color('erlang-dark','002240');
+.bg_color('lesser-dark','262626');
+.bg_color('mbo','2C2C2C');
+.bg_color('midnight','0F192A');
+.bg_color('monokai','272822');
+.bg_color('night','0A001F');
+.bg_color('paraiso-dark','2F1E2E');
+.bg_color('paraiso-light','E7E9DB');
+.bg_color('pastel-on-dark','2C2827');
+.bg_color('rubyblue','112435');
+.bg_color('the-matrix','000000');
+.bg_color('tomorrow-night-eighties','000000');
+.bg_color('twilight','141414');
+.bg_color('vibrant-ink','002240');
+.bg_color('xq-dark','0A001F');
