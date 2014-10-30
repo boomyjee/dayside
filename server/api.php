@@ -231,9 +231,30 @@ class FileApi {
             return;
         }
         
-        $fileArray = reset($_FILES);
-        move_uploaded_file($fileArray['tmp_name'],$path."/".$fileArray['name']);
-        echo "SUCCESS\n";
+        $file = reset($_FILES);
+        $file_name = isset($_POST["name"]) ? $_POST["name"] : $file["name"];
+        $target = $path."/".$file_name;
+        
+        $chunk = isset($_POST["chunk"]) ? intval($_POST["chunk"]) : 0;
+        $chunks = isset($_POST["chunks"]) ? intval($_POST["chunks"]) : 0;
+
+        $out = @fopen("{$target}.part", $chunk == 0 ? "wb" : "ab");
+        if ($out) {
+            $in = @fopen($file['tmp_name'], "rb");
+            if ($in) {
+                while ($buff = fread($in, 4096)) fwrite($out, $buff);
+
+                @fclose($in);
+                @fclose($out);
+                @unlink($file['tmp_name']);
+
+                if (!$chunks || $chunk == $chunks - 1) rename("{$target}.part", $target);
+                echo "SUCCESS\n";
+                return;
+            }
+        }
+        @unlink("{$target}.part");
+        echo "ERROR: cannot move uploaded file to target folder";
         return;
     }    
     
