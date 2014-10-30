@@ -18817,8 +18817,8 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
             me.panel.element.plupload({
                 runtimes : 'html5',
                 url : "http://no-url-set",
-                max_file_size : '100mb',
-                chunk_size: '100mb',
+                max_file_size : '10000mb',
+                chunk_size: '500kb',
                 views: {
                     list: true,
                     thumbs: true, // Show thumbs
