@@ -33,6 +33,7 @@ dayside.plugins.console = $.Class.extend({
         
         var id = 'console_'+path.replace(/[^0-9a-zA-Z]/g, "__");
         dayside.editor.mainPanel.addTab(consoleTab,id,"bottom");
+        consoleTab.tabPanel.selectTab(consoleTab);
     }
 });
     
