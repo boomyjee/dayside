@@ -98,6 +98,8 @@ ui.optionsButton = teacss.ui.Button.extend({
     updateOptions: function () {
         var ui = teacss.ui;
         var value = this.value;
+        
+        dayside.editor.trigger("configUpdate",{value:this.value});
 
         var theme = value.theme || 'default';
         $("body").attr("class","cm-s-"+theme);
