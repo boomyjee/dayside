@@ -63,6 +63,9 @@ window.dayside = window.dayside || (function(){
         });        
     }
     
+    // for early events
+    dayside.core = teacss.ui.Control();
+    
     dayside.storage = {
         key: function (key) {
             return "dayside_"+location.href;
