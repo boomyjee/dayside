@@ -61,7 +61,7 @@ ui.optionsButton = teacss.ui.Button.extend({
                 ui.select({name: 'theme', items: themeOptions,width:"100%", comboDirection: 'right', comboHeight: 1000, margin: "-3px 0 0 0" })
             );
             panel.addTab(editorTab);
-            dayside.editor.trigger("configTabsCreated",{tabs:panel});
+            dayside.core.trigger("configTabsCreated",{tabs:panel});
         });
         check.element.css("font-size",10);
 
@@ -92,14 +92,14 @@ ui.optionsButton = teacss.ui.Button.extend({
         dayside.storage.set("options",this.value);
     },
     loadValue: function () {
-        dayside.editor.trigger("configDefaults",{value:this.defaults});
+        dayside.core.trigger("configDefaults",{value:this.defaults});
         this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
     },
     updateOptions: function () {
         var ui = teacss.ui;
         var value = this.value;
         
-        dayside.editor.trigger("configUpdate",{value:this.value});
+        dayside.core.trigger("configUpdate",{value:this.value});
 
         var theme = value.theme || 'default';
         $("body").attr("class","cm-s-"+theme);
