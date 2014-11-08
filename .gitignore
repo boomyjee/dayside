@@ -1,2 +1,5 @@
 # do not track password
 server/password.php
+
+# temp pid file for xdebug
+plugins/xdebug/proxy/proxy.pid
