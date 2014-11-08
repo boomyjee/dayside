@@ -55,7 +55,7 @@ window.dayside = window.dayside || (function(){
             FileApi.auth_error = options.auth_error;
             
             dayside.loaded = false;
-            var editor = window.dayside.editor = new teacss.ui.editorPanel({
+            var editor = new teacss.ui.editorPanel({
                 jupload: options.jupload_url
             });
             dayside.loaded = true;

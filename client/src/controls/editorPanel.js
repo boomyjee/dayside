@@ -207,6 +207,8 @@ teacss.ui.editorPanel = (function($){
             var me = this;
             var ui = teacss.ui;
             
+            window.dayside.editor = me;
+            
             this.mainPanel = ui.dockPanel({});
             this.mainPanel.element.css({position:'absolute',left:0,right:0,top:27,bottom:0,'z-index':1});
             
@@ -235,7 +237,12 @@ teacss.ui.editorPanel = (function($){
                 .css({position:'absolute',left:0,right:0,top:0,padding:""})
                 .addClass("editorPanel-toolbar");
             
-            // options combo with editor and layout options
+            this.loadTabs();
+            
+            this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
+            this.element.css({position:'fixed',left:0,top:0,right:0,bottom:0});
+            
+            // config button
             this.optionsButton = new ui.optionsButton({
                 label:"Config",
                 icons:{primary:'ui-icon-gear'},
@@ -243,11 +250,6 @@ teacss.ui.editorPanel = (function($){
             });
             this.optionsButton.element
                 .appendTo(this.toolbar.element);
-            
-            this.loadTabs();
-            
-            this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
-            this.element.css({position:'fixed',left:0,top:0,right:0,bottom:0});
             
             this.element.appendTo("body").addClass("teacss-ui");
             
