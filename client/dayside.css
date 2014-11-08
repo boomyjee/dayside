@@ -493,6 +493,10 @@
     border-color: transparent;
 }
 
+.dark-ui .teacss-ui .dayside-statusbar {
+    color: #e0e0e0;
+}
+
 .dark-ui .teacss-ui .icon-button span.ui-button-text {
     background:  transparent;
 }
@@ -1665,7 +1669,7 @@ THE SOFTWARE.
 .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #151515;
 }
-.cm-s-base16-dark .teacss-ui .button-select-panel, .cm-s-base16-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-base16-dark .teacss-ui .button-select-panel, .cm-s-base16-dark .teacss-ui .editorPanel-toolbar, .cm-s-base16-dark .teacss-ui .dayside-statusbar {
     background: #222222;
 }
 .cm-s-base16-dark .ui-splitter {
@@ -1680,7 +1684,7 @@ THE SOFTWARE.
 .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #202020;
 }
-.cm-s-ambiance .teacss-ui .button-select-panel, .cm-s-ambiance .teacss-ui .editorPanel-toolbar {
+.cm-s-ambiance .teacss-ui .button-select-panel, .cm-s-ambiance .teacss-ui .editorPanel-toolbar, .cm-s-ambiance .teacss-ui .dayside-statusbar {
     background: #2d2d2d;
 }
 .cm-s-ambiance .ui-splitter {
@@ -1695,7 +1699,7 @@ THE SOFTWARE.
 .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #090300;
 }
-.cm-s-3024-night .teacss-ui .button-select-panel, .cm-s-3024-night .teacss-ui .editorPanel-toolbar {
+.cm-s-3024-night .teacss-ui .button-select-panel, .cm-s-3024-night .teacss-ui .editorPanel-toolbar, .cm-s-3024-night .teacss-ui .dayside-statusbar {
     background: #100700;
 }
 .cm-s-3024-night .ui-splitter {
@@ -1710,7 +1714,7 @@ THE SOFTWARE.
 .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #0C1021;
 }
-.cm-s-blackboard .teacss-ui .button-select-panel, .cm-s-blackboard .teacss-ui .editorPanel-toolbar {
+.cm-s-blackboard .teacss-ui .button-select-panel, .cm-s-blackboard .teacss-ui .editorPanel-toolbar, .cm-s-blackboard .teacss-ui .dayside-statusbar {
     background: #131934;
 }
 .cm-s-blackboard .ui-splitter {
@@ -1725,7 +1729,7 @@ THE SOFTWARE.
 .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #002240;
 }
-.cm-s-cobalt .teacss-ui .button-select-panel, .cm-s-cobalt .teacss-ui .editorPanel-toolbar {
+.cm-s-cobalt .teacss-ui .button-select-panel, .cm-s-cobalt .teacss-ui .editorPanel-toolbar, .cm-s-cobalt .teacss-ui .dayside-statusbar {
     background: #00305a;
 }
 .cm-s-cobalt .ui-splitter {
@@ -1740,7 +1744,7 @@ THE SOFTWARE.
 .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #002240;
 }
-.cm-s-erlang-dark .teacss-ui .button-select-panel, .cm-s-erlang-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-erlang-dark .teacss-ui .button-select-panel, .cm-s-erlang-dark .teacss-ui .editorPanel-toolbar, .cm-s-erlang-dark .teacss-ui .dayside-statusbar {
     background: #00305a;
 }
 .cm-s-erlang-dark .ui-splitter {
@@ -1755,7 +1759,7 @@ THE SOFTWARE.
 .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #262626;
 }
-.cm-s-lesser-dark .teacss-ui .button-select-panel, .cm-s-lesser-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-lesser-dark .teacss-ui .button-select-panel, .cm-s-lesser-dark .teacss-ui .editorPanel-toolbar, .cm-s-lesser-dark .teacss-ui .dayside-statusbar {
     background: #333333;
 }
 .cm-s-lesser-dark .ui-splitter {
@@ -1770,7 +1774,7 @@ THE SOFTWARE.
 .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #2C2C2C;
 }
-.cm-s-mbo .teacss-ui .button-select-panel, .cm-s-mbo .teacss-ui .editorPanel-toolbar {
+.cm-s-mbo .teacss-ui .button-select-panel, .cm-s-mbo .teacss-ui .editorPanel-toolbar, .cm-s-mbo .teacss-ui .dayside-statusbar {
     background: #393939;
 }
 .cm-s-mbo .ui-splitter {
@@ -1785,7 +1789,7 @@ THE SOFTWARE.
 .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #0F192A;
 }
-.cm-s-midnight .teacss-ui .button-select-panel, .cm-s-midnight .teacss-ui .editorPanel-toolbar {
+.cm-s-midnight .teacss-ui .button-select-panel, .cm-s-midnight .teacss-ui .editorPanel-toolbar, .cm-s-midnight .teacss-ui .dayside-statusbar {
     background: #16243d;
 }
 .cm-s-midnight .ui-splitter {
@@ -1800,7 +1804,7 @@ THE SOFTWARE.
 .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #272822;
 }
-.cm-s-monokai .teacss-ui .button-select-panel, .cm-s-monokai .teacss-ui .editorPanel-toolbar {
+.cm-s-monokai .teacss-ui .button-select-panel, .cm-s-monokai .teacss-ui .editorPanel-toolbar, .cm-s-monokai .teacss-ui .dayside-statusbar {
     background: #34362e;
 }
 .cm-s-monokai .ui-splitter {
@@ -1815,7 +1819,7 @@ THE SOFTWARE.
 .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #0A001F;
 }
-.cm-s-night .teacss-ui .button-select-panel, .cm-s-night .teacss-ui .editorPanel-toolbar {
+.cm-s-night .teacss-ui .button-select-panel, .cm-s-night .teacss-ui .editorPanel-toolbar, .cm-s-night .teacss-ui .dayside-statusbar {
     background: #120039;
 }
 .cm-s-night .ui-splitter {
@@ -1830,7 +1834,7 @@ THE SOFTWARE.
 .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #2F1E2E;
 }
-.cm-s-paraiso-dark .teacss-ui .button-select-panel, .cm-s-paraiso-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-paraiso-dark .teacss-ui .button-select-panel, .cm-s-paraiso-dark .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-dark .teacss-ui .dayside-statusbar {
     background: #3f283d;
 }
 .cm-s-paraiso-dark .ui-splitter {
@@ -1845,7 +1849,7 @@ THE SOFTWARE.
 .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #E7E9DB;
 }
-.cm-s-paraiso-light .teacss-ui .button-select-panel, .cm-s-paraiso-light .teacss-ui .editorPanel-toolbar {
+.cm-s-paraiso-light .teacss-ui .button-select-panel, .cm-s-paraiso-light .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-light .teacss-ui .dayside-statusbar {
     background: #f2f3eb;
 }
 .cm-s-paraiso-light .ui-splitter {
@@ -1860,7 +1864,7 @@ THE SOFTWARE.
 .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #2C2827;
 }
-.cm-s-pastel-on-dark .teacss-ui .button-select-panel, .cm-s-pastel-on-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-pastel-on-dark .teacss-ui .button-select-panel, .cm-s-pastel-on-dark .teacss-ui .editorPanel-toolbar, .cm-s-pastel-on-dark .teacss-ui .dayside-statusbar {
     background: #3a3433;
 }
 .cm-s-pastel-on-dark .ui-splitter {
@@ -1875,7 +1879,7 @@ THE SOFTWARE.
 .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #112435;
 }
-.cm-s-rubyblue .teacss-ui .button-select-panel, .cm-s-rubyblue .teacss-ui .editorPanel-toolbar {
+.cm-s-rubyblue .teacss-ui .button-select-panel, .cm-s-rubyblue .teacss-ui .editorPanel-toolbar, .cm-s-rubyblue .teacss-ui .dayside-statusbar {
     background: #173148;
 }
 .cm-s-rubyblue .ui-splitter {
@@ -1890,7 +1894,7 @@ THE SOFTWARE.
 .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #000000;
 }
-.cm-s-the-matrix .teacss-ui .button-select-panel, .cm-s-the-matrix .teacss-ui .editorPanel-toolbar {
+.cm-s-the-matrix .teacss-ui .button-select-panel, .cm-s-the-matrix .teacss-ui .editorPanel-toolbar, .cm-s-the-matrix .teacss-ui .dayside-statusbar {
     background: #0d0d0d;
 }
 .cm-s-the-matrix .ui-splitter {
@@ -1905,7 +1909,7 @@ THE SOFTWARE.
 .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #000000;
 }
-.cm-s-tomorrow-night-eighties .teacss-ui .button-select-panel, .cm-s-tomorrow-night-eighties .teacss-ui .editorPanel-toolbar {
+.cm-s-tomorrow-night-eighties .teacss-ui .button-select-panel, .cm-s-tomorrow-night-eighties .teacss-ui .editorPanel-toolbar, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-statusbar {
     background: #0d0d0d;
 }
 .cm-s-tomorrow-night-eighties .ui-splitter {
@@ -1920,7 +1924,7 @@ THE SOFTWARE.
 .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #141414;
 }
-.cm-s-twilight .teacss-ui .button-select-panel, .cm-s-twilight .teacss-ui .editorPanel-toolbar {
+.cm-s-twilight .teacss-ui .button-select-panel, .cm-s-twilight .teacss-ui .editorPanel-toolbar, .cm-s-twilight .teacss-ui .dayside-statusbar {
     background: #212121;
 }
 .cm-s-twilight .ui-splitter {
@@ -1935,7 +1939,7 @@ THE SOFTWARE.
 .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #002240;
 }
-.cm-s-vibrant-ink .teacss-ui .button-select-panel, .cm-s-vibrant-ink .teacss-ui .editorPanel-toolbar {
+.cm-s-vibrant-ink .teacss-ui .button-select-panel, .cm-s-vibrant-ink .teacss-ui .editorPanel-toolbar, .cm-s-vibrant-ink .teacss-ui .dayside-statusbar {
     background: #00305a;
 }
 .cm-s-vibrant-ink .ui-splitter {
@@ -1950,7 +1954,7 @@ THE SOFTWARE.
 .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
     border-color: #0A001F;
 }
-.cm-s-xq-dark .teacss-ui .button-select-panel, .cm-s-xq-dark .teacss-ui .editorPanel-toolbar {
+.cm-s-xq-dark .teacss-ui .button-select-panel, .cm-s-xq-dark .teacss-ui .editorPanel-toolbar, .cm-s-xq-dark .teacss-ui .dayside-statusbar {
     background: #120039;
 }
 .cm-s-xq-dark .ui-splitter {
@@ -2125,6 +2129,12 @@ THE SOFTWARE.
     margin-right: 5px;
     border: 1px solid #000;
     vertical-align: middle;
+}
+.teacss-ui .dayside-statusbar {
+    background: #eee;
+    font-size: 0.8em;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .teacss-ui .editorPanel-toolbar {
     background: #eee;

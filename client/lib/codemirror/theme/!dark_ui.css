@@ -47,6 +47,10 @@
     border-color: transparent;
 }
 
+.dark-ui .teacss-ui .dayside-statusbar {
+    color: #e0e0e0;
+}
+
 .dark-ui .teacss-ui .icon-button span.ui-button-text {
     background:  transparent;
 }
