@@ -112,6 +112,8 @@ var watchPanel = ui.panel.extend({
         // val = [{fullname:"bla",value:"123"},{fullname:"bla",children:[{fullname:"123",value:"123"},{fullname:"234"}]}];
         this._super(val);
         
+        console.debug('watch',val);
+        
         function json_data(list,data,depth) {
             depth = depth || 0;
             var res = {};
@@ -232,26 +234,42 @@ dayside.plugins.xdebug = teacss.jQuery.Class.extend({
             });
             
             dayside.editor.bind("codeSaved",function(b,tab){ me.codeSaved(tab); });
-        });
-        
-        var keys = {
-            "f10" : me.stepOver,
-            "f11" : me.stepInto,
-            "shift+f11" : me.stepOut,
-            "f8" : me.run
-        };
-        
-        teacss.jQuery.each(keys,function(key,f){
-            teacss.jQuery(document).bind("keydown",key,function(e){
-                e.preventDefault();
-                return false;
+            
+            var keys = {
+                "f10" : me.stepOver,
+                "f11" : me.stepInto,
+                "shift+f11" : me.stepOut,
+                "f8" : me.run
+            };
+            
+            teacss.jQuery.each(keys,function(key,f){
+                teacss.jQuery(document).bind("keydown",key,function(e){
+                    e.preventDefault();
+                    return false;
+                });
+                teacss.jQuery(document).bind("keyup",key,function(e){
+                    f.call(me);
+                    e.preventDefault();
+                    return false;
+                });
+            });            
+            
+            dayside.editor.bind("editorCreated",function(b,e){
+                var cm = e.cm;
+                teacss.jQuery.each(keys,function(key,f){
+                    $(e.cm.display.input).bind("keydown",key,function(e){
+                        e.preventDefault();
+                        return false;
+                    });
+                    $(e.cm.display.input).bind("keyup",key,function(e){
+                        f.call(me);
+                        e.preventDefault();
+                        return false;
+                    });
+                });
             });
-            teacss.jQuery(document).bind("keyup",key,function(e){
-                f.call(me);
-                e.preventDefault();
-                return false;
-            });
         });
+
         
         this.tid = 1;
         this.status = "stop";
@@ -473,6 +491,7 @@ dayside.plugins.xdebug = teacss.jQuery.Class.extend({
                     }
                 }
                 me.status = "running";
+                me.send("feature_set -n max_depth -v 10");
                 me.send("run");
             }
 
