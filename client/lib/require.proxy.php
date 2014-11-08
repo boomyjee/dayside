@@ -1,4 +1,42 @@
-<?php
+<? if (!isset($_GET['url'])): ?>
+
+(function(){
+var scripts = document.getElementsByTagName("script");
+for (var s=0;s < scripts.length;s++) {
+    var script = scripts[s];
+    if (script.src.indexOf("require.proxy.php")!=-1) {
+        var proxy_url = script.src;
+        window.require.extensions.js.pre = function (path,callback,async) {
+            if (window.require.cache.files[path]) return callback();
+            window.require.getFile(proxy_url+"?url="+encodeURIComponent(path),function(text){
+                var ret = JSON.parse(text);
+                for (var key in ret) {
+                    var text = ret[key];
+                    if (text===false) throw "Proxy could not load module on path "+path;
+                    window.require.cache.files[key] = text;
+                }
+                callback();
+            });
+
+        };
+        teacss.getFile_original = teacss.getFile;
+        teacss.getFile = function (path,callback) {
+            if (teacss.files[path]) return callback(teacss.files[path]);
+            var url = proxy_url + "?tea=1&url="+encodeURIComponent(path);
+            teacss.getFile_original(url,function(text){
+                var json = JSON.parse(text);
+                for (var key in json) {
+                    teacss.files[key] = json[key];
+                }
+                callback(teacss.files[path]);
+            });
+        }
+        break;
+    }
+}
+})();
+
+<? die(); endif;
 
 class Proxy {
     static $base_url;
@@ -7,6 +45,12 @@ class Proxy {
     static $tea = false;
     
     static function resolve($url) {
+        
+        if (strpos($url,"uxcandy.com")!==false) {
+            $path = preg_replace("/http\:\/\/uxcandy\.com\/\~([A-Za-z0-9_-]+)/","/var/www/uxcandy_$1/data/public_html",$url);
+            return $path;
+        }
+        
         if (strpos($url,self::$base_url)!==0) return false;
         return self::$base_path.substr($url,strlen(self::$base_url));
     }
@@ -56,7 +100,7 @@ class Proxy {
     static function run() {
         $self = $_SERVER['SCRIPT_URI'];
         $path_self = $_SERVER['PATH_TRANSLATED'];
-
+        
         $a = strlen($self);
         $b = strlen($path_self);
 
