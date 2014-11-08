@@ -18378,40 +18378,40 @@ ui.optionsButton = teacss.ui.Button.extend({
         var themeOptions = {};
         $.each(themes,function(t,theme){ themeOptions[theme] = theme.split(" ")[0]; });
         
-        setTimeout(function(){
-            me.form = ui.form(function(){
-                panel = ui.tabPanel({width:"100%",height:'auto',margin:0,padding:0});
-                var editorTab = ui.panel({label:"Editor",padding:"1em"}).push(
-                    ui.label({template:'Font size: ${value}px',name:'fontSize',margin:"5px 0"}),
-                    ui.slider({min:10,max:24,margin:"0px 15px 0px",name:'fontSize'}),
-                    ui.label({template:'Tab size: ${value}',name:'tabSize',margin:"5px 0"}),
-                    ui.slider({min:1,max:16,margin:"0px 15px 0px",name:'tabSize'}),
-                    check = ui.check({margin:"10px 15px 5px 15px",width:'100%',label:'Use tab character',name:'useTab'}),
-                    ui.label({template:'Theme:',margin:"5px 0"}),
-                    ui.select({name: 'theme', items: themeOptions,width:"100%", comboDirection: 'right', comboHeight: 1000, margin: "-3px 0 0 0" })
-                );
-                panel.addTab(editorTab);
-                dayside.editor.trigger("configTabsCreated",{tabs:panel});
-            });
-            check.element.css("font-size",10);
-            
-            me.form.setValue(me.value);
-            me.form.bind("change",function(){
-                me.value = me.form.value;
-                me.updateOptions();
-                me.trigger("change");
-                me.saveValue();
-            });
-            
-            me.dialog.element.append(panel.element);
-        },1)
+        this.loadValue();
+        this.updateOptions();
         
+        me.form = ui.form(function(){
+            panel = ui.tabPanel({width:"100%",height:'auto',margin:0,padding:0});
+            var editorTab = ui.panel({label:"Editor",padding:"1em"}).push(
+                ui.label({template:'Font size: ${value}px',name:'fontSize',margin:"5px 0"}),
+                ui.slider({min:10,max:24,margin:"0px 15px 0px",name:'fontSize'}),
+                ui.label({template:'Tab size: ${value}',name:'tabSize',margin:"5px 0"}),
+                ui.slider({min:1,max:16,margin:"0px 15px 0px",name:'tabSize'}),
+                check = ui.check({margin:"10px 15px 5px 15px",width:'100%',label:'Use tab character',name:'useTab'}),
+                ui.label({template:'Theme:',margin:"5px 0"}),
+                ui.select({name: 'theme', items: themeOptions,width:"100%", comboDirection: 'right', comboHeight: 1000, margin: "-3px 0 0 0" })
+            );
+            panel.addTab(editorTab);
+            dayside.editor.trigger("configTabsCreated",{tabs:panel});
+        });
+        check.element.css("font-size",10);
+
+        me.form.setValue(me.value);
+        me.form.bind("change",function(){
+            me.value = me.form.value;
+            me.updateOptions();
+            me.trigger("change");
+            me.saveValue();
+        });
+
         this.dialog = ui.dialog({
             title: options.label,
             width: 300,
             resizable: false,
             draggable: true,
-            dialogClass: "dayside-config-dialog"
+            dialogClass: "dayside-config-dialog",
+            items: [panel]
         });
         
         this._super($.extend({
@@ -18419,14 +18419,12 @@ ui.optionsButton = teacss.ui.Button.extend({
                 me.dialog.open();
             }
         },options));
-        
-        this.loadValue();
-        this.updateOptions();
     },
     saveValue: function () {
         dayside.storage.set("options",this.value);
     },
     loadValue: function () {
+        dayside.editor.trigger("configDefaults",{value:this.defaults});
         this.value = $.extend({},this.defaults,dayside.storage.get("options",{}));
     },
     updateOptions: function () {
@@ -18673,6 +18671,8 @@ teacss.ui.editorPanel = (function($){
             var me = this;
             var ui = teacss.ui;
             
+            window.dayside.editor = me;
+            
             this.mainPanel = ui.dockPanel({});
             this.mainPanel.element.css({position:'absolute',left:0,right:0,top:27,bottom:0,'z-index':1});
             
@@ -18701,7 +18701,12 @@ teacss.ui.editorPanel = (function($){
                 .css({position:'absolute',left:0,right:0,top:0,padding:""})
                 .addClass("editorPanel-toolbar");
             
-            // options combo with editor and layout options
+            this.loadTabs();
+            
+            this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
+            this.element.css({position:'fixed',left:0,top:0,right:0,bottom:0});
+            
+            // config button
             this.optionsButton = new ui.optionsButton({
                 label:"Config",
                 icons:{primary:'ui-icon-gear'},
@@ -18709,11 +18714,6 @@ teacss.ui.editorPanel = (function($){
             });
             this.optionsButton.element
                 .appendTo(this.toolbar.element);
-            
-            this.loadTabs();
-            
-            this._super($.extend({items:[this.toolbar,this.mainPanel],margin:0},options||{}));
-            this.element.css({position:'fixed',left:0,top:0,right:0,bottom:0});
             
             this.element.appendTo("body").addClass("teacss-ui");
             
@@ -19312,7 +19312,7 @@ window.dayside = window.dayside || (function(){
             FileApi.auth_error = options.auth_error;
             
             dayside.loaded = false;
-            var editor = window.dayside.editor = new teacss.ui.editorPanel({
+            var editor = new teacss.ui.editorPanel({
                 jupload: options.jupload_url
             });
             dayside.loaded = true;
