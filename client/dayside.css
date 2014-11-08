@@ -2035,6 +2035,15 @@ THE SOFTWARE.
 #teacss-layer {
     position: absolute;
 }
+.teacss-ui .dayside-config-dialog {
+    padding: 0;
+}
+.teacss-ui .dayside-config-dialog > .ui-dialog-content {
+    padding: 0;
+}
+.teacss-ui .dayside-config-dialog > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #eee;
+}
 .teacss-ui .file-search-tab {
     overflow: auto;
 }

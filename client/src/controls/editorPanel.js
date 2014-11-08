@@ -236,12 +236,12 @@ teacss.ui.editorPanel = (function($){
                 .addClass("editorPanel-toolbar");
             
             // options combo with editor and layout options
-            this.optionsCombo = new ui.optionsCombo({
+            this.optionsButton = new ui.optionsButton({
                 label:"Config",
                 icons:{primary:'ui-icon-gear'},
                 margin: 0
             });
-            this.optionsCombo.element
+            this.optionsButton.element
                 .appendTo(this.toolbar.element);
             
             this.loadTabs();
