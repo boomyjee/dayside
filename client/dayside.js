@@ -18395,7 +18395,6 @@ ui.optionsButton = teacss.ui.Button.extend({
             panel.addTab(editorTab);
             dayside.core.trigger("configTabsCreated",{tabs:panel});
         });
-        check.element.css("font-size",10);
 
         me.form.setValue(me.value);
         me.form.bind("change",function(){
@@ -18469,10 +18468,18 @@ teacss.ui.dockPanel = (function($){
         init: function (options) {
             var ui = teacss.ui;
             var me = this;
+            
+            this.centerArea = ui.panel({items:[
+                this.centerPanel = ui.tabPanel({width:"100%",height:"100%",margin:0,padding:0}),
+                this.statusBar = ui.panel({margin:0,padding:"0 10px"})
+            ]});
+            this.centerPanel.element.css({ position: 'absolute', left: 0, right: 0, top: 0, bottom: 24, height: "" });
+            this.statusBar.element.css({ position: 'absolute', left: 0, right: 0, height: 24, lineHeight: "24px", bottom: 0 }).addClass("dayside-statusbar");
+            
             var lc = ui.panel({items:[
                 this.leftPanel = ui.tabPanel(),
-                this.centerPanel = ui.tabPanel(),
-                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerPanel ],align:'left',size:2})
+                this.centerArea,
+                this.leftSplitter = ui.splitter({panels:[this.leftPanel,this.centerArea ],align:'left',size:2})
             ]});
             var lcr = ui.panel({items:[
                 lc,
@@ -18667,6 +18674,15 @@ teacss.ui.editorPanel = (function($){
             }
             me.tabsForFiles.selectTab(tab);
             return tab;
+        },
+        
+        setStatus: function (msg,icon,timeout) {
+            var me = this;
+            clearTimeout(me.statusTimeout);
+            me.mainPanel.statusBar.element.text(msg);
+            if (msg) setTimeout(function(){
+                me.mainPanel.statusBar.element.text("");
+            },timeout || 20000);
         },
         
         init : function (options) {

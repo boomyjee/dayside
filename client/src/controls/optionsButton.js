@@ -63,7 +63,6 @@ ui.optionsButton = teacss.ui.Button.extend({
             panel.addTab(editorTab);
             dayside.core.trigger("configTabsCreated",{tabs:panel});
         });
-        check.element.css("font-size",10);
 
         me.form.setValue(me.value);
         me.form.bind("change",function(){
