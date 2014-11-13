@@ -533,6 +533,9 @@ class FileApi {
             'authInclude' =>  __FILE__,
             'authFunction' => array('\FileApi','remote_auth')
         );
+        $params = array_merge($params,array(
+            'port' => (int)(@$_REQUEST['port'] ?:8000)
+        ));
         $params = escapeshellarg(json_encode($params));
         echo shell_exec("python ".$server_path." restart ".$params." 2>&1");
     }
