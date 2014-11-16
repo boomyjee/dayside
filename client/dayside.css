@@ -1666,7 +1666,7 @@ THE SOFTWARE.
 .cm-s-base16-dark > .teacss-ui, .cm-s-base16-dark .jstree-default.jstree-focused, .cm-s-base16-dark .jstree-default.jstree-focused > ul, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #151515;
 }
-.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-base16-dark .teacss-ui .dayside-statusbar {
     border-color: #151515;
 }
 .cm-s-base16-dark .teacss-ui .button-select-panel, .cm-s-base16-dark .teacss-ui .editorPanel-toolbar, .cm-s-base16-dark .teacss-ui .dayside-statusbar {
@@ -1681,7 +1681,7 @@ THE SOFTWARE.
 .cm-s-ambiance > .teacss-ui, .cm-s-ambiance .jstree-default.jstree-focused, .cm-s-ambiance .jstree-default.jstree-focused > ul, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
     background: #202020;
 }
-.cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default, .cm-s-ambiance .teacss-ui .dayside-statusbar {
     border-color: #202020;
 }
 .cm-s-ambiance .teacss-ui .button-select-panel, .cm-s-ambiance .teacss-ui .editorPanel-toolbar, .cm-s-ambiance .teacss-ui .dayside-statusbar {
@@ -1696,7 +1696,7 @@ THE SOFTWARE.
 .cm-s-3024-night > .teacss-ui, .cm-s-3024-night .jstree-default.jstree-focused, .cm-s-3024-night .jstree-default.jstree-focused > ul, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
     background: #090300;
 }
-.cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-3024-night .teacss-ui .dayside-statusbar {
     border-color: #090300;
 }
 .cm-s-3024-night .teacss-ui .button-select-panel, .cm-s-3024-night .teacss-ui .editorPanel-toolbar, .cm-s-3024-night .teacss-ui .dayside-statusbar {
@@ -1711,7 +1711,7 @@ THE SOFTWARE.
 .cm-s-blackboard > .teacss-ui, .cm-s-blackboard .jstree-default.jstree-focused, .cm-s-blackboard .jstree-default.jstree-focused > ul, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
     background: #0C1021;
 }
-.cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default, .cm-s-blackboard .teacss-ui .dayside-statusbar {
     border-color: #0C1021;
 }
 .cm-s-blackboard .teacss-ui .button-select-panel, .cm-s-blackboard .teacss-ui .editorPanel-toolbar, .cm-s-blackboard .teacss-ui .dayside-statusbar {
@@ -1726,7 +1726,7 @@ THE SOFTWARE.
 .cm-s-cobalt > .teacss-ui, .cm-s-cobalt .jstree-default.jstree-focused, .cm-s-cobalt .jstree-default.jstree-focused > ul, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
     background: #002240;
 }
-.cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default, .cm-s-cobalt .teacss-ui .dayside-statusbar {
     border-color: #002240;
 }
 .cm-s-cobalt .teacss-ui .button-select-panel, .cm-s-cobalt .teacss-ui .editorPanel-toolbar, .cm-s-cobalt .teacss-ui .dayside-statusbar {
@@ -1741,7 +1741,7 @@ THE SOFTWARE.
 .cm-s-erlang-dark > .teacss-ui, .cm-s-erlang-dark .jstree-default.jstree-focused, .cm-s-erlang-dark .jstree-default.jstree-focused > ul, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #002240;
 }
-.cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-erlang-dark .teacss-ui .dayside-statusbar {
     border-color: #002240;
 }
 .cm-s-erlang-dark .teacss-ui .button-select-panel, .cm-s-erlang-dark .teacss-ui .editorPanel-toolbar, .cm-s-erlang-dark .teacss-ui .dayside-statusbar {
@@ -1756,7 +1756,7 @@ THE SOFTWARE.
 .cm-s-lesser-dark > .teacss-ui, .cm-s-lesser-dark .jstree-default.jstree-focused, .cm-s-lesser-dark .jstree-default.jstree-focused > ul, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #262626;
 }
-.cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-lesser-dark .teacss-ui .dayside-statusbar {
     border-color: #262626;
 }
 .cm-s-lesser-dark .teacss-ui .button-select-panel, .cm-s-lesser-dark .teacss-ui .editorPanel-toolbar, .cm-s-lesser-dark .teacss-ui .dayside-statusbar {
@@ -1771,7 +1771,7 @@ THE SOFTWARE.
 .cm-s-mbo > .teacss-ui, .cm-s-mbo .jstree-default.jstree-focused, .cm-s-mbo .jstree-default.jstree-focused > ul, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
     background: #2C2C2C;
 }
-.cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default, .cm-s-mbo .teacss-ui .dayside-statusbar {
     border-color: #2C2C2C;
 }
 .cm-s-mbo .teacss-ui .button-select-panel, .cm-s-mbo .teacss-ui .editorPanel-toolbar, .cm-s-mbo .teacss-ui .dayside-statusbar {
@@ -1786,7 +1786,7 @@ THE SOFTWARE.
 .cm-s-midnight > .teacss-ui, .cm-s-midnight .jstree-default.jstree-focused, .cm-s-midnight .jstree-default.jstree-focused > ul, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
     background: #0F192A;
 }
-.cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-midnight .teacss-ui .dayside-statusbar {
     border-color: #0F192A;
 }
 .cm-s-midnight .teacss-ui .button-select-panel, .cm-s-midnight .teacss-ui .editorPanel-toolbar, .cm-s-midnight .teacss-ui .dayside-statusbar {
@@ -1801,7 +1801,7 @@ THE SOFTWARE.
 .cm-s-monokai > .teacss-ui, .cm-s-monokai .jstree-default.jstree-focused, .cm-s-monokai .jstree-default.jstree-focused > ul, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
     background: #272822;
 }
-.cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default, .cm-s-monokai .teacss-ui .dayside-statusbar {
     border-color: #272822;
 }
 .cm-s-monokai .teacss-ui .button-select-panel, .cm-s-monokai .teacss-ui .editorPanel-toolbar, .cm-s-monokai .teacss-ui .dayside-statusbar {
@@ -1816,7 +1816,7 @@ THE SOFTWARE.
 .cm-s-night > .teacss-ui, .cm-s-night .jstree-default.jstree-focused, .cm-s-night .jstree-default.jstree-focused > ul, .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
     background: #0A001F;
 }
-.cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-night .teacss-ui .dayside-statusbar {
     border-color: #0A001F;
 }
 .cm-s-night .teacss-ui .button-select-panel, .cm-s-night .teacss-ui .editorPanel-toolbar, .cm-s-night .teacss-ui .dayside-statusbar {
@@ -1831,7 +1831,7 @@ THE SOFTWARE.
 .cm-s-paraiso-dark > .teacss-ui, .cm-s-paraiso-dark .jstree-default.jstree-focused, .cm-s-paraiso-dark .jstree-default.jstree-focused > ul, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #2F1E2E;
 }
-.cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-dark .teacss-ui .dayside-statusbar {
     border-color: #2F1E2E;
 }
 .cm-s-paraiso-dark .teacss-ui .button-select-panel, .cm-s-paraiso-dark .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-dark .teacss-ui .dayside-statusbar {
@@ -1846,7 +1846,7 @@ THE SOFTWARE.
 .cm-s-paraiso-light > .teacss-ui, .cm-s-paraiso-light .jstree-default.jstree-focused, .cm-s-paraiso-light .jstree-default.jstree-focused > ul, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
     background: #E7E9DB;
 }
-.cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-light .teacss-ui .dayside-statusbar {
     border-color: #E7E9DB;
 }
 .cm-s-paraiso-light .teacss-ui .button-select-panel, .cm-s-paraiso-light .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-light .teacss-ui .dayside-statusbar {
@@ -1861,7 +1861,7 @@ THE SOFTWARE.
 .cm-s-pastel-on-dark > .teacss-ui, .cm-s-pastel-on-dark .jstree-default.jstree-focused, .cm-s-pastel-on-dark .jstree-default.jstree-focused > ul, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #2C2827;
 }
-.cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .dayside-statusbar {
     border-color: #2C2827;
 }
 .cm-s-pastel-on-dark .teacss-ui .button-select-panel, .cm-s-pastel-on-dark .teacss-ui .editorPanel-toolbar, .cm-s-pastel-on-dark .teacss-ui .dayside-statusbar {
@@ -1876,7 +1876,7 @@ THE SOFTWARE.
 .cm-s-rubyblue > .teacss-ui, .cm-s-rubyblue .jstree-default.jstree-focused, .cm-s-rubyblue .jstree-default.jstree-focused > ul, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
     background: #112435;
 }
-.cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default, .cm-s-rubyblue .teacss-ui .dayside-statusbar {
     border-color: #112435;
 }
 .cm-s-rubyblue .teacss-ui .button-select-panel, .cm-s-rubyblue .teacss-ui .editorPanel-toolbar, .cm-s-rubyblue .teacss-ui .dayside-statusbar {
@@ -1891,7 +1891,7 @@ THE SOFTWARE.
 .cm-s-the-matrix > .teacss-ui, .cm-s-the-matrix .jstree-default.jstree-focused, .cm-s-the-matrix .jstree-default.jstree-focused > ul, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
     background: #000000;
 }
-.cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default, .cm-s-the-matrix .teacss-ui .dayside-statusbar {
     border-color: #000000;
 }
 .cm-s-the-matrix .teacss-ui .button-select-panel, .cm-s-the-matrix .teacss-ui .editorPanel-toolbar, .cm-s-the-matrix .teacss-ui .dayside-statusbar {
@@ -1906,7 +1906,7 @@ THE SOFTWARE.
 .cm-s-tomorrow-night-eighties > .teacss-ui, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused > ul, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
     background: #000000;
 }
-.cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-statusbar {
     border-color: #000000;
 }
 .cm-s-tomorrow-night-eighties .teacss-ui .button-select-panel, .cm-s-tomorrow-night-eighties .teacss-ui .editorPanel-toolbar, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-statusbar {
@@ -1921,7 +1921,7 @@ THE SOFTWARE.
 .cm-s-twilight > .teacss-ui, .cm-s-twilight .jstree-default.jstree-focused, .cm-s-twilight .jstree-default.jstree-focused > ul, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
     background: #141414;
 }
-.cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-twilight .teacss-ui .dayside-statusbar {
     border-color: #141414;
 }
 .cm-s-twilight .teacss-ui .button-select-panel, .cm-s-twilight .teacss-ui .editorPanel-toolbar, .cm-s-twilight .teacss-ui .dayside-statusbar {
@@ -1936,7 +1936,7 @@ THE SOFTWARE.
 .cm-s-vibrant-ink > .teacss-ui, .cm-s-vibrant-ink .jstree-default.jstree-focused, .cm-s-vibrant-ink .jstree-default.jstree-focused > ul, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
     background: #002240;
 }
-.cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default, .cm-s-vibrant-ink .teacss-ui .dayside-statusbar {
     border-color: #002240;
 }
 .cm-s-vibrant-ink .teacss-ui .button-select-panel, .cm-s-vibrant-ink .teacss-ui .editorPanel-toolbar, .cm-s-vibrant-ink .teacss-ui .dayside-statusbar {
@@ -1951,7 +1951,7 @@ THE SOFTWARE.
 .cm-s-xq-dark > .teacss-ui, .cm-s-xq-dark .jstree-default.jstree-focused, .cm-s-xq-dark .jstree-default.jstree-focused > ul, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
     background: #0A001F;
 }
-.cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-xq-dark .teacss-ui .dayside-statusbar {
     border-color: #0A001F;
 }
 .cm-s-xq-dark .teacss-ui .button-select-panel, .cm-s-xq-dark .teacss-ui .editorPanel-toolbar, .cm-s-xq-dark .teacss-ui .dayside-statusbar {
@@ -2131,6 +2131,7 @@ THE SOFTWARE.
     vertical-align: middle;
 }
 .teacss-ui .dayside-statusbar {
+    border: 1px solid #ccc;
     background: #eee;
     font-size: 0.8em;
     overflow: hidden;
