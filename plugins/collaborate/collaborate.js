@@ -6299,7 +6299,7 @@ return firepad.Firepad; }, this);;
 })();;
 (function($,ui){
     
-dayside.plugins.firepad = teacss.ui.Control.extend({
+dayside.plugins.collaborate = teacss.ui.Control.extend({
     init: function (o) {
         var me = this;
         this._super(o);
