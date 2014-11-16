@@ -13,7 +13,7 @@
         <script src="../../client/dayside.js"></script>
         <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
         
-        <? if (build("makefile.tea",false,"firepad.js",__DIR__)!='dev'): ?>
+        <? if (build("makefile.tea",false,"collaborate.js",__DIR__)!='dev'): ?>
             <script>
                 dayside.plugins.firepad();
                 dayside({
