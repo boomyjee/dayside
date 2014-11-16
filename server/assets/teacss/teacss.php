@@ -9,8 +9,8 @@ function teacss($makefile,$css,$js,$dir,$dev) {
         }
         if (isset($_POST['css'])) {
             ob_get_clean();
-            if ($css) file_put_contents(realpath($dir)."/".basename($js),$_POST['js']);
-            if ($js) file_put_contents(realpath($dir)."/".basename($css),$_POST['css']);
+            if ($js) file_put_contents(realpath($dir)."/".basename($js),$_POST['js']);
+            if ($css) file_put_contents(realpath($dir)."/".basename($css),$_POST['css']);
             echo 'ok';
             die();
         }   
