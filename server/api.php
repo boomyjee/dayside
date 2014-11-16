@@ -2,6 +2,24 @@
 
 class FileApi {
     
+    static protected $_extensions;
+    static function extend($name,$f) {
+        if ($f) {
+            self::$_extensions[$name] = $f;
+        } else {
+            unset(self::$_extensions[$name]);
+        }
+    }
+    
+    public function __call($name,$args) {
+        if (isset(self::$_extensions[$name])) {
+            $args = array_merge(array($this),$args);
+            return call_user_func_array(self::$_extensions[$name],$args);
+        } else {
+            throw new \Exception('Method is not implemented');
+        }
+    }    
+    
     function __construct($_type=false) {
         $fileapi_hash = false;
         $password_path = __DIR__."/password.php";

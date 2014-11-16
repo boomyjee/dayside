@@ -17794,7 +17794,7 @@ teacss.ui.codeTab = (function($){
             
             this.bind("close",function(o,e){
                 if (this.changed) {
-                    e.cancel = !confirm(this.options.caption+" is not saved. Sure to close?");
+                    e.cancel = !confirm(this.options.label+" is not saved. Sure to close?");
                 }
                 if (!e.cancel) {
                     var index = this.Class.tabs.indexOf(this);
