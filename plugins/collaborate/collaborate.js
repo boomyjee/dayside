@@ -6315,10 +6315,13 @@ return firepad.Firepad; }, this);;
                 me.disconnectUser(id);
                 delete me.peers[id];
             });
-            if (me.ref_user) me.ref_user.remove();
             if (me.ref_users) me.ref_users.off();
             if (me.ref_signals) me.ref_signals.off();
             if (me.stream) me.stream.stop();
+            if (me.ref_user) {
+                me.ref_user.remove();
+                me.ref_user = false;
+            }
         }
     });
 })();;

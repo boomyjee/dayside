@@ -2,7 +2,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>Firepad plugin test</title>
+        <title>Collaborate plugin test</title>
         <meta charset="utf-8">
         
         <script src="../../server/assets/teacss/teacss.js"></script>
