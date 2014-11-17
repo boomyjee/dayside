@@ -6083,7 +6083,10 @@ return firepad.Firepad; }, this);;
         leaveChat: function () {
             var me = this;
             this.setUserData({video:false,audio:false});
-            if (me.stream) me.stream.stop();
+            if (me.stream) {
+                me.stream.stop();
+                me.disconnectUser(me.user_id);
+            }
         },
         
         setUserData: function (data) {
@@ -6375,6 +6378,7 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
                 icons: { primary: "ui-icon-close" }
             });
             me.tab.push(me.joinVideoChatButton,me.leaveVideoChatButton);
+            me.videoDiv = $("<div>").appendTo(me.tab.element);
             me.userList = $("<ul>").addClass("collaborate-user-list").appendTo(me.tab.element).css({padding:15})
             
             me.userList.on("click","a[data-file]",function(e){
