@@ -52,7 +52,10 @@
         leaveChat: function () {
             var me = this;
             this.setUserData({video:false,audio:false});
-            if (me.stream) me.stream.stop();
+            if (me.stream) {
+                me.stream.stop();
+                me.disconnectUser(me.user_id);
+            }
         },
         
         setUserData: function (data) {
