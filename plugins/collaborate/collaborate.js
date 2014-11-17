@@ -6336,10 +6336,14 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
         
         dayside.core.bind("configDefaults",function(b,e){
             e.value.collaboration_autostart = false;
+            e.value.collaboration_username = "";
         });
 
         dayside.core.bind("configUpdate",function(b,e){
             me.autostart = e.value.collaboration_autostart;
+            me.config_username = e.value.collaboration_username || "Guest_"+(Math.floor(Math.random()*1000));
+            if (me.meeting)
+                me.meeting.setUserData({name:me.config_username});
         });
 
         dayside.core.bind("configTabsCreated",function(b,e){
@@ -6347,7 +6351,9 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
                 label: "Collaboration", padding: "1em"
             }).push(
                 ui.label({ value: "Collaboration options:", margin: "5px 0" }),
-                ui.check({ label: "Autostart enabled", name: "collaboration_autostart", width: "100%", margin: "5px 0" })
+                ui.check({ label: "Autostart enabled", name: "collaboration_autostart", width: "100%", margin: "5px 0" }),
+                ui.label({ value: "Username to display:", margin: "5px 0" }),
+                ui.text({ name: "collaboration_username", margin:"0px 0", width: "100%" })
             );
             e.tabs.addTab(configTab);
         });        
@@ -6432,7 +6438,9 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
         
         if (!me.meeting) {
             me.meeting = new Meeting({ firebase: me.rootRef.child('meetings') });
-            me.meeting.setUserData({name:"Guest_"+(Math.floor(Math.random()*1000))});
+            me.meeting.setUserData({
+                name: me.config_username
+            });
             
             me.meeting.bind("usersChange",function(b,users){
                 me.userList.empty();
@@ -6473,13 +6481,14 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
             });
         }
         
-        me.connected = true;
-        me.meeting.connect();
-        console.debug('firepad connected');
-        
         $.each(teacss.ui.codeTab.tabs,function(t,tab){
             me.wrap(tab);
         });
+        
+        me.connected = true;
+        me.meeting.connect();
+        console.debug('firebase connected');
+        
         dayside.editor.mainPanel.addTab(me.tab,"collaborate","right");
     },
     
