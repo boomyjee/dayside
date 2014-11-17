@@ -39,47 +39,68 @@
             this._super(o);
             if (!this.options.firebase) console.debug('No firebase ref is set for Meeting');
             this.peers = {};
+            this.user_data = {video:false,audio:false,name:false};
+        },
+        
+        joinChat: function () {
+            var me = this;
+            this.addStream(function(){
+                me.setUserData({video:true,audio:true});    
+            });
+        },
+        
+        leaveChat: function () {
+            var me = this;
+            this.setUserData({video:false,audio:false});
+            if (me.stream) me.stream.stop();
+        },
+        
+        setUserData: function (data) {
+            this.user_data = $.extend(this.user_data,data||{});
+            if (this.ref_user) this.ref_user.set(this.user_data);
         },
         
         connect: function () {
             var me = this;
-            this.addStream(function(){
-                me.ref_users = me.options.firebase.child('users');
-                me.ref_signals = me.options.firebase.child('signals');
-                me.ref_user = me.ref_users.push({name:false});
-                me.ref_user.onDisconnect().remove();
-                me.user_id = me.ref_user.key();
+            
+            me.ref_users = me.options.firebase.child('users');
+            me.ref_signals = me.options.firebase.child('signals');
+            me.ref_user = me.ref_users.push(this.user_data);
+            me.ref_user.onDisconnect().remove();
+            me.user_id = me.ref_user.key();
 
-                me.ref_users.on('value',function(snapshot){
-                    var users = snapshot.val();
-                    
-                    var peerEnabled = {};
-                    $.each(me.peers,function(id,peer){
-                        peerEnabled[id] = false;
-                    });
-                    
-                    if (users) $.each(users,function(id,user){
-                        if (id!=me.user_id) {
-                            // new user
-                            if (id > me.user_id && !me.peers[id]) {
-                                me.createPeerConnection(id);
-                            }
-                        }
-                        peerEnabled[id] = true;
-                    });
-                    
-                    $.each(me.peers,function(id,peer){
-                        if (!peerEnabled[id]) me.disconnectUser(id);
-                    });
+            me.ref_users.on('value',function(snapshot){
+                var users = snapshot.val();
+
+                me.trigger("usersChange",users);
+
+                var peerEnabled = {};
+                $.each(me.peers,function(id,peer){
+                    peerEnabled[id] = false;
                 });
 
-                me.ref_signals.on('child_added',function (snap) {
-                    var data = snap.val();
-                    if (data.user_id != me.user_id) {
-                        me.recvMessage(data);
-                        snap.ref().remove();
+                if (users) $.each(users,function(id,user){
+                    if (!me.user_data.video) return;
+                    if (id!=me.user_id) {
+                        if (me.user_data.video && user.video) {
+                            // new user
+                            if (id > me.user_id && !me.peers[id]) me.createPeerConnection(id);
+                            peerEnabled[id] = true;
+                        }
                     }
-                });                   
+                });
+
+                $.each(me.peers,function(id,peer){
+                    if (!peerEnabled[id]) me.disconnectUser(id);
+                });
+            });
+
+            me.ref_signals.on('child_added',function (snap) {
+                var data = snap.val();
+                if (data.user_id != me.user_id) {
+                    me.recvMessage(data);
+                    snap.ref().remove();
+                }
             });
         },
                            
@@ -87,6 +108,7 @@
             var me = this;
             me.trigger("userLeft",id==me.user_id ? 'self' : id);
             var peer = me.peers[id];
+            delete me.peers[id];
             if (peer) peer.close();
         },
         

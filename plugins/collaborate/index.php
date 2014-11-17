@@ -15,7 +15,7 @@
         
         <? if (build("makefile.tea",false,"collaborate.js",__DIR__)!='dev'): ?>
             <script>
-                dayside.plugins.firepad();
+                dayside.plugins.collaborate();
                 dayside({
                     root: teacss.path.absolute("./../../../"),
                     ajax_url: teacss.path.absolute("./demo.php")

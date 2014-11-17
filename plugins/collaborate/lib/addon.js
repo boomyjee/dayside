@@ -54,7 +54,6 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
                 icons: { primary: "ui-icon-close" }
             });
             me.tab.push(me.joinVideoChatButton,me.leaveVideoChatButton);
-            me.videoDiv = $("<div>").appendTo(me.tab.element);
             me.userList = $("<ul>").addClass("collaborate-user-list").appendTo(me.tab.element).css({padding:15})
             
             me.userList.on("click","a[data-file]",function(e){
@@ -70,41 +69,15 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
     },
     
     joinChat: function () {
-        var me = this;
-        if (me.meeting) me.leaveChat();
-        
-        var ref = me.rootRef.child('meetings');
-        
-        me.meeting = new Meeting({ firebase:ref });
-        me.meeting.bind("addStream",function(b,e){
-            me.videoDiv[0].appendChild(e.video);
-            $(e.video).css({
-                width: "100%",
-                boxSizing: "border-box",
-                border: e.type=='local' ? "2px solid yellow" : "2px solid #ccc"
-            })
-        });
-        me.meeting.bind("userLeft",function(b,id){
-            var video = document.getElementById(id);
-            if (video) video.parentNode.removeChild(video);
-        });
-        me.meeting.connect();
-        
-        me.joinVideoChatButton.element.hide();
-        me.leaveVideoChatButton.element.show();
+        this.meeting.joinChat();
+        this.joinVideoChatButton.element.hide();
+        this.leaveVideoChatButton.element.show();
     },
     
     leaveChat: function () {
-        var me = this;
-        
-        if (me.meeting) {
-            me.meeting.disconnect();
-            me.meeting = false;
-        }
-        
-        me.videoDiv.empty();
-        me.joinVideoChatButton.element.show();
-        me.leaveVideoChatButton.element.hide();
+        this.meeting.leaveChat();
+        this.joinVideoChatButton.element.show();
+        this.leaveVideoChatButton.element.hide();
     },
     
     connect: function () {
@@ -128,35 +101,53 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
             });
             return;
         }
-        me.connected = true;
-        console.debug('firepad connected');
         
-        me.ref_users = me.rootRef.child('users');
-        me.ref_user = me.ref_users.push({
-            name:'Guest'+Math.floor(Math.random()*1000)
-        });
-        me.ref_user.onDisconnect().remove();
-        me.ref_users.on("value",function(snapshot){
-            var users = snapshot.val();
-            me.userList.empty();
-            if (users) $.each(users,function(id,data){
-                if (id==me.ref_user.key()) return;
-                
-                var ul = false;
-                if (data.files) $.each(data.files,function(f,file){
-                    ul = ul || $("<ul>").css({paddingLeft:15,paddingBottom:15});
-                    ul.append(
-                        $("<li>").append(
-                            $("<a href='#'>")
-                                .attr("data-file",file)
-                                .text(file.substring(FileApi.root.length))
-                        )
-                    );
-                });
-                var li = $("<li>").text(data.name).append(ul);
-                me.userList.append(li);
+        if (!me.meeting) {
+            me.meeting = new Meeting({ firebase: me.rootRef.child('meetings') });
+            me.meeting.setUserData({name:"Guest_"+(Math.floor(Math.random()*1000))});
+            
+            me.meeting.bind("usersChange",function(b,users){
+                me.userList.empty();
+                if (users) $.each(users,function(id,data){
+                    var you = (id==me.meeting.user_id);
+                    var ul = false;
+                    if (data.files) $.each(data.files,function(f,file){
+                        var file_short = file.substring(FileApi.root.length);
+                        if (file_short[0]=='/') file_short = file_short.substring(1);
+                        
+                        ul = ul || $("<ul>").css({paddingLeft:15,paddingBottom:15});
+                        ul.append(
+                            $("<li>").append(
+                                $("<a href='#'>")
+                                    .attr("data-file",file)
+                                    .text(file_short)
+                            )
+                        );
+                    });
+                    var li = $("<li>").text(data.name+(you ? " (it's you)":"")).append(ul);
+                    if (you)
+                        me.userList.prepend(li);
+                    else
+                        me.userList.append(li);
+                });                
+            });            
+            me.meeting.bind("addStream",function(b,e){
+                me.videoDiv[0].appendChild(e.video);
+                $(e.video).css({
+                    width: "100%",
+                    boxSizing: "border-box",
+                    border: e.type=='local' ? "2px solid yellow" : "2px solid #ccc"
+                })
             });
-        });
+            me.meeting.bind("userLeft",function(b,id){
+                var video = document.getElementById(id);
+                if (video) video.parentNode.removeChild(video);
+            });
+        }
+        
+        me.connected = true;
+        me.meeting.connect();
+        console.debug('firepad connected');
         
         $.each(teacss.ui.codeTab.tabs,function(t,tab){
             me.wrap(tab);
@@ -171,8 +162,7 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
         me.tab.element.detach();
         me.tab.tabPanel.closeTab(me.tab);
         
-        if (me.ref_user) me.ref_user.remove();
-        if (me.ref_users) me.ref_users.off();
+        me.meeting.disconnect();
         
         $.each(teacss.ui.codeTab.tabs,function(t,tab){
             me.unwrap(tab);
@@ -186,11 +176,11 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
             tab.editor.firepad.dispose();
             tab.editor.firepad = false;            
         }
-        if (me.ref_user && tab.options.file) {
+        if (me.meeting && tab.options.file) {
             var idx = me.openFiles.indexOf(tab.options.file);
             if (idx!=-1) {
                 me.openFiles.splice(idx, 1);
-                me.ref_user.child("files").set(me.openFiles);
+                me.meeting.setUserData({files:me.openFiles});
             }
         }
     },
@@ -207,10 +197,10 @@ dayside.plugins.collaborate = teacss.ui.Control.extend({
             });
         }
         
-        if (me.ref_user && tab.options.file) {
+        if (me.meeting && tab.options.file) {
             if (me.openFiles.indexOf(tab.options.file)==-1) {
                 me.openFiles.push(tab.options.file);
-                me.ref_user.child("files").set(me.openFiles);
+                me.meeting.setUserData({files:me.openFiles});
             }
         }
         
