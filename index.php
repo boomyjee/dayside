@@ -16,12 +16,14 @@
             <script src="plugins/xdebug/xdebug.js"></script>
             <link href="plugins/xdebug/xdebug.css" rel="stylesheet" type="text/css">
             <script src="plugins/console/console.js"></script>
+            <!--<script src="plugins/collaborate/collaborate.js"></script>-->
 
             <script>
                 dayside({preview:false});
                 dayside.plugins.pixlr();
                 dayside.plugins.xdebug();
                 dayside.plugins.console();
+                // dayside.plugins.collaborate();
             </script>
         <? endif ?>
     </head>
