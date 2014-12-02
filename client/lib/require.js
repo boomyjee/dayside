@@ -212,11 +212,13 @@
         r.dir = r.path ? r.path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '') : r.path;
         return r;
     }
-
-    window.require = factory();
-    window.require.root = ".";
-    window.require.extensions = extensions;
-    window.require.factory = factory;
-    window.require.cache = cache;
-    window.require.getFile = getFile;
+    
+    if (!window.require) {
+        window.require = factory();
+        window.require.root = ".";
+        window.require.extensions = extensions;
+        window.require.factory = factory;
+        window.require.cache = cache;
+        window.require.getFile = getFile;
+    }
 })();

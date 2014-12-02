@@ -10957,11 +10957,6 @@ CodeMirror.defineMode("htmlmixed", function(config, parserConfig) {
 CodeMirror.defineMIME("text/html", "htmlmixed");
 ;
 (function(mod) {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    mod(require("../../lib/codemirror"));
-  else if (typeof define == "function" && define.amd) // AMD
-    define(["../../lib/codemirror"], mod);
-  else // Plain browser env
     mod(CodeMirror);
 })(function(CodeMirror) {
 "use strict";
@@ -16395,13 +16390,15 @@ jQuery.cookie = function(name, value, options) {
         r.dir = r.path ? r.path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '') : r.path;
         return r;
     }
-
-    window.require = factory();
-    window.require.root = ".";
-    window.require.extensions = extensions;
-    window.require.factory = factory;
-    window.require.cache = cache;
-    window.require.getFile = getFile;
+    
+    if (!window.require) {
+        window.require = factory();
+        window.require.root = ".";
+        window.require.extensions = extensions;
+        window.require.factory = factory;
+        window.require.cache = cache;
+        window.require.getFile = getFile;
+    }
 })();;
 /**
  * mOxie - multi-runtime File API & XMLHttpRequest L2 Polyfill
