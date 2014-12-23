@@ -12,7 +12,7 @@ for (var s=0;s < scripts.length;s++) {
                 var ret = JSON.parse(text);
                 for (var key in ret) {
                     var text = ret[key];
-                    if (text===false) throw "Proxy could not load module on path "+path;
+                    if (text===false) throw "Proxy could not load module on path "+key;
                     window.require.cache.files[key] = text;
                 }
                 callback();
@@ -69,13 +69,12 @@ class Proxy {
     
     static function process($url) {
         $path = self::resolve($url);
-        if (!$path) return;
         if (isset(self::$cache[$url])) return;
-        if (!file_exists($path)) {
+        
+        if (!$path || !file_exists($path)) {
             self::$cache[$url] = false;
             return;
         }
-        
         $text = file_get_contents($path);
         self::$cache[$url] = $text;
         

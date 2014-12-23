@@ -95,8 +95,6 @@
     }
     
     function resolve(what,base) {
-        var ext = what.split(".").pop();
-        if (!extensions[ext]) what = what + ".js";
         var root = require.root.replace(/\/$/,'');
         if (/^\.{1,2}\//.test(what)) {
             if (base===undefined) base = require.base;
@@ -155,12 +153,16 @@
             
             for (var i=0;i<args.length;i++) {
                 var path,ext;
-                if (args[i].ext) {
+                if (args[i].ext!==undefined) {
                     path = resolve(args[i].path);
                     ext = args[i].ext;
                 } else {
                     path = resolve(args[i]);
-                    ext = path.split(".").pop();
+                    ext = (path.match(/[^\\\/]\.([^.\\\/]+)$/) || [null]).pop();
+                    if (!ext) {
+                        path = path + ".js";
+                        ext = "js";
+                    }
                 }
                 pathes.push(path);
                 exts.push(ext);
