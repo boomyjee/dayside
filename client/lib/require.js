@@ -1,63 +1,59 @@
 (function(){
     var cache = {
         files: {},
-        modules: {}
+        modules: {},
+        defined: {}
     };
+    
+    function path_string(path) {
+        return "'"+path.replace(/\\?("|')/g,'\\$1')+"'";
+    }
     
     var extensions = {
         js: {
-            proxy: false,
             pre: function (path,callback,async) {
                 if (cache.files[path]) return callback();
-                if (extensions.js.proxy) {
-                    getFile(extensions.js.proxy+"?url="+encodeURIComponent(path),function(text){
-                        var ret = JSON.parse(text);
-                        for (var key in ret) {
-                            var text = ret[key];
-                            if (text===false) throw "Proxy could not load module on path "+path;
-                            cache.files[key] = text;
-                        }
-                        callback();
-                    });
-                } else {
-                    getFile(path,function(text){
-                        if (text===false) {
-                            throw "Could not load module on path "+path;
-                            callback(false);
-                            return;
-                        }
-                        var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
-                        var deps = {}, count = 0;
+                getFile(path,function(text){
+                    if (text===false) {
+                        throw "Could not load module on path "+path;
+                        callback(false);
+                        return;
+                    }
+                    var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
+                    var deps = {}, count = 0;
 
-                        while (m=r.exec(text)) {
-                            deps[resolve(m[2],path)] = 1;
-                            count++;
-                        }
+                    while (m=r.exec(text)) {
+                        deps[resolve(m[2],path)] = 1;
+                        count++;
+                    }
 
-                        var loaded = 0;
-                        for (var key in deps) {
-                            extensions.js.pre(key,function(){
-                                loaded++;
-                                if (loaded==count) callback(text);
-                            },async);
-                        }
-                        if (count==0) callback(text);
-                    },async);
-                }
+                    var loaded = 0;
+                    for (var key in deps) {
+                        extensions.js.pre(key,function(){
+                            loaded++;
+                            if (loaded==count) callback(text);
+                        },async);
+                    }
+                    if (count==0) callback(text);
+                },async);
             },
-            get: function (path,callback) {
+            wrap: function (path) {
                 var js = "";
-                var path_s = "'"+path.replace(/\\?("|')/g,'\\$1')+"'";
-                
-                js += "(function(){";
-                js += "var require = window.require.factory("+path_s+");";
+                js += "(function(path){";
+                js += "var require = window.require.factory(path);";
+                js += "var module = { exports: false };";
                 js += "var exports = {};\n";
                 
                 js += cache.files[path];
                 
-                js += "\n"+"return exports;";
-                js += "})();";
-                js += "//# sourceURL="+path;
+                js += "\n"+"return module.exports || exports;";
+                js += "})";
+                return js;
+            },
+            get: function (path,callback) {
+                var path_s = path_string(path);
+                var js = this.wrap(path);
+                js += "("+path_s+");//# sourceURL="+path;
                 
                 try {
                     var res = eval(js);
@@ -66,6 +62,11 @@
                     throw(e);
                 }
                 callback(res);
+            },
+            build: function (path,callback) {
+                var path_s = path_string(path);
+                var js = 'require.define('+path_s+','+this.wrap(path)+')\n';
+                callback({js:js});
             }
         },
         css: {
@@ -77,6 +78,14 @@
                 append.href = path;
                 head.appendChild(append);
                 callback(true);
+            },
+            build: function (path,callback) {
+                var path_s = path_string(path);
+                var js = 'require.define('+path_s+',true)\n';
+                
+                getFile(path,function(text){
+                    callback({js:js,css:text});
+                },true);
             }
         },
         tea: {
@@ -92,6 +101,65 @@
                 );
             }
         }
+    }
+    
+    function build() {
+        var args = Array.prototype.slice.call(arguments);
+        var callback = args[args.length-1];
+        
+        if (callback!==true && (!callback || !callback.call)) {
+            args.push(callback=false);
+        };
+        
+        var pathes = [];
+        var loaded = 0;
+        var result = {
+            css: "",
+            js: "var require_min = function(f){\n"
+        };
+        
+        args[args.length-1] = function(){
+            for (var path in cache.modules) {
+                var mod = cache.modules[path];
+                var ext = mod.ext;
+                if (extensions[ext] && extensions[ext].build) {
+                    pathes.push({ext:extensions[ext],path:path});
+                }
+            }
+            
+            for (var i=0;i<pathes.length;i++) {
+                var one = pathes[i];
+                one.ext.build(one.path,function(res){
+                    if (res.css) result.css += res.css;
+                    if (res.js) result.js += res.js;
+                    done_cb();
+                });
+            }
+        };
+        
+        function done_cb() {
+            loaded++;
+            if (loaded>=pathes.length && callback) {
+                var out_path = [];
+                for (var i=0;i<args.length;i++) {
+                    var arg = args[i];
+                    if (arg!==true && !arg.call) out_path.push(path_string(arg));
+                }
+                out_path.push('f || function(){}');
+                
+                result.js += 'require('+out_path.join(", ")+')\n';
+                result.js += "}\n";
+                setTimeout(function(){ callback(result); },1);
+                
+            }
+        }
+        window.require.apply(window.required,args);
+    }
+    
+    function define(path,f) {
+        cache.files[path] = "defined";
+        cache.defined[path] = f;
+        return f;
     }
     
     function resolve(what,base) {
@@ -126,9 +194,11 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 var text = cache.files[path] = xhr.status==200 ? xhr.responseText:false;
-                try {
+                try 
+                {
                     callback(text);
-                } catch (e) {
+                } 
+                catch (e) {
                     setTimeout(function(){ throw e; },1);
                 }
             }
@@ -170,7 +240,7 @@
             for (var i=0;i<pathes.length;i++) {
                 var path = pathes[i];
                 var ext = exts[i];
-                if (cache.modules[path]) { loaded_cb(); continue; }
+                if (cache.modules[path] || cache.defined[path]) { loaded_cb(); continue; }
                 
                 var pre = extensions[ext].pre;
                 if (pre)
@@ -189,13 +259,21 @@
                             var path = pathes[got];
                             var ext = exts[got];
                             if (!cache.modules[path]) {
-                                extensions[ext].get(path,function(res){
-                                    cache.modules[path] = res;
+                                
+                                function get_cb(res) {
+                                    cache.modules[path] = {result:res,ext:ext};
                                     result.push(res);
                                     got++; next();
-                                },async);
+                                }
+                                
+                                var defined = cache.defined[path];
+                                if (defined) {
+                                    get_cb(defined.call ? defined(path) : defined);
+                                } else {
+                                    extensions[ext].get(path,get_cb,async);
+                                }
                             } else {
-                                result.push(cache.modules[path]);
+                                result.push(cache.modules[path].result);
                                 got++; next();
                             }
                         } else {
@@ -212,6 +290,7 @@
         }
         r.path = base;
         r.dir = r.path ? r.path.replace(/\\/g, '/').replace(/\/[^\/]*\/?$/, '') : r.path;
+        r.define = define;
         return r;
     }
     
@@ -222,5 +301,6 @@
         window.require.factory = factory;
         window.require.cache = cache;
         window.require.getFile = getFile;
+        window.require.build = build;
     }
 })();

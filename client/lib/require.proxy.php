@@ -1,5 +1,5 @@
 <? if (!isset($_GET['url'])): ?>
-
+<? header("Content-Type: application/javascript") ?>
 (function(){
 var scripts = document.getElementsByTagName("script");
 for (var s=0;s < scripts.length;s++) {
@@ -16,7 +16,7 @@ for (var s=0;s < scripts.length;s++) {
                     window.require.cache.files[key] = text;
                 }
                 callback();
-            });
+            },async);
 
         };
         teacss.getFile_original = teacss.getFile;
@@ -45,13 +45,12 @@ class Proxy {
     static $tea = false;
     
     static function resolve($url) {
-        
         if (strpos($url,"uxcandy.com")!==false) {
             $path = preg_replace("/http\:\/\/uxcandy\.com\/\~([A-Za-z0-9_-]+)/","/var/www/uxcandy_$1/data/public_html",$url);
             return $path;
         }
         
-        if (strpos($url,self::$base_url)!==0) return false;
+        if (self::$base_url && strpos($url,self::$base_url)!==0) return false;
         return self::$base_path.substr($url,strlen(self::$base_url));
     }
     
@@ -97,16 +96,16 @@ class Proxy {
     }
     
     static function run() {
-        $self = $_SERVER['SCRIPT_URI'];
+        $self = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
         $path_self = $_SERVER['PATH_TRANSLATED'];
         
         $a = strlen($self);
         $b = strlen($path_self);
-
+        
         $i = 0;
         while ($self[$a-$i-1]==$path_self[$b-$i-1] && $i<1000) $i++;
         if ($i==0) return;
-
+        
         self::$base_url = substr($self,0,strlen($self)-$i);
         self::$base_path = substr($path_self,0,strlen($path_self)-$i);
         
