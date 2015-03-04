@@ -28,7 +28,9 @@
 
 .dark-ui .teacss-ui .ui-state-default, 
 .dark-ui .teacss-ui .ui-widget-content .ui-state-default, 
-.dark-ui .teacss-ui .ui-widget-header .ui-state-default {
+.dark-ui .teacss-ui .ui-widget-header .ui-state-default,
+.dark-ui .teacss-ui .ui-widget-content
+{
     color: #e0e0e0;
 }
 
