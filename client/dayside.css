@@ -474,7 +474,9 @@
 
 .dark-ui .teacss-ui .ui-state-default, 
 .dark-ui .teacss-ui .ui-widget-content .ui-state-default, 
-.dark-ui .teacss-ui .ui-widget-header .ui-state-default {
+.dark-ui .teacss-ui .ui-widget-header .ui-state-default,
+.dark-ui .teacss-ui .ui-widget-content
+{
     color: #e0e0e0;
 }
 
@@ -1661,19 +1663,21 @@ THE SOFTWARE.
 .jstree-default .jstree-checked a .jstree-checkbox { _background-position:-38px -19px; }
 .jstree-default .jstree-unchecked a .jstree-checkbox { _background-position:-2px -19px; }
 /* IE6 END */::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
 }
 ::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    background: #ffffff;
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+::-webkit-scrollbar-thumb {
+    background: #ffffff;
 }
 ::-webkit-scrollbar-thumb:window-inactive {
     background: #ffffff;
@@ -1681,11 +1685,14 @@ THE SOFTWARE.
 .cm-s-base16-dark {
     background: #151515;
 }
-.cm-s-base16-dark > .teacss-ui, .cm-s-base16-dark .jstree-default.jstree-focused, .cm-s-base16-dark .jstree-default.jstree-focused > ul, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-base16-dark > .teacss-ui, .cm-s-base16-dark .jstree-default.jstree-focused, .cm-s-base16-dark .jstree-default.jstree-focused > ul, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content {
     background: #151515;
 }
+.cm-s-base16-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-base16-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #080808;
+}
 .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-base16-dark .teacss-ui .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-base16-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-base16-dark .teacss-ui .dayside-statusbar {
-    border-color: #151515;
+    border-color: #222222;
 }
 .cm-s-base16-dark .teacss-ui .button-select-panel, .cm-s-base16-dark .teacss-ui .editorPanel-toolbar, .cm-s-base16-dark .teacss-ui .dayside-statusbar {
     background: #222222;
@@ -1693,20 +1700,8 @@ THE SOFTWARE.
 .cm-s-base16-dark .ui-splitter {
     background: #222222 !important;
 }
-.cm-s-base16-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-base16-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-base16-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #484848;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-base16-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #484848;
@@ -1714,11 +1709,14 @@ THE SOFTWARE.
 .cm-s-ambiance {
     background: #202020;
 }
-.cm-s-ambiance > .teacss-ui, .cm-s-ambiance .jstree-default.jstree-focused, .cm-s-ambiance .jstree-default.jstree-focused > ul, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-ambiance > .teacss-ui, .cm-s-ambiance .jstree-default.jstree-focused, .cm-s-ambiance .jstree-default.jstree-focused > ul, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content {
     background: #202020;
 }
+.cm-s-ambiance .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-ambiance .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #131313;
+}
 .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-active, .cm-s-ambiance .teacss-ui .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-content .ui-state-default, .cm-s-ambiance .teacss-ui .ui-widget-header .ui-state-default, .cm-s-ambiance .teacss-ui .dayside-statusbar {
-    border-color: #202020;
+    border-color: #2d2d2d;
 }
 .cm-s-ambiance .teacss-ui .button-select-panel, .cm-s-ambiance .teacss-ui .editorPanel-toolbar, .cm-s-ambiance .teacss-ui .dayside-statusbar {
     background: #2d2d2d;
@@ -1726,20 +1724,8 @@ THE SOFTWARE.
 .cm-s-ambiance .ui-splitter {
     background: #2d2d2d !important;
 }
-.cm-s-ambiance ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-ambiance ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-ambiance ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #535353;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-ambiance ::-webkit-scrollbar-thumb:window-inactive {
     background: #535353;
@@ -1747,11 +1733,14 @@ THE SOFTWARE.
 .cm-s-3024-night {
     background: #090300;
 }
-.cm-s-3024-night > .teacss-ui, .cm-s-3024-night .jstree-default.jstree-focused, .cm-s-3024-night .jstree-default.jstree-focused > ul, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-3024-night > .teacss-ui, .cm-s-3024-night .jstree-default.jstree-focused, .cm-s-3024-night .jstree-default.jstree-focused > ul, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content {
     background: #090300;
 }
+.cm-s-3024-night .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-3024-night .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #000000;
+}
 .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-3024-night .teacss-ui .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-3024-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-3024-night .teacss-ui .dayside-statusbar {
-    border-color: #090300;
+    border-color: #100700;
 }
 .cm-s-3024-night .teacss-ui .button-select-panel, .cm-s-3024-night .teacss-ui .editorPanel-toolbar, .cm-s-3024-night .teacss-ui .dayside-statusbar {
     background: #100700;
@@ -1759,20 +1748,8 @@ THE SOFTWARE.
 .cm-s-3024-night .ui-splitter {
     background: #100700 !important;
 }
-.cm-s-3024-night ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-3024-night ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-3024-night ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #6f2500;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-3024-night ::-webkit-scrollbar-thumb:window-inactive {
     background: #6f2500;
@@ -1780,11 +1757,14 @@ THE SOFTWARE.
 .cm-s-blackboard {
     background: #0C1021;
 }
-.cm-s-blackboard > .teacss-ui, .cm-s-blackboard .jstree-default.jstree-focused, .cm-s-blackboard .jstree-default.jstree-focused > ul, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-blackboard > .teacss-ui, .cm-s-blackboard .jstree-default.jstree-focused, .cm-s-blackboard .jstree-default.jstree-focused > ul, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content {
     background: #0C1021;
 }
+.cm-s-blackboard .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-blackboard .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #05070e;
+}
 .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-active, .cm-s-blackboard .teacss-ui .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-content .ui-state-default, .cm-s-blackboard .teacss-ui .ui-widget-header .ui-state-default, .cm-s-blackboard .teacss-ui .dayside-statusbar {
-    border-color: #0C1021;
+    border-color: #131934;
 }
 .cm-s-blackboard .teacss-ui .button-select-panel, .cm-s-blackboard .teacss-ui .editorPanel-toolbar, .cm-s-blackboard .teacss-ui .dayside-statusbar {
     background: #131934;
@@ -1792,20 +1772,8 @@ THE SOFTWARE.
 .cm-s-blackboard .ui-splitter {
     background: #131934 !important;
 }
-.cm-s-blackboard ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-blackboard ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-blackboard ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #27346c;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-blackboard ::-webkit-scrollbar-thumb:window-inactive {
     background: #27346c;
@@ -1813,11 +1781,14 @@ THE SOFTWARE.
 .cm-s-cobalt {
     background: #002240;
 }
-.cm-s-cobalt > .teacss-ui, .cm-s-cobalt .jstree-default.jstree-focused, .cm-s-cobalt .jstree-default.jstree-focused > ul, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-cobalt > .teacss-ui, .cm-s-cobalt .jstree-default.jstree-focused, .cm-s-cobalt .jstree-default.jstree-focused > ul, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content {
     background: #002240;
 }
+.cm-s-cobalt .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-cobalt .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #001427;
+}
 .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-active, .cm-s-cobalt .teacss-ui .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-content .ui-state-default, .cm-s-cobalt .teacss-ui .ui-widget-header .ui-state-default, .cm-s-cobalt .teacss-ui .dayside-statusbar {
-    border-color: #002240;
+    border-color: #00305a;
 }
 .cm-s-cobalt .teacss-ui .button-select-panel, .cm-s-cobalt .teacss-ui .editorPanel-toolbar, .cm-s-cobalt .teacss-ui .dayside-statusbar {
     background: #00305a;
@@ -1825,20 +1796,8 @@ THE SOFTWARE.
 .cm-s-cobalt .ui-splitter {
     background: #00305a !important;
 }
-.cm-s-cobalt ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-cobalt ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-cobalt ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #0058a6;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-cobalt ::-webkit-scrollbar-thumb:window-inactive {
     background: #0058a6;
@@ -1846,11 +1805,14 @@ THE SOFTWARE.
 .cm-s-erlang-dark {
     background: #002240;
 }
-.cm-s-erlang-dark > .teacss-ui, .cm-s-erlang-dark .jstree-default.jstree-focused, .cm-s-erlang-dark .jstree-default.jstree-focused > ul, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-erlang-dark > .teacss-ui, .cm-s-erlang-dark .jstree-default.jstree-focused, .cm-s-erlang-dark .jstree-default.jstree-focused > ul, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content {
     background: #002240;
 }
+.cm-s-erlang-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-erlang-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #001427;
+}
 .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-erlang-dark .teacss-ui .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-erlang-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-erlang-dark .teacss-ui .dayside-statusbar {
-    border-color: #002240;
+    border-color: #00305a;
 }
 .cm-s-erlang-dark .teacss-ui .button-select-panel, .cm-s-erlang-dark .teacss-ui .editorPanel-toolbar, .cm-s-erlang-dark .teacss-ui .dayside-statusbar {
     background: #00305a;
@@ -1858,20 +1820,8 @@ THE SOFTWARE.
 .cm-s-erlang-dark .ui-splitter {
     background: #00305a !important;
 }
-.cm-s-erlang-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-erlang-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-erlang-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #0058a6;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-erlang-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #0058a6;
@@ -1879,11 +1829,14 @@ THE SOFTWARE.
 .cm-s-lesser-dark {
     background: #262626;
 }
-.cm-s-lesser-dark > .teacss-ui, .cm-s-lesser-dark .jstree-default.jstree-focused, .cm-s-lesser-dark .jstree-default.jstree-focused > ul, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-lesser-dark > .teacss-ui, .cm-s-lesser-dark .jstree-default.jstree-focused, .cm-s-lesser-dark .jstree-default.jstree-focused > ul, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content {
     background: #262626;
 }
+.cm-s-lesser-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-lesser-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #191919;
+}
 .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-lesser-dark .teacss-ui .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-lesser-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-lesser-dark .teacss-ui .dayside-statusbar {
-    border-color: #262626;
+    border-color: #333333;
 }
 .cm-s-lesser-dark .teacss-ui .button-select-panel, .cm-s-lesser-dark .teacss-ui .editorPanel-toolbar, .cm-s-lesser-dark .teacss-ui .dayside-statusbar {
     background: #333333;
@@ -1891,20 +1844,8 @@ THE SOFTWARE.
 .cm-s-lesser-dark .ui-splitter {
     background: #333333 !important;
 }
-.cm-s-lesser-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-lesser-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-lesser-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #595959;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-lesser-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #595959;
@@ -1912,11 +1853,14 @@ THE SOFTWARE.
 .cm-s-mbo {
     background: #2C2C2C;
 }
-.cm-s-mbo > .teacss-ui, .cm-s-mbo .jstree-default.jstree-focused, .cm-s-mbo .jstree-default.jstree-focused > ul, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-mbo > .teacss-ui, .cm-s-mbo .jstree-default.jstree-focused, .cm-s-mbo .jstree-default.jstree-focused > ul, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content {
     background: #2C2C2C;
 }
+.cm-s-mbo .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-mbo .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #1f1f1f;
+}
 .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-active, .cm-s-mbo .teacss-ui .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-content .ui-state-default, .cm-s-mbo .teacss-ui .ui-widget-header .ui-state-default, .cm-s-mbo .teacss-ui .dayside-statusbar {
-    border-color: #2C2C2C;
+    border-color: #393939;
 }
 .cm-s-mbo .teacss-ui .button-select-panel, .cm-s-mbo .teacss-ui .editorPanel-toolbar, .cm-s-mbo .teacss-ui .dayside-statusbar {
     background: #393939;
@@ -1924,20 +1868,8 @@ THE SOFTWARE.
 .cm-s-mbo .ui-splitter {
     background: #393939 !important;
 }
-.cm-s-mbo ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-mbo ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-mbo ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #5f5f5f;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-mbo ::-webkit-scrollbar-thumb:window-inactive {
     background: #5f5f5f;
@@ -1945,11 +1877,14 @@ THE SOFTWARE.
 .cm-s-midnight {
     background: #0F192A;
 }
-.cm-s-midnight > .teacss-ui, .cm-s-midnight .jstree-default.jstree-focused, .cm-s-midnight .jstree-default.jstree-focused > ul, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-midnight > .teacss-ui, .cm-s-midnight .jstree-default.jstree-focused, .cm-s-midnight .jstree-default.jstree-focused > ul, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content {
     background: #0F192A;
 }
+.cm-s-midnight .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-midnight .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #080e17;
+}
 .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-midnight .teacss-ui .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-midnight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-midnight .teacss-ui .dayside-statusbar {
-    border-color: #0F192A;
+    border-color: #16243d;
 }
 .cm-s-midnight .teacss-ui .button-select-panel, .cm-s-midnight .teacss-ui .editorPanel-toolbar, .cm-s-midnight .teacss-ui .dayside-statusbar {
     background: #16243d;
@@ -1957,20 +1892,8 @@ THE SOFTWARE.
 .cm-s-midnight .ui-splitter {
     background: #16243d !important;
 }
-.cm-s-midnight ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-midnight ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-midnight ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #2a4675;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-midnight ::-webkit-scrollbar-thumb:window-inactive {
     background: #2a4675;
@@ -1978,11 +1901,14 @@ THE SOFTWARE.
 .cm-s-monokai {
     background: #272822;
 }
-.cm-s-monokai > .teacss-ui, .cm-s-monokai .jstree-default.jstree-focused, .cm-s-monokai .jstree-default.jstree-focused > ul, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-monokai > .teacss-ui, .cm-s-monokai .jstree-default.jstree-focused, .cm-s-monokai .jstree-default.jstree-focused > ul, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content {
     background: #272822;
 }
+.cm-s-monokai .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-monokai .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #1a1a16;
+}
 .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-active, .cm-s-monokai .teacss-ui .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-content .ui-state-default, .cm-s-monokai .teacss-ui .ui-widget-header .ui-state-default, .cm-s-monokai .teacss-ui .dayside-statusbar {
-    border-color: #272822;
+    border-color: #34362e;
 }
 .cm-s-monokai .teacss-ui .button-select-panel, .cm-s-monokai .teacss-ui .editorPanel-toolbar, .cm-s-monokai .teacss-ui .dayside-statusbar {
     background: #34362e;
@@ -1990,20 +1916,8 @@ THE SOFTWARE.
 .cm-s-monokai .ui-splitter {
     background: #34362e !important;
 }
-.cm-s-monokai ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-monokai ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-monokai ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #5d5f51;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-monokai ::-webkit-scrollbar-thumb:window-inactive {
     background: #5d5f51;
@@ -2011,11 +1925,14 @@ THE SOFTWARE.
 .cm-s-night {
     background: #0A001F;
 }
-.cm-s-night > .teacss-ui, .cm-s-night .jstree-default.jstree-focused, .cm-s-night .jstree-default.jstree-focused > ul, .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-night > .teacss-ui, .cm-s-night .jstree-default.jstree-focused, .cm-s-night .jstree-default.jstree-focused > ul, .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content {
     background: #0A001F;
 }
+.cm-s-night .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-night .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #020005;
+}
 .cm-s-night .teacss-ui .ui-widget-header .ui-state-active, .cm-s-night .teacss-ui .ui-state-default, .cm-s-night .teacss-ui .ui-widget-content .ui-state-default, .cm-s-night .teacss-ui .ui-widget-header .ui-state-default, .cm-s-night .teacss-ui .dayside-statusbar {
-    border-color: #0A001F;
+    border-color: #120039;
 }
 .cm-s-night .teacss-ui .button-select-panel, .cm-s-night .teacss-ui .editorPanel-toolbar, .cm-s-night .teacss-ui .dayside-statusbar {
     background: #120039;
@@ -2023,20 +1940,8 @@ THE SOFTWARE.
 .cm-s-night .ui-splitter {
     background: #120039 !important;
 }
-.cm-s-night ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-night ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-night ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #2b0085;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-night ::-webkit-scrollbar-thumb:window-inactive {
     background: #2b0085;
@@ -2044,11 +1949,14 @@ THE SOFTWARE.
 .cm-s-paraiso-dark {
     background: #2F1E2E;
 }
-.cm-s-paraiso-dark > .teacss-ui, .cm-s-paraiso-dark .jstree-default.jstree-focused, .cm-s-paraiso-dark .jstree-default.jstree-focused > ul, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-paraiso-dark > .teacss-ui, .cm-s-paraiso-dark .jstree-default.jstree-focused, .cm-s-paraiso-dark .jstree-default.jstree-focused > ul, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content {
     background: #2F1E2E;
 }
+.cm-s-paraiso-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-paraiso-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #1f141f;
+}
 .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-dark .teacss-ui .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-dark .teacss-ui .dayside-statusbar {
-    border-color: #2F1E2E;
+    border-color: #3f283d;
 }
 .cm-s-paraiso-dark .teacss-ui .button-select-panel, .cm-s-paraiso-dark .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-dark .teacss-ui .dayside-statusbar {
     background: #3f283d;
@@ -2056,20 +1964,8 @@ THE SOFTWARE.
 .cm-s-paraiso-dark .ui-splitter {
     background: #3f283d !important;
 }
-.cm-s-paraiso-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-paraiso-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-paraiso-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #6d466b;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-paraiso-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #6d466b;
@@ -2077,11 +1973,14 @@ THE SOFTWARE.
 .cm-s-paraiso-light {
     background: #E7E9DB;
 }
-.cm-s-paraiso-light > .teacss-ui, .cm-s-paraiso-light .jstree-default.jstree-focused, .cm-s-paraiso-light .jstree-default.jstree-focused > ul, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-paraiso-light > .teacss-ui, .cm-s-paraiso-light .jstree-default.jstree-focused, .cm-s-paraiso-light .jstree-default.jstree-focused > ul, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content {
     background: #E7E9DB;
 }
+.cm-s-paraiso-light .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-paraiso-light .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #dcdfcb;
+}
 .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-active, .cm-s-paraiso-light .teacss-ui .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-content .ui-state-default, .cm-s-paraiso-light .teacss-ui .ui-widget-header .ui-state-default, .cm-s-paraiso-light .teacss-ui .dayside-statusbar {
-    border-color: #E7E9DB;
+    border-color: #f2f3eb;
 }
 .cm-s-paraiso-light .teacss-ui .button-select-panel, .cm-s-paraiso-light .teacss-ui .editorPanel-toolbar, .cm-s-paraiso-light .teacss-ui .dayside-statusbar {
     background: #f2f3eb;
@@ -2089,20 +1988,8 @@ THE SOFTWARE.
 .cm-s-paraiso-light .ui-splitter {
     background: #f2f3eb !important;
 }
-.cm-s-paraiso-light ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-paraiso-light ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-paraiso-light ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #ffffff;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-paraiso-light ::-webkit-scrollbar-thumb:window-inactive {
     background: #ffffff;
@@ -2110,11 +1997,14 @@ THE SOFTWARE.
 .cm-s-pastel-on-dark {
     background: #2C2827;
 }
-.cm-s-pastel-on-dark > .teacss-ui, .cm-s-pastel-on-dark .jstree-default.jstree-focused, .cm-s-pastel-on-dark .jstree-default.jstree-focused > ul, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-pastel-on-dark > .teacss-ui, .cm-s-pastel-on-dark .jstree-default.jstree-focused, .cm-s-pastel-on-dark .jstree-default.jstree-focused > ul, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content {
     background: #2C2827;
 }
+.cm-s-pastel-on-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-pastel-on-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #1e1c1b;
+}
 .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-pastel-on-dark .teacss-ui .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-pastel-on-dark .teacss-ui .dayside-statusbar {
-    border-color: #2C2827;
+    border-color: #3a3433;
 }
 .cm-s-pastel-on-dark .teacss-ui .button-select-panel, .cm-s-pastel-on-dark .teacss-ui .editorPanel-toolbar, .cm-s-pastel-on-dark .teacss-ui .dayside-statusbar {
     background: #3a3433;
@@ -2122,20 +2012,8 @@ THE SOFTWARE.
 .cm-s-pastel-on-dark .ui-splitter {
     background: #3a3433 !important;
 }
-.cm-s-pastel-on-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-pastel-on-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-pastel-on-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #625957;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-pastel-on-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #625957;
@@ -2143,11 +2021,14 @@ THE SOFTWARE.
 .cm-s-rubyblue {
     background: #112435;
 }
-.cm-s-rubyblue > .teacss-ui, .cm-s-rubyblue .jstree-default.jstree-focused, .cm-s-rubyblue .jstree-default.jstree-focused > ul, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-rubyblue > .teacss-ui, .cm-s-rubyblue .jstree-default.jstree-focused, .cm-s-rubyblue .jstree-default.jstree-focused > ul, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content {
     background: #112435;
 }
+.cm-s-rubyblue .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-rubyblue .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #0b1722;
+}
 .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-active, .cm-s-rubyblue .teacss-ui .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-content .ui-state-default, .cm-s-rubyblue .teacss-ui .ui-widget-header .ui-state-default, .cm-s-rubyblue .teacss-ui .dayside-statusbar {
-    border-color: #112435;
+    border-color: #173148;
 }
 .cm-s-rubyblue .teacss-ui .button-select-panel, .cm-s-rubyblue .teacss-ui .editorPanel-toolbar, .cm-s-rubyblue .teacss-ui .dayside-statusbar {
     background: #173148;
@@ -2155,20 +2036,8 @@ THE SOFTWARE.
 .cm-s-rubyblue .ui-splitter {
     background: #173148 !important;
 }
-.cm-s-rubyblue ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-rubyblue ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-rubyblue ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #2a5882;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-rubyblue ::-webkit-scrollbar-thumb:window-inactive {
     background: #2a5882;
@@ -2176,11 +2045,14 @@ THE SOFTWARE.
 .cm-s-the-matrix {
     background: #000000;
 }
-.cm-s-the-matrix > .teacss-ui, .cm-s-the-matrix .jstree-default.jstree-focused, .cm-s-the-matrix .jstree-default.jstree-focused > ul, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-the-matrix > .teacss-ui, .cm-s-the-matrix .jstree-default.jstree-focused, .cm-s-the-matrix .jstree-default.jstree-focused > ul, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content {
+    background: #000000;
+}
+.cm-s-the-matrix .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-the-matrix .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
     background: #000000;
 }
 .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-active, .cm-s-the-matrix .teacss-ui .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-content .ui-state-default, .cm-s-the-matrix .teacss-ui .ui-widget-header .ui-state-default, .cm-s-the-matrix .teacss-ui .dayside-statusbar {
-    border-color: #000000;
+    border-color: #0d0d0d;
 }
 .cm-s-the-matrix .teacss-ui .button-select-panel, .cm-s-the-matrix .teacss-ui .editorPanel-toolbar, .cm-s-the-matrix .teacss-ui .dayside-statusbar {
     background: #0d0d0d;
@@ -2188,20 +2060,8 @@ THE SOFTWARE.
 .cm-s-the-matrix .ui-splitter {
     background: #0d0d0d !important;
 }
-.cm-s-the-matrix ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-the-matrix ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-the-matrix ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #333333;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-the-matrix ::-webkit-scrollbar-thumb:window-inactive {
     background: #333333;
@@ -2209,11 +2069,14 @@ THE SOFTWARE.
 .cm-s-tomorrow-night-eighties {
     background: #000000;
 }
-.cm-s-tomorrow-night-eighties > .teacss-ui, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused > ul, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-tomorrow-night-eighties > .teacss-ui, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused, .cm-s-tomorrow-night-eighties .jstree-default.jstree-focused > ul, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content {
+    background: #000000;
+}
+.cm-s-tomorrow-night-eighties .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
     background: #000000;
 }
 .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-active, .cm-s-tomorrow-night-eighties .teacss-ui .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-content .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .ui-widget-header .ui-state-default, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-statusbar {
-    border-color: #000000;
+    border-color: #0d0d0d;
 }
 .cm-s-tomorrow-night-eighties .teacss-ui .button-select-panel, .cm-s-tomorrow-night-eighties .teacss-ui .editorPanel-toolbar, .cm-s-tomorrow-night-eighties .teacss-ui .dayside-statusbar {
     background: #0d0d0d;
@@ -2221,20 +2084,8 @@ THE SOFTWARE.
 .cm-s-tomorrow-night-eighties .ui-splitter {
     background: #0d0d0d !important;
 }
-.cm-s-tomorrow-night-eighties ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-tomorrow-night-eighties ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-tomorrow-night-eighties ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #333333;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-tomorrow-night-eighties ::-webkit-scrollbar-thumb:window-inactive {
     background: #333333;
@@ -2242,11 +2093,14 @@ THE SOFTWARE.
 .cm-s-twilight {
     background: #141414;
 }
-.cm-s-twilight > .teacss-ui, .cm-s-twilight .jstree-default.jstree-focused, .cm-s-twilight .jstree-default.jstree-focused > ul, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-twilight > .teacss-ui, .cm-s-twilight .jstree-default.jstree-focused, .cm-s-twilight .jstree-default.jstree-focused > ul, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content {
     background: #141414;
 }
+.cm-s-twilight .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-twilight .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #070707;
+}
 .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-active, .cm-s-twilight .teacss-ui .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-content .ui-state-default, .cm-s-twilight .teacss-ui .ui-widget-header .ui-state-default, .cm-s-twilight .teacss-ui .dayside-statusbar {
-    border-color: #141414;
+    border-color: #212121;
 }
 .cm-s-twilight .teacss-ui .button-select-panel, .cm-s-twilight .teacss-ui .editorPanel-toolbar, .cm-s-twilight .teacss-ui .dayside-statusbar {
     background: #212121;
@@ -2254,20 +2108,8 @@ THE SOFTWARE.
 .cm-s-twilight .ui-splitter {
     background: #212121 !important;
 }
-.cm-s-twilight ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-twilight ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-twilight ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #474747;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-twilight ::-webkit-scrollbar-thumb:window-inactive {
     background: #474747;
@@ -2275,11 +2117,14 @@ THE SOFTWARE.
 .cm-s-vibrant-ink {
     background: #002240;
 }
-.cm-s-vibrant-ink > .teacss-ui, .cm-s-vibrant-ink .jstree-default.jstree-focused, .cm-s-vibrant-ink .jstree-default.jstree-focused > ul, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-vibrant-ink > .teacss-ui, .cm-s-vibrant-ink .jstree-default.jstree-focused, .cm-s-vibrant-ink .jstree-default.jstree-focused > ul, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content {
     background: #002240;
 }
+.cm-s-vibrant-ink .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-vibrant-ink .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #001427;
+}
 .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-active, .cm-s-vibrant-ink .teacss-ui .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-content .ui-state-default, .cm-s-vibrant-ink .teacss-ui .ui-widget-header .ui-state-default, .cm-s-vibrant-ink .teacss-ui .dayside-statusbar {
-    border-color: #002240;
+    border-color: #00305a;
 }
 .cm-s-vibrant-ink .teacss-ui .button-select-panel, .cm-s-vibrant-ink .teacss-ui .editorPanel-toolbar, .cm-s-vibrant-ink .teacss-ui .dayside-statusbar {
     background: #00305a;
@@ -2287,20 +2132,8 @@ THE SOFTWARE.
 .cm-s-vibrant-ink .ui-splitter {
     background: #00305a !important;
 }
-.cm-s-vibrant-ink ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-vibrant-ink ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-vibrant-ink ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #0058a6;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-vibrant-ink ::-webkit-scrollbar-thumb:window-inactive {
     background: #0058a6;
@@ -2308,11 +2141,14 @@ THE SOFTWARE.
 .cm-s-xq-dark {
     background: #0A001F;
 }
-.cm-s-xq-dark > .teacss-ui, .cm-s-xq-dark .jstree-default.jstree-focused, .cm-s-xq-dark .jstree-default.jstree-focused > ul, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default {
+.cm-s-xq-dark > .teacss-ui, .cm-s-xq-dark .jstree-default.jstree-focused, .cm-s-xq-dark .jstree-default.jstree-focused > ul, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content {
     background: #0A001F;
 }
+.cm-s-xq-dark .teacss-ui .ui-tabs .ui-tabs-nav, .cm-s-xq-dark .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav {
+    background: #020005;
+}
 .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-active, .cm-s-xq-dark .teacss-ui .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-content .ui-state-default, .cm-s-xq-dark .teacss-ui .ui-widget-header .ui-state-default, .cm-s-xq-dark .teacss-ui .dayside-statusbar {
-    border-color: #0A001F;
+    border-color: #120039;
 }
 .cm-s-xq-dark .teacss-ui .button-select-panel, .cm-s-xq-dark .teacss-ui .editorPanel-toolbar, .cm-s-xq-dark .teacss-ui .dayside-statusbar {
     background: #120039;
@@ -2320,20 +2156,8 @@ THE SOFTWARE.
 .cm-s-xq-dark .ui-splitter {
     background: #120039 !important;
 }
-.cm-s-xq-dark ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
-}
-.cm-s-xq-dark ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-}
 .cm-s-xq-dark ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
     background: #2b0085;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
 .cm-s-xq-dark ::-webkit-scrollbar-thumb:window-inactive {
     background: #2b0085;

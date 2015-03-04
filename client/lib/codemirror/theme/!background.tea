@@ -40,16 +40,25 @@
         .teacss-ui .ui-widget-header .ui-state-active,
         .teacss-ui .ui-state-default, 
         .teacss-ui .ui-widget-content .ui-state-default, 
-        .teacss-ui .ui-widget-header .ui-state-default {
+        .teacss-ui .ui-widget-header .ui-state-default,
+        .teacss-ui .ui-widget-content
+        {
             background: @color;
         }
+        
+        .teacss-ui .ui-tabs .ui-tabs-nav,
+        .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav
+        {
+            background: @darken(color,5);
+        }
+        
         .teacss-ui .ui-widget-header .ui-state-active,
         .teacss-ui .ui-state-default, 
         .teacss-ui .ui-widget-content .ui-state-default, 
         .teacss-ui .ui-widget-header .ui-state-default,
         .teacss-ui .dayside-statusbar
         {
-            border-color: @color;
+            border-color: @sec;
         }
         .teacss-ui .button-select-panel,
         .teacss-ui .editorPanel-toolbar,
