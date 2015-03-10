@@ -117,6 +117,7 @@ if (false !== $userCommand) {
     list($output, $error, $code) = executeCommand($command);
 
     header("Content-Type: text/plain; charset=utf-8");
+    header("Cache-Control: no-cache");
     echo formatOutput($userCommand, htmlspecialchars($output));
     echo htmlspecialchars($error);
 
