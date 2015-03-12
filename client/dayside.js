@@ -18251,9 +18251,14 @@ teacss.ui.filePanel = (function($){
                             res["link"] = {label:"Open web location",action:function(){
                                 window.open(path);
                             }}
-                            
-                            res["download"] = { label: 'Download', action: function(){
-                                window.open(window.FileApi.ajax_url + '?' + $.param({path : path, _type: 'download'}));
+
+                            res["download"] = { label: 'Download', action: function(e){
+                                var array_path = [];
+                                var obj = this.data.ui.selected;
+                                for (i = 0; i < obj.length; i++) { 
+                                    array_path[i] = this.data.ui.selected[i].getAttribute("rel");
+                                }
+                                window.open(window.FileApi.ajax_url + '?' + $.param({path : array_path, _type: 'download'}));
                             }}                                
                             
                             if (node.data("folder")) {
