@@ -28849,6 +28849,7 @@ teacss.ui.check = teacss.ui.Check = teacss.ui.Control.extend("teacss.ui.Check",{
     setValue: function (value) {
         this.value = value;
         this.input[0].checked = value;
+        this.input.button("refresh");
         this.trigger('setValue');
     },
     init : function(options) {
@@ -28874,7 +28875,7 @@ teacss.ui.check = teacss.ui.Check = teacss.ui.Control.extend("teacss.ui.Check",{
 
         me.checkbox = teacss.jQuery("<input type='checkbox' id='check_input'>");
         
-        var cnt = this.Class.cnt = (this.Class.cnt || 0)+1;
+        var cnt = teacss.ui.check.cnt = (teacss.ui.check.cnt || 0)+1;
         
         me.element.appendTo("body").attr("for","check_input_"+cnt);
         me.checkbox.appendTo("body").attr("id","check_input_"+cnt);
@@ -29272,16 +29273,16 @@ teacss.ui.tabPanel = teacss.ui.Panel.extend({
         this.element.tabs( "option", "active", idx);
     },
     prevTab: function () {
-        var sel = this.element.tabs("option","selected");
-        if (sel>0) this.element.tabs("option","selected",sel-1);
+        var sel = this.element.tabs("option","active");
+        if (sel>0) this.element.tabs("option","active",sel-1);
     },
     nextTab: function () {
-        var sel = this.element.tabs("option","selected");
+        var sel = this.element.tabs("option","active");
         var N = this.element.tabs("length");
-        if (sel+1<N) this.element.tabs("option","selected",sel+1);
+        if (sel+1<N) this.element.tabs("option","active",sel+1);
     },
     selectedTab: function () {
-        var sel = this.element.tabs("option","selected");
+        var sel = this.element.tabs("option","active");
         if (sel<0) return false;
         return this.element.find("> div.ui-tabs-panel").eq(sel).data("tab");
     }
@@ -29654,7 +29655,11 @@ teacss.ui.composite = teacss.ui.panel.extend({
                     return;
                 }
                 
-                var cls = teacss.ui[this.type];
+                var cls = this.type;
+                if (typeof(cls)=="string" || cls instanceof String) {
+                    cls = teacss.ui[cls];
+                }
+                
                 if (cls) {
                     var margin = me.table ? 0 : "0 0 10px 0";
                     if (cls == teacss.ui.switcher && me.table) {
