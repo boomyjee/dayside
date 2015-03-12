@@ -163,8 +163,14 @@ function executeCommand($command)
         2 => array("pipe", "w"), // stdout - error channel
         3 => array("pipe", "r"), // stdin - This is the pipe we can feed the password into
     );
+    
+    $env = $_ENV;
+    if (empty($env['HOME']) && function_exists('posix_getuid')) {
+        $uinfo = posix_getpwuid(posix_getuid());
+        $env['HOME'] = $uinfo['dir'];
+    }
 
-    $process = proc_open($command, $descriptors, $pipes);
+    $process = proc_open($command, $descriptors, $pipes,NULL,$env);
 
     if (!is_resource($process)) {
         die("Can't open resource with proc_open.");
