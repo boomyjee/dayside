@@ -278,44 +278,54 @@ class FileApi {
         return;
     }    
     
-    function download(){
-        $path = $this->_pathFromUrl(@$_REQUEST['path']);  
+    function download() {
+        $path = array();
+        if (!$_REQUEST['path'] || is_string($_REQUEST['path'])) { echo "ERROR: Download path is not defined"; die(); }
+        foreach ($_REQUEST['path'] as $value) {
+            $path_temp = $this->_pathFromUrl($value);
+            if (!$path_temp) { echo "ERROR: Invalid download path"; die(); }
+            $path[] = $path_temp;
+        }
         $output = false;
-        if (!$path) { echo "ERROR: Invalid download path"; die(); }
+        $addDir = function(&$zip, $location, $name) use(&$addDir) {
+            $zip->addEmptyDir($name);
+            $name .= '/';
+            $location .= '/';
+
+            // Read all Files in Dir
+            $dir = opendir ($location);
+            while ($file = readdir($dir))
+            {
+                if ($file == '.' || $file == '..') continue;
+
+                if (filetype($location . $file) == 'dir')
+                    $addDir($zip, $location . $file, $name . $file);
+                else
+                    $zip->addFile($location . $file, $name . $file);
+            }
+        };
         
-        if (filetype($path) == 'dir') {
-            $addDir = function(&$zip, $location, $name) use(&$addDir) {
-                $zip->addEmptyDir($name);
-                $name .= '/';
-                $location .= '/';
-        
-                // Read all Files in Dir
-                $dir = opendir ($location);
-                while ($file = readdir($dir))
-                {
-                    if ($file == '.' || $file == '..') continue;
-                    
-                    if (filetype($location . $file) == 'dir')
-                        $addDir($zip, $location . $file, $name . $file);
-                    else
-                        $zip->addFile($location . $file, $name . $file);
-                }
-            };
-      
+        if (count($path) > 1 || filetype($path[0]) == 'dir') {
             $za = new \ZipArchive;
             $dir = sys_get_temp_dir() .'/'. uniqid(); 
             mkdir($dir);
-            $zip_file_name = $dir.'/'.basename($path).'.zip';
-            $res = $za->open($zip_file_name, ZipArchive::CREATE);
+            $zip_file_name = $dir.'/dayside.zip';
             
+            $res = $za->open($zip_file_name, ZipArchive::CREATE);
             if($res === TRUE) {
-                $addDir($za, $path, basename($path));
+                foreach ($path as $value) {
+                    if (filetype($value) == 'dir') 
+                        $addDir($za, $value, basename($value));
+                    else 
+                        $za->addFile($value, basename($value));
+                }
                 $za->close();
                 $output = $zip_file_name;
             }
             else  { echo 'Could not create a zip archive';}
-        } else {
-            $output = $path;
+        }
+        else {
+            $output = $path[0];
         }
         
         if ($output) {
@@ -521,7 +531,7 @@ class FileApi {
         $commands = $commands ?:array(
             'git*' => 'git $1',
             'ls*' => 'ls $1'
-        );        
+        );
         $theme = $theme ?:'ubuntu';
         
         require __DIR__."/../plugins/console/console.php";
