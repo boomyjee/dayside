@@ -1,0 +1,284 @@
+.teacss-ui .git-commit-tab .partial {
+    opacity: 0.6;  
+}
+.teacss-ui .git-commit-tab .hide{
+    display: none;
+}
+.teacss-ui .git-commit-tab .CodeMirror {
+    position: relative;
+    width: 100%;
+}
+.teacss-ui .git-commit-tab form {
+    position: absolute;
+    left: 0; right: 0; top: 0; bottom: 0;
+}
+.teacss-ui .git-commit-tab .panel_buttons {
+    position: absolute;
+    height: 3em;
+    z-index: 10;
+    border-top-style: none;
+    background: #FFF 50% 50% repeat-x;
+    top: 0; left: 0; right: 0;
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons button{
+    margin-right: 0;
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons td{
+    padding: 0.2em 0.2em 0.3em;
+    width: 1px;
+    white-space: nowrap;
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.refresh {
+    padding-left: 0.4em; 
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.branch_name,
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.commit_name {
+    padding-left: 0;
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.commit_msg {    
+    vertical-align: middle;
+    width: 100%;    
+}
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.commit_msg input{
+    box-sizing: border-box;
+    width: 100%;    
+    height: 2.2em;
+}
+
+.teacss-ui .git-commit-tab .diff_scroll_wrap {
+    left: 0; right: 0; top: 3em; bottom: 0;
+    position: absolute;
+    overflow: auto;
+}
+
+.teacss-ui .git-commit-tab .diff_status {
+    background: #CFCFCF 50% 50% repeat-x;
+}
+
+.teacss-ui .git-commit-tab .diff_status tr {
+    border-left: none;
+    border-right: none;
+}
+
+.teacss-ui .git-commit-tab .diff_status .filelist_header {
+    border-top: none;
+    height: 2.8em;
+}
+.teacss-ui .git-commit-tab .diff_status .filelist_header th {
+    text-align: center;
+    padding: 0.5em 1em;
+    font-weight: bold;
+}
+.teacss-ui .git-commit-tab .diff_status .filelist_header th.filename,
+.teacss-ui .git-commit-tab .diff_status tr.file td.filename {
+    text-align: left;
+}
+.teacss-ui .git-commit-tab .diff_status tr.file td {
+    text-align: center;
+    padding: 0.1em 1em;
+}
+.teacss-ui .git-commit-tab .diff_status tr.file td:not(.empty) {
+    width: 1px;
+}
+.teacss-ui .git-commit-tab .diff_status tr.file td.filename {
+    min-width: 10em;
+    white-space: nowrap;
+}
+.teacss-ui .git-commit-tab .diff_status tr.file td.checkbox input.checkbox{
+    width: 100%;
+}
+.teacss-ui .git-commit-tab tr.diff_html {
+    display: none;
+}
+.teacss-ui .git-commit-tab table.diff_status {
+    width: 100%;
+    text-align: left;
+}
+
+.teacss-ui .git-commit-tab table.diff_status tr.file,
+.teacss-ui .git-commit-tab .delta tr td,
+.teacss-ui .panel_buttons .branch_name .ui-button .combo-label,
+.teacss-ui .panel_buttons .commit_name .ui-button .combo-label,
+.teacss-ui .panel_buttons .view_controls .ui-button .combo-label{
+    -webkit-user-select: none; 
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.teacss-ui .git-commit-tab .diff_status tr.file {
+    height: 2.6em;
+}
+.teacss-ui .git-commit-tab .file {
+    background: #F7F7F7 50% 50% repeat-x;
+}
+.teacss-ui .git-commit-tab .diff_status tr td.checkbox {    
+    padding-left: 0;
+}
+.teacss-ui .git-commit-tab .diff_status tr td.filename {
+    cursor: pointer;
+}
+.teacss-ui .git-commit-tab table.diff_status tr td.checkbox label.ui-button{
+    vertical-align: super;
+    border: none;
+}
+.teacss-ui .git-commit-tab table.diff_status tr td.checkbox label.ui-button input{
+    cursor: pointer;
+}
+.teacss-ui .git-commit-tab table.diff_status tr.file .filename:after {
+    margin-left: 0.5em;
+    content: "\25bc"; 
+    visibility: hidden;
+}
+.teacss-ui .git-commit-tab table.diff_status tr.file .filename:hover:after {
+    visibility: visible;    
+}
+.teacss-ui .git-commit-tab table.diff_status tr.file.active .filename:hover:after {
+    margin-left: 0.5em;
+    content: "\25b2";  
+}
+.teacss-ui .git-commit-tab .delta tr td {
+    border-bottom: none;
+    border-top: none;
+    background: #FFF 50% 50% repeat-x;
+}
+.teacss-ui .git-commit-tab .delta tr:last-child td {
+    border-bottom: initial;
+}
+
+.teacss-ui .git-commit-tab table.delta tr.info.partial_staged td {
+    font-weight: bold;
+}
+
+.teacss-ui .git-commit-tab table.delta tr.info.partial_staged td.number_del {
+    text-align: center;
+}
+
+.teacss-ui .git-commit-tab table.delta tr.info.partial_staged td.number_del:after {
+    content: "✓"
+}
+
+.teacss-ui .git-commit-tab table.delta tr td.number_add, 
+.teacss-ui .git-commit-tab table.delta tr td.number_del {
+    width: 4em;
+    min-width: 4em;
+    text-align: right;
+    padding: 0 0.3em;
+}
+.teacss-ui .git-commit-tab table.delta tr td.diff_line {
+    white-space: pre;
+    padding: 0 0 0 1em;
+}
+.teacss-ui .git-commit-tab .diff_status tr td.checkout button {
+    height: 1.8em;
+    width: 1.8em;
+}
+.teacss-ui .git-commit-tab .button-select-panel .combo-label,
+.teacss-ui .git-commit-tab .button-select-panel .combo-label p {
+    padding-left: 1em;
+    padding-right: 1em;
+    max-width: 20em;
+    white-space: normal;
+}
+.teacss-ui .git-commit-tab .commit_name .button-select-panel .combo-label{
+    padding: 0;
+}
+.teacss-ui .git-commit-tab .panel_buttons .ui-button .combo-label{
+    padding-left: 1em;
+    padding-right: 1em;
+}
+.teacss-ui .git-commit-tab .panel_buttons .branch_name .button-select-panel,
+.teacss-ui .git-commit-tab .panel_buttons .commit_name .button-select-panel,
+.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel{
+    z-index: 100000;
+    display: none;
+}
+.teacss-ui .git-commit-tab .panel_buttons .branch_name .button-select-panel.show,
+.teacss-ui .git-commit-tab .panel_buttons .commit_name .button-select-panel.show, 
+.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel.show {
+    display: block;
+    min-height: 0;
+}
+
+/* светлые темы */
+.teacss-ui .git-commit-tab .info .number_add, 
+.teacss-ui .git-commit-tab .info .number_del {
+    background-color: #C9F4F9;
+}
+.teacss-ui .git-commit-tab .insert .number_add, 
+.teacss-ui .git-commit-tab .insert .number_del {
+    background-color: #DBFFDB;
+}
+.teacss-ui .git-commit-tab .delete .number_add, 
+.teacss-ui .git-commit-tab .delete .number_del {
+    background-color: #FDD;
+}
+.teacss-ui .git-commit-tab .info .diff_line{
+    background-color: #DEFCFF;
+}
+.teacss-ui .git-commit-tab .insert .diff_line{
+    background-color: #EAFFEA;
+}
+.teacss-ui .git-commit-tab .delete .diff_line{
+    background-color: #FFECEC;
+}
+.teacss-ui .git-commit-tab .delta tr.context:not(.partial_staged):hover,
+.teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover {
+    cursor: pointer;
+}
+.teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.number_add,
+.teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.number_del {
+    background-color: #9EFF9E;
+}
+.teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.diff_line{
+    background-color: #C6FFC6;
+}
+.teacss-ui .git-commit-tab .delta tr.context:not(.partial_staged):hover td{
+    background-color: #EAEAEA;
+}
+
+/* тёмные темы */
+.dark-ui .teacss-ui .git-commit-tab .info .number_add, 
+.dark-ui .teacss-ui .git-commit-tab .info .number_del {
+    background-color: #0F2152;
+}
+.dark-ui .teacss-ui .git-commit-tab .insert .number_add, 
+.dark-ui .teacss-ui .git-commit-tab .insert .number_del {
+    background-color: #122712;
+}
+.dark-ui .teacss-ui .git-commit-tab .delete .number_add, 
+.dark-ui .teacss-ui .git-commit-tab .delete .number_del {
+    background-color: #2C1A1A;
+}
+.dark-ui .teacss-ui .git-commit-tab .info .diff_line{
+    background-color: #1D2B52
+}
+.dark-ui .teacss-ui .git-commit-tab .insert .diff_line{
+    background-color: #1F371F;
+}
+.dark-ui .teacss-ui .git-commit-tab .delete .diff_line{
+    background-color: #3C2222;
+}
+.cm-s-lesser-dark.dark-ui .teacss-ui .git-commit-tab .diff_status .diff_html pre {
+    padding: 0;
+} 
+.dark-ui .teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.number_add,
+.dark-ui .teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.number_del {
+    background-color: #0E200E;
+}
+.dark-ui .teacss-ui .git-commit-tab .delta tr.insert:not(.partial_staged):hover td.diff_line{
+    background-color: #1B2F1B;
+}
+.dark-ui .teacss-ui .git-commit-tab .delta tr.context:not(.partial_staged):hover td{
+    background-color: #252525;
+}
+
+
+/* Error */
+.teacss-ui .git-commit-tab .ui-state-error:empty {
+    display: none !important;
+}
+.teacss-ui .git-commit-tab .ui-state-error {
+    padding: 0.5em 1em;
+    white-space: pre-wrap;
+}
+
