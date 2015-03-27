@@ -16,6 +16,8 @@
             <script src="plugins/xdebug/xdebug.js"></script>
             <link href="plugins/xdebug/xdebug.css" rel="stylesheet" type="text/css">
             <script src="plugins/console/console.js"></script>
+            <script src="plugins/git_commit/git_commit.js"></script>
+            <link href="plugins/git_commit/git_commit.css" rel="stylesheet" type="text/css">
             <!--<script src="plugins/collaborate/collaborate.js"></script>-->
 
             <script>
@@ -23,6 +25,7 @@
                 dayside.plugins.pixlr();
                 dayside.plugins.xdebug();
                 dayside.plugins.console();
+                dayside.plugins.git_commit();
                 // dayside.plugins.collaborate();
             </script>
         <? endif ?>
