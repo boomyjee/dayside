@@ -190,7 +190,10 @@ dayside.plugins.git_commit = $.Class.extend({
         
         // показывать/скрывать выпадающее меню для branch-ей и commit-ов
         $(tab.element).on("mousedown",".view_type_list, .branch_list, .commit_list",function(e){
-            $(this).next(".button-select-panel").toggleClass("show");
+            var panel = $(this).next(".button-select-panel");
+            var show = panel.hasClass("show");
+            tab.element.find(".button-select-panel.show").removeClass("show");
+            panel.toggleClass("show",!show);
             e.stopPropagation();
         });
         
