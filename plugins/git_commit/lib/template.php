@@ -104,7 +104,7 @@
                 <? if($view_type!="history"): ?>
                     <th class="checkout ui-state-default">Checkout</th>
                 <? endif ?>
-                <th class="empty"></th>
+                <th class="empty ui-state-default"></th>
             </tr>
             <? if (empty($status)): ?>
                 <tr class="file ui-widget-content ui-state-default">
