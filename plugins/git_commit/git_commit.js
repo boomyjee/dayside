@@ -183,7 +183,7 @@ dayside.plugins.git_commit = $.Class.extend({
             });
         }); 
         
-        // cкрытие меню клику в другом месте
+        // cкрытие выпадающего меню клику в другом месте
         $(document).mousedown(function(){
             tab.element.find(".button-select-panel.show").removeClass("show");
         });

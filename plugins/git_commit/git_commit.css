@@ -22,6 +22,7 @@
 }
 .teacss-ui .git-commit-tab .panel_buttons .buttons button{
     margin-right: 0;
+    margin-bottom: 0;
 }
 .teacss-ui .git-commit-tab .panel_buttons .buttons td{
     padding: 0.2em 0.2em 0.3em;
@@ -68,6 +69,10 @@
     text-align: center;
     padding: 0.5em 1em;
     font-weight: bold;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    min-width: 3em;
 }
 .teacss-ui .git-commit-tab .diff_status .filelist_header th.filename,
 .teacss-ui .git-commit-tab .diff_status tr.file td.filename {
@@ -171,6 +176,7 @@
 .teacss-ui .git-commit-tab .diff_status tr td.checkout button {
     height: 1.8em;
     width: 1.8em;
+    margin-bottom: 0;
 }
 .teacss-ui .git-commit-tab .button-select-panel .combo-label,
 .teacss-ui .git-commit-tab .button-select-panel .combo-label p {
