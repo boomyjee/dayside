@@ -1,5 +1,5 @@
 <form>
-    <table class="panel_buttons ui-widget-header ui-state-default">
+    <table class="panel_buttons ui-state-default">
         <tr class="buttons">
             <td class="refresh">
                 <button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' type='submit' name='action' value='refresh'>
@@ -95,14 +95,14 @@
             <tr>
                 <td colspan="5"><div class="ui-state-error ui-corner-all"><?= $error ?></div></td>            
             </tr>
-            <tr class="filelist_header ui-widget-header ui-state-default">
+            <tr class="filelist_header ui-state-default">
                 <? if($view_type!="history"): ?>
-                    <th class="staged">Staged</th>
+                    <th class="staged ui-state-default">Staged</th>
                 <? endif ?>
-                <th class="state">State</th> 
-                <th class="filename">Filename</th>
+                <th class="state ui-state-default">State</th> 
+                <th class="filename ui-state-default">Filename</th>
                 <? if($view_type!="history"): ?>
-                    <th class="checkout">Checkout</th>
+                    <th class="checkout ui-state-default">Checkout</th>
                 <? endif ?>
                 <th class="empty"></th>
             </tr>
