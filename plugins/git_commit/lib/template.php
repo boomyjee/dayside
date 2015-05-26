@@ -112,7 +112,7 @@
                 </tr>
             <? endif ?>
             <? foreach ($status as $one): ?>
-                <tr data-file='<?=htmlspecialchars($one['file'])?>' class="file ui-widget-content ui-state-default">
+                <tr data-file='<?=htmlspecialchars($one['file'])?>' data-status="<?=htmlspecialchars(json_encode($one))?>" class="file ui-widget-content ui-state-default">
                     <? if($view_type!="history"): ?>
                         <td class="checkbox">
                             <input class='checkbox <?=$one['partial'] ? 'partial' : '' ?>' <?=$one['staged'] ? 'checked' : '' ?> type='checkbox'>
@@ -129,9 +129,7 @@
                     <? endif ?>
                     <td class="empty"></td>
                 </tr>
-                <tr class='diff_html'>
-                    <?= $this->generate_diff($one)?>
-                </tr>
+                <tr class='diff_html'></tr>
             <? endforeach ?>
         </table>
     </div>

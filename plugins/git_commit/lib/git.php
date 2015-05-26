@@ -17,8 +17,6 @@ class Git {
         foreach($array_args as $v)
             $args .= ' '. escapeshellarg($v);
 
-        $command = escapeshellcmd($command);
-        
         $descriptorspec = array(
             0 => Array ('pipe', 'r'),  // stdin
             1 => Array ('pipe', 'w'),  // stdout
@@ -120,31 +118,61 @@ class Git {
         return $this->run_command(array('log', '--pretty=format:%H', '-1', $branch_name)); 
     }
     
+    function diff($one_status,$commit_sha1=false,$commit_sha2=false) {
+        $res = array(
+            'diff_staged' => '',
+            'diff_wt' => ''
+        );
+        
+        if ($commit_sha1 && $commit_sha2) {
+            $file_2 = $one_status['file'];
+            $file_1 = isset($one_status['old_file']) ? $one_status['old_file'] : $file_2;
+            $res['diff_staged'] = $this->run_command(array('diff', '--find-renames', $commit_sha1, $commit_sha2, '--', $file_1, $file_2)); 
+        } 
+        else {
+            $head_file = @$one_status['old_file']?:$one_status['file'];
+            
+            if ($one_status['staged']) {
+                $res['diff_staged'] = $this->run_command(array('diff', '--cached', '--find-renames', '--', $one_status['file'],$head_file));
+            } else {
+                $res['diff_staged'] = "";
+            }
+            
+            if (!$one_status['staged'] || $one_status['partial']) {
+                if ($one_status['state'][0]=='?') {
+                    $res['diff_wt'] = $this->run_command(array('diff', '--', '/dev/null', $head_file));
+                } else {
+                    $res['diff_wt'] = $this->run_command(array('diff', 'HEAD', '--', $head_file));
+                }
+            } else {
+                $res['diff_wt'] = "";
+            }
+        }
+        return $res;
+    }
+    
     function history($commit_sha, $name_branch=null) {
         $status = array();
-        $string = $this->run_command(array("diff", "--name-status", '--find-renames', $commit_sha."^", $commit_sha));
+        $status_string = $this->run_command(array("diff", "--name-status", '--find-renames', $commit_sha."^", $commit_sha));
         if ($this->error) return $status;
         
-        $lines = preg_split("/\\r\\n|\\r|\\n/", $string, -1,  PREG_SPLIT_NO_EMPTY);        
+        $status_lines = preg_split("/\\r\\n|\\r|\\n/", $status_string, -1,  PREG_SPLIT_NO_EMPTY);        
        
-        foreach ($lines as $line) {
-            $str = rtrim($line);
+        foreach ($status_lines as $status_line) {
+            $str = rtrim($status_line);
             $str = preg_split("/\s/", $str, -1,  PREG_SPLIT_NO_EMPTY); 
+            
             $one = array(); 
             $one['state'] = $str[0]; 
-            if(substr($one['state'],0,1)=="R"){                
+            if($one['state'][0]=="R"){                
                 $one['old_file'] = $file_1 = $str[1];
                 $one['file'] = $file_2 = $str[2];
             } else {
                 $one['file'] = $file_1 = $file_2 = $str[1];
             }
-            $one['diff_staged'] = $this->run_command(array('diff', $commit_sha."^", $commit_sha, '--', $file_1, $file_2)); 
-            $one['diff_wt'] = '';
-
             if ($this->error) return $status;
             $status[$one['file']] = $one;
         }
-        
         return $status;
     }
     
@@ -159,6 +187,16 @@ class Git {
             $one = array('partial'=>false);
             $str = rtrim($line);           
             
+            $one['state'] = $str[0].$str[1];            
+            $one['file'] = substr($str, 3);
+            $one['modified'] = filemtime($this->dir."/".$one['file']);
+            
+            if ($str[0]=='R') {
+                $parts = explode('->',$one['file']);
+                $one['old_file'] = trim($parts[0]);                
+                $one['file'] = trim($parts[1]);
+            }
+            
             if ($str[0]!=' ' && $str[0]!='?') {
                 $one['staged'] = 1;
                 if ($str[1]!=' ') $one['partial'] = true;
@@ -166,24 +204,6 @@ class Git {
                 $one['staged'] = 0;
             }
             
-            $one['state'] = $str[0].$str[1];            
-            $one['file'] = substr($str, 3);
-            
-            if ($one['staged']) {
-                $old_file = @$one['old_file']?:'';
-                $one['diff_staged'] = $this->run_command(array('diff', '--cached', '--find-renames', '--', $one['file'],$old_file));
-            } else {
-                $one['diff_staged'] = "";
-            }
-            if (!$one['staged'] || $one['partial']) {
-                if ($str[0]=='?') {
-                    $one['diff_wt'] = $this->run_command(array('diff', '--', '/dev/null', $one['file']));
-                } else {
-                    $one['diff_wt'] = $this->run_command(array('diff', 'HEAD', '--', $one['file']));
-                }
-            } else {
-                $one['diff_wt'] = "";
-            }
             $status[$one['file']] = $one;
         }        
         return $status;
