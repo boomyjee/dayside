@@ -204,8 +204,40 @@ dayside.plugins.git_commit = $.Class.extend({
         
         // показывать/скрывать diff 
         $(tab.element).on("click","td.filename",function(){  
-            $(this).parent('tr.file').toggleClass('active');
-            $(this).parent('tr.file').next("tr.diff_html").toggle();             
+            
+            var $tr = $(this).parent('tr.file')
+            var $tr_diff_html = $tr.next("tr.diff_html");
+            
+            var commit_sha1 = '',commit_sha2 = '';
+            
+            if ($(".view_type.selected").data("value")=='history') {
+                commit_sha2 = $(".commit.selected").data("value");
+                commit_sha1 = commit_sha2+"^";
+            }
+            
+            if ($tr_diff_html.is(":empty")) {
+                reloadTab(
+                    {
+                        ajax_action: 'diff',
+                        one_status: $tr.attr("data-status"),
+                        commit_sha1: commit_sha1,
+                        commit_sha2: commit_sha2
+                    },
+                    'json',
+                    function(data) { 
+                        if(data.error){
+                            tab.element.find(".ui-state-error").text(data.error);
+                            return;
+                        } else {
+                            $tr_diff_html.html(data.diff_html);
+                        }
+                    }
+                );            
+                
+            }
+            
+            $tr.toggleClass('active');
+            $tr_diff_html.toggle();             
         });
                 
     },

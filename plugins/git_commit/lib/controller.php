@@ -146,14 +146,14 @@ class Controller {
         
         if ($old_file) {
             $res['extra_status'][0] = $this->data['status'][$_POST['file']];
-            $res['extra_status'][0]['diff'] = $this->generate_diff($this->data['status'][$_POST['file']]);
+            $res['extra_status'][0]['diff'] = $this->diff_html($this->data['status'][$_POST['file']]);
             $res['extra_status'][1] = $this->data['status'][$old_file];
-            $res['extra_status'][1]['diff'] = $this->generate_diff($this->data['status'][$old_file]);
+            $res['extra_status'][1]['diff'] = $this->diff_html($this->data['status'][$old_file]);
         } else {
             foreach ($status as $one_status) {
                 if($one_status['state'][0]=="R" && ($one_status['file']==$_POST['file'] || $one_status['old_file']==$_POST['file'])){
                     $res['extra_status'][0] = $one_status;
-                    $res['extra_status'][0]['diff'] = $this->generate_diff($one_status);
+                    $res['extra_status'][0]['diff'] = $this->diff_html($one_status);
                     break;
                 }                          
             } 
@@ -172,18 +172,32 @@ class Controller {
         echo json_encode($res);
     }
     
-    function generate_diff($one_status){
-
-        $lines_staged = $one_status['diff_staged'] ? explode("\n",$one_status['diff_staged']) : array();
-        $lines_wt = $one_status['diff_wt'] ? explode("\n",$one_status['diff_wt']) : array();
+    function diff() {
+        $commit_sha1 = @$_POST['commit_sha1'];
+        $commit_sha2 = @$_POST['commit_sha2'];
+        $one_status = json_decode($_POST['one_status'],true);
         
+        $res = array();
+        if ($this->model->error) {
+            $res['error'] = $this->model->error;
+        } else {
+            $res['diff_html'] = $this->diff_html($one_status,$commit_sha1,$commit_sha2);
+        }
+        echo json_encode($res);
+    }
+        
+        
+    function diff_html($one_status,$commit_sha1,$commit_sha2) {
+        $diff = $this->model->diff($one_status,$commit_sha1,$commit_sha2);
+        
+        $lines_staged = $diff['diff_staged'] ? explode("\n",$diff['diff_staged']) : array();
+        $lines_wt = $diff['diff_wt'] ? explode("\n",$diff['diff_wt']) : array();
+
         $add = false;
         $del = false;
-            
-        $result.=" <td colspan='5'>                        
-                      <table class='delta CodeMirror cm-s-no-direct-theme' data-filename='".$one_status['file']."'>
-                          <tbody>";
-        
+
+        $diff_html = " <td colspan='5'><table class='delta CodeMirror cm-s-no-direct-theme' data-filename='".$one_status['file']."'><tbody>";
+
         foreach (array('staged'=>$lines_staged,'wt'=>$lines_wt) as $line_src => $lines) {
             $was_header = false;
             $partial_staged = ($line_src=='staged' && !empty($lines_wt)) ? 'partial_staged' : '';
@@ -204,26 +218,24 @@ class Controller {
                     $was_header = true;
                     $tr_class = "info";
                 }
-                
+
                 if (!$was_header) continue;
                 if ($line[0]=="\\") continue;
-                
+
                 if ($line[0]==" " || $line[0]=="+") $add_str = $add++;
                 if ($line[0]==" " || $line[0]=="-") $del_str = $del++;
                 if ($line[0]=="+") $tr_class = "insert";
                 if ($line[0]=="-") $tr_class = "delete";
-                
-                $result.="<tr class='$tr_class $partial_staged'>
-                              <td class='number_del ui-state-default'>$del_str</td>
-                              <td class='number_add ui-state-default'>$add_str</td> 
-                              <td class='diff_line ui-state-default'>".htmlspecialchars($line)."</td>
-                          </tr>";
+
+                $diff_html .= "<tr class='$tr_class $partial_staged'>
+                                   <td class='number_del ui-state-default'>$del_str</td>
+                                   <td class='number_add ui-state-default'>$add_str</td> 
+                                   <td class='diff_line ui-state-default'>".htmlspecialchars($line)."</td>
+                              </tr>";
             }
-            
+
         }
-                $result.="</tbody>
-                      </table>                         
-                  </td>";
-        return $result;
+        $diff_html .= "</tbody></table></td>";
+        return $diff_html;
     }
 }
