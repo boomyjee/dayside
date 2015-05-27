@@ -69,7 +69,7 @@ dayside.plugins.git_commit = $.Class.extend({
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
         $(tab.element).on("click","tr.insert, tr.context",function(e){
 
-            if($(tab.element).find(".view_type.selected").data("value")!='working_tree' || $(this).hasClass("partial_staged")){
+            if($(tab.element).find(".view_type").data("value")!='working_tree' || $(this).hasClass("partial_staged")){
                 return;
             }
             
@@ -159,14 +159,14 @@ dayside.plugins.git_commit = $.Class.extend({
         
         // переключение view_type
         $(tab.element).on("mousedown",".view_type",function(){
-            if ($(this).is(".selected")) return;
-            reloadTab({action:$(this).data("value")});
+            reloadTab({
+                action: $(".view_type").data("value")=="working_tree" ? 'history' : 'working_tree',
+            });
         });         
         
         // переключение branch-а
         $(tab.element).on("mousedown",".branch",function(){
-            if ($(this).is(".selected")) return;
-            var view_type = $(".view_type.selected").data("value");
+            var view_type = $(".view_type").data("value");
             reloadTab({
                 action: view_type=='working_tree' ? 'switch_branch' : 'history',
                 selected_branch: $(this).data("value")
@@ -189,7 +189,7 @@ dayside.plugins.git_commit = $.Class.extend({
         });
         
         // показывать/скрывать выпадающее меню для branch-ей и commit-ов
-        $(tab.element).on("mousedown",".view_type_list, .branch_list, .commit_list",function(e){
+        $(tab.element).on("mousedown",".branch_list, .commit_list",function(e){
             var panel = $(this).next(".button-select-panel");
             var show = panel.hasClass("show");
             tab.element.find(".button-select-panel.show").removeClass("show");
@@ -210,7 +210,7 @@ dayside.plugins.git_commit = $.Class.extend({
             
             var commit_sha1 = '',commit_sha2 = '';
             
-            if ($(".view_type.selected").data("value")=='history') {
+            if ($(".view_type").data("value")=='history') {
                 commit_sha2 = $(".commit.selected").data("value");
                 commit_sha1 = commit_sha2+"^";
             }

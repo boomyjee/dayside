@@ -142,7 +142,7 @@ class Git {
                 if ($one_status['state'][0]=='?') {
                     $res['diff_wt'] = $this->run_command(array('diff', '--', '/dev/null', $head_file));
                 } else {
-                    $res['diff_wt'] = $this->run_command(array('diff', 'HEAD', '--', $head_file));
+                    $res['diff_wt'] = $this->run_command(array('diff', 'HEAD', '--find-renames', '--', $one_status['file'], $head_file));
                 }
             } else {
                 $res['diff_wt'] = "";

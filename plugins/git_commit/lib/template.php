@@ -7,23 +7,15 @@
                 </button>                 
             </td>   
             <td class="view_controls">
-                <div class="ui-button ui-widget ui-state-default icon-button view_type_list" role="button">
+                <div class="ui-button ui-widget ui-state-default icon-button" role="button">
                     <span class="ui-button-text">
                         <div class="combo-item">
-                            <span class="combo-label"><?=$view_type?></span>
+                            <span data-value="<?=$view_type?>" class="combo-label view_type">
+                                <?=($view_type=="history") ? "history" : "working tree" ?>
+                            </span>
                         </div>
                     </span>
                 </div>  
-                <div class="button-select-panel teacss-ui">
-                    <div>                        
-                        <div data-value="working_tree" class="view_type combo-item <?=($view_type=="working_tree")? "selected":""?>">
-                            <span class="combo-label">working tree</span>
-                        </div>
-                        <div data-value="history" class="view_type combo-item <?=($view_type=="history")? "selected":""?>">                                
-                            <span class="combo-label">history</span>
-                        </div>
-                    </div>
-                </div>
             </td>            
             <td class="branch_name">
                 <div class="ui-button ui-widget ui-state-default icon-button icon-button branch_list" role="button">
