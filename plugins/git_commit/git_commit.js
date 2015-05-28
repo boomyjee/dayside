@@ -42,8 +42,33 @@ dayside.plugins.git_commit = $.Class.extend({
             });
         }
         
+        function reloadCodeTab(one_tab) {
+            FileApi.file(one_tab.options.file,function (answer){
+                if (!one_tab.editor) return;
+                if(one_tab.editor.getValue()==FileApi.cache[one_tab.options.file]) return;
+
+                var stateData = dayside.storage.get("codeTabState") || {};
+                var tab_state = stateData[one_tab.options.file];
+
+                one_tab.editor.setValue(FileApi.cache[one_tab.options.file]); 
+
+                stateData[one_tab.options.file] = tab_state;
+                dayside.storage.set("codeTabState",stateData);
+
+                one_tab.restoreState();
+                one_tab.editorChange();
+            });
+        }        
+        
+        function reloadFileTab() {
+            var tree = window.dayside.editor.filePanel.tree;
+            var node = tree.find("li[rel]").each(function(){
+                if ($(this).attr("rel")==tab.path) tree.jstree('refresh',$(this));
+            });
+        }
+        
         function tpl(one_status) {
-            return $("<tr class='file ui-widget-content ui-state-default'>").attr("data-file", one_status.file).append(
+            return $("<tr class='file ui-widget-content ui-state-default'>").attr("data-file", one_status.file).attr("data-status", JSON.stringify(one_status)).append(
                 $("<td class='checkbox'>").append(
                     $("<input class='checkbox' type='checkbox'>").attr("checked", one_status.staged ? true : false).addClass(one_status.partial ? 'partial' : '')
                 ),
@@ -140,11 +165,12 @@ dayside.plugins.git_commit = $.Class.extend({
         // откат изменений(checkout) файла
         $(tab.element).on("click",".checkout_file",function(e){
             var $tr = $(this).parents("tr.file");
+            var file_status = $tr.data("status");
             e.preventDefault();
             reloadTab(
                 {
                     ajax_action: 'checkout_file',
-                    file: $tr.data("file")
+                    file: file_status.file
                 },
                 'json',
                 function(data) { 
@@ -153,6 +179,18 @@ dayside.plugins.git_commit = $.Class.extend({
                         return;
                     }            
                     $tr.next().andSelf().remove();
+                    
+                    reloadFileTab();
+                    $(teacss.ui.codeTab.tabs).each( function(key, one_tab) {
+                        if (one_tab.options.file==tab.path + '/' + file_status.file) {
+                            if (file_status.old_file) {
+                                one_tab.options.file = tab.path + '/' + file_status.old_file;
+                                var caption = file_status.old_file.split("/").pop(); 
+                                one_tab.navElement.find("a").text(caption);
+                            }
+                            reloadCodeTab(one_tab);
+                        }
+                    });
                 }
             );
         }); 
@@ -160,17 +198,43 @@ dayside.plugins.git_commit = $.Class.extend({
         // переключение view_type
         $(tab.element).on("mousedown",".view_type",function(){
             reloadTab({
-                action: $(".view_type").data("value")=="working_tree" ? 'history' : 'working_tree',
+                action: $(".view_type").data("value")=="working_tree" ? 'history' : 'working_tree'
             });
         });         
         
         // переключение branch-а
         $(tab.element).on("mousedown",".branch",function(){
+            
+            var $this = $(this);
             var view_type = $(".view_type").data("value");
-            reloadTab({
-                action: view_type=='working_tree' ? 'switch_branch' : 'history',
-                selected_branch: $(this).data("value")
-            });
+            
+            if (view_type=="working_tree") {
+                var changed = false;
+                $(teacss.ui.codeTab.tabs).each(function(key, one_tab) { changed = changed || one_tab.changed; });
+                if (changed) {
+                    tab.element.find(".ui-state-error").text("Save changed files before switching branch");
+                    tab.element.find(".button-select-panel").removeClass("show");
+                    return;
+                }
+            }            
+
+            reloadTab(
+                {
+                    action: view_type=='working_tree' ? 'switch_branch' : 'history',
+                    selected_branch: $(this).data("value")
+                },
+                false,
+                function (){
+                    if (view_type!="working_tree") return;
+                    
+                    reloadFileTab();
+                    $(teacss.ui.codeTab.tabs).each( function(key, one_tab) {
+                        reloadCodeTab(one_tab);
+                    });
+                }
+            );
+            
+           
         });  
         
         // переключение commit-а
