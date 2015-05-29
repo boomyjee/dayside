@@ -1,4 +1,11 @@
 (function ($,ui) {
+    
+dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
+    serialize: function () {},
+    deserialize: function () {},
+},{
+    
+});
 
 dayside.plugins.git_commit = $.Class.extend({
     init: function (options) {
@@ -312,6 +319,9 @@ dayside.plugins.git_commit = $.Class.extend({
         if (rel[0]=='/') rel = rel.substring(1);
         
         var ajax_url = FileApi.ajax_url + "?" + $.param({_type:"git_commit",path:path});
+        
+        var tab = new dayside.plugins.git_commit.projectTab({path:rel});
+        
         var tab = ui.panel({label:"Commit: /" + rel,closable:true});
         
         tab.element.addClass('git-commit-tab');
