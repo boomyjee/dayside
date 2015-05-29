@@ -77,10 +77,15 @@ class Controller {
         $this->data['status'] = $this->model->history($commit_sha, $name_branch);
         $this->data['error'] = $this->model->error;
     }
-    
-    
+        
     function stage_all(){
         $this->model->stage_all();
+        $this->data['error'] = $this->model->error;
+        $this->working_tree();
+    }
+        
+    function amend(){
+        $this->model->amend();
         $this->data['error'] = $this->model->error;
         $this->working_tree();
     }

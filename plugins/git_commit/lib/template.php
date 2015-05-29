@@ -65,6 +65,11 @@
                         <span class="ui-button-text">Stage All</span>
                     </button> 
                 </td>
+                <td class="amend">
+                    <button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' type='submit' name='action' value='amend'>
+                        <span class="ui-button-text">Amend</span>
+                    </button> 
+                </td>
                 <td class="commit_msg">
                     <input name='commit_message' placeholder='commit message' value='<?= $commit_message ?>' /input>
                 </td>
