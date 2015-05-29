@@ -110,6 +110,10 @@ class Git {
         return $result;
     }
     
+    function amend() {
+        return $this->run_command(array("commit", "--amend", "--no-edit"));
+    }
+    
     function commit($message) {
         return $this->run_command(array("commit", "-m", escapeshellarg($message)));
     }
