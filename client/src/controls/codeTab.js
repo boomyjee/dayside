@@ -1,6 +1,12 @@
 teacss.ui.codeTab = (function($){
-    return teacss.ui.Panel.extend({
-        tabs: []
+    return teacss.ui.Panel.extend("teacss.ui.codeTab",{
+        tabs: [],
+        serialize: function (tab) {
+            return tab.options.file;
+        },
+        deserialize: function (data) {
+            return new this({file:data,closable:true});
+        }
     },{
         init: function (options) {
             this._super(options);
