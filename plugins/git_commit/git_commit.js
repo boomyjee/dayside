@@ -247,13 +247,21 @@ dayside.plugins.git_commit = $.Class.extend({
             });
         }); 
         
+        // выполнение amend
+        $(tab.element).on("mousedown",".amend",function(){
+            reloadTab({
+                action: 'amend',
+                message: $("input[name=commit_message]").val()
+            });
+        });
+        
         // cкрытие выпадающего меню клику в другом месте
         $(document).mousedown(function(){
             tab.element.find(".button-select-panel.show").removeClass("show");
         });
         
         // показывать/скрывать выпадающее меню для branch-ей и commit-ов
-        $(tab.element).on("mousedown",".branch_list, .commit_list",function(e){
+        $(tab.element).on("mousedown",".branch_list, .commit_list, .commit_select_menu",function(e){
             var panel = $(this).next(".button-select-panel");
             var show = panel.hasClass("show");
             tab.element.find(".button-select-panel.show").removeClass("show");

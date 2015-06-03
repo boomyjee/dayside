@@ -194,16 +194,37 @@
 }
 .teacss-ui .git-commit-tab .panel_buttons .branch_name .button-select-panel,
 .teacss-ui .git-commit-tab .panel_buttons .commit_name .button-select-panel,
-.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel{
+.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel,
+.teacss-ui .git-commit-tab .panel_buttons .commit_btn .button-select-panel {
     z-index: 100000;
     display: none;
 }
 .teacss-ui .git-commit-tab .panel_buttons .branch_name .button-select-panel.show,
 .teacss-ui .git-commit-tab .panel_buttons .commit_name .button-select-panel.show, 
-.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel.show {
+.teacss-ui .git-commit-tab .panel_buttons .view_controls .button-select-panel.show,
+.teacss-ui .git-commit-tab .panel_buttons .commit_btn .button-select-panel.show {
     display: block;
     min-height: 0;
 }
+.teacss-ui .git-commit-tab .panel_buttons .buttons td.commit_btn {
+    position: relative; 
+}
+.teacss-ui .git-commit-tab .commit_select_menu.ui-button {
+    vertical-align: middle;
+}
+.teacss-ui .git-commit-tab .commit_select_menu .ui-button-text {
+    padding: 0.4em;
+}
+.teacss-ui .git-commit-tab .button-select-panel.commit_select_menu_item { 
+    position: absolute !important;
+    right: 0;    
+    left: 0;
+    margin: 0 0.2em;
+}
+.teacss-ui .git-commit-tab .button-select-panel.commit_select_menu_item .amend .combo-label{ 
+    padding-left: 10px;
+}
+
 
 /* светлые темы */
 .teacss-ui .git-commit-tab .info .number_add, 
