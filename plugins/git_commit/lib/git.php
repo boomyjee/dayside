@@ -110,6 +110,11 @@ class Git {
         return $result;
     }
     
+    function amend($message) {
+        $args = $message ? "-m ".escapeshellarg($message) : "--no-edit";
+        return $this->run_command(array("commit", "--amend", $args));
+    }
+    
     function commit($message) {
         return $this->run_command(array("commit", "-m", escapeshellarg($message)));
     }
