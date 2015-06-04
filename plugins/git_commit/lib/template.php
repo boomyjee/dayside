@@ -71,7 +71,16 @@
                 <td class="commit_btn">
                     <button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' type='submit' name='action' value='commit'>
                         <span class="ui-button-text">Commit</span>
-                    </button>
+                    </button><div class='commit_select_menu ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only'>
+                        <span class="ui-button-text">&#9660;</span>                    
+                    </div>
+                    <div class="commit_select_menu_item button-select-panel teacss-ui">
+                        <div>
+                            <div class="amend combo-item">                                
+                                <span class="combo-label">Amend</span>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             <? endif ?>
             <td class="empty" style="width: 100%;"></td>
