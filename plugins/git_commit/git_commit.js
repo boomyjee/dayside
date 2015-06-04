@@ -81,7 +81,9 @@ dayside.plugins.git_commit = $.Class.extend({
                 ),
                 $("<td class='empty'>")
             ).add(
-                $("<tr class='diff_html'>").html(one_status.diff)
+                $("<tr>").append(
+                    $("<td class='diff_html ui-state-default' colspan='5'>").html(one_status.diff)
+                )                
             );
         }
         
@@ -92,14 +94,14 @@ dayside.plugins.git_commit = $.Class.extend({
         });
         
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
-        $(tab.element).on("click","tr.insert, tr.context",function(e){
+        $(tab.element).on("click",".diff_line .insert, .diff_line .context",function(e){
 
-            if($(tab.element).find(".view_type").data("value")!='working_tree' || $(this).hasClass("partial_staged")){
-                return;
-            }
+            if(getSelection().toString()) return;
             
-            var line = $(this).find('.number_add').text();
-            var filename = $(this).parents('table.delta').data('filename');
+            if($(tab.element).find(".view_type").data("value")!='working_tree' || $(this).hasClass("partial_staged")) return;
+
+            var line = $(this).parents('.hunk').find('.number_add > div').eq($(this).index()).text();
+            var filename = $(this).parents('.delta').data('filename');
 
             var new_tab = dayside.editor.selectFile(tab.path+"/"+filename);
 
@@ -270,16 +272,19 @@ dayside.plugins.git_commit = $.Class.extend({
         $(tab.element).on("click","td.filename",function(){  
             
             var $tr = $(this).parent('tr.file')
-            var $tr_diff_html = $tr.next("tr.diff_html");
+            var $diff_html = $tr.next().children(".diff_html");
             
             var commit_sha1 = '',commit_sha2 = '';
             
             if ($(".view_type").data("value")=='history') {
                 commit_sha2 = $(".commit.selected").data("value");
                 commit_sha1 = commit_sha2+"^";
-            }
+            }           
             
-            if ($tr_diff_html.is(":empty")) {
+            $diff_html.toggle();
+
+            if ($diff_html.is(":empty")) {
+                $diff_html.addClass('load_diff');
                 reloadTab(
                     {
                         ajax_action: 'diff',
@@ -290,18 +295,16 @@ dayside.plugins.git_commit = $.Class.extend({
                     'json',
                     function(data) { 
                         if(data.error){
+                            $diff_html.removeClass('load_diff').toggle();
                             tab.element.find(".ui-state-error").text(data.error);
                             return;
                         } else {
-                            $tr_diff_html.html(data.diff_html);
+                            $diff_html.removeClass('load_diff').html(data.diff_html);                            
                         }
                     }
-                );            
-                
-            }
-            
+                );
+            }  
             $tr.toggleClass('active');
-            $tr_diff_html.toggle();             
         });
                 
     },
