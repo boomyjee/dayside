@@ -125,24 +125,27 @@ dayside.plugins.git_commit = $.Class.extend({
         $(tab.element).on("click","input.checkbox",function(e){
 
             var chbox = this;
-                      
+            var tr_file = $(chbox).parents("tr.file");
+            var td_diff_html = tr_file.next().children("td.diff_html");
+
             reloadTab(
                 {
                     ajax_action: 'change_staged',
                     stage_file: chbox.checked ? 1 : 0,
-                    file: $(this).parents("tr.file").data("file")
+                    file: tr_file.data("file"),
+                    need_diff: (td_diff_html.is(":visible")) ? true : false
                 },
                 'json',
-                function(data) {
+                function(data) {  
                     if (data.error) {
                         tab.element.find(".ui-state-error").text(data.error);
                         chbox.checked = !chbox.checked; 
                         return;
                     }
                     $(chbox).removeClass("partial");
-                    
-                    if(data.extra_status && data.extra_status.length>1) {
-                        var tr_file = $(chbox).parents("tr.file");                        
+                    $(chbox).parents("tr.file").attr("data-status",JSON.stringify(data.status));
+
+                    if(data.extra_status && data.extra_status.length>1) {                   
                         tr_file.next().after(tpl(data.extra_status[1]));
                         tr_file.next().andSelf().replaceWith(tpl(data.extra_status[0]));
                     } 
@@ -158,7 +161,10 @@ dayside.plugins.git_commit = $.Class.extend({
                         });
                     }
                     else {
-                        $(chbox).parents("tr.file").find('td.state').text(data.state);
+                        tr_file.find('td.state').text(data.state);
+                        if(data.diff_html){                            
+                            td_diff_html.children(".delta").replaceWith(data.diff_html);
+                        }
                     }
                 }
             );
