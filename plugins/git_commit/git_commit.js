@@ -87,12 +87,21 @@ dayside.plugins.git_commit = $.Class.extend({
             );
         }
         
-        // клик по любой кнопке в шапке tab вызов для неё action и перерисовка всей формы
-        $(tab.element).on("click",".buttons button",function(e){            
-            e.preventDefault();
-            reloadTab($(this).parents("form").serialize()+"&action="+$(this).val());
+        // клик по любой кнопке нужно отследить, чтоб учесть как параметр action при отправке формы
+        $(tab.element).on("click","form",function(e){
+            $(this).data("clicked",$(e.target).parents("[value]").eq(0));
         });
         
+        // перехватываем отправку формы и отправляем ее ajax-ом
+        $(tab.element).on("submit","form",function(e){            
+            e.preventDefault();
+            var action = 'commit';
+            var clicked = $(this).data("clicked");
+            if (clicked && clicked.val()) action = clicked.val();
+            $(this).data("clicked",false);
+            
+            reloadTab($(this).serialize()+"&action="+action);
+        });
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
         $(tab.element).on("click",".diff_line .insert, .diff_line .context",function(e){
 
@@ -247,7 +256,7 @@ dayside.plugins.git_commit = $.Class.extend({
                 selected_branch: $(".branch.selected").data("value"),
                 selected_commit: $(this).data("value")
             });
-        }); 
+        });
         
         // выполнение amend
         $(tab.element).on("mousedown",".amend",function(){
