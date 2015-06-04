@@ -195,16 +195,25 @@ class Controller {
 
         $add = false;
         $del = false;
-
-        $diff_html = " <td colspan='5'><table class='delta CodeMirror cm-s-no-direct-theme' data-filename='".$one_status['file']."'><tbody>";
+        
+        $diff_html = "<div class='delta CodeMirror cm-s-no-direct-theme' data-filename='".$one_status['file']."'>";
 
         foreach (array('staged'=>$lines_staged,'wt'=>$lines_wt) as $line_src => $lines) {
+            
+            if(empty($lines)) continue;
+            
             $was_header = false;
-            $partial_staged = ($line_src=='staged' && !empty($lines_wt)) ? 'partial_staged' : '';
+            $staged = ($line_src=='staged') ? 'staged' : '';
+            
+            $part_1 = $part_2 = $part_3 = null;
+            
             foreach($lines as $line) {
+                
+                if(empty($line)) continue;
+                
                 $add_str = "";
                 $del_str = "";
-                $tr_class = "context";
+                $class = "context";
 
                 if("@@" == substr($line, 0, 2)){
                     preg_match('/\d+,\d+\s\+\d+,\d+/', $line, $info);
@@ -216,26 +225,32 @@ class Controller {
                     $add = ($counter_add[0] == 0) ? 1 : $counter_add[0];
                     $del = ($counter_del[0] == 0) ? 1 : $counter_del[0];
                     $was_header = true;
-                    $tr_class = "info";
+                    $class = "info";
                 }
 
                 if (!$was_header) continue;
                 if ($line[0]=="\\") continue;
 
-                if ($line[0]==" " || $line[0]=="+") $add_str = $add++;
-                if ($line[0]==" " || $line[0]=="-") $del_str = $del++;
-                if ($line[0]=="+") $tr_class = "insert";
-                if ($line[0]=="-") $tr_class = "delete";
-
-                $diff_html .= "<tr class='$tr_class $partial_staged'>
-                                   <td class='number_del ui-state-default'>$del_str</td>
-                                   <td class='number_add ui-state-default'>$add_str</td> 
-                                   <td class='diff_line ui-state-default'>".htmlspecialchars($line)."</td>
-                              </tr>";
+                if ($line[0]==" " || $line[0]=="+") $add_str = $del++;
+                if ($line[0]==" " || $line[0]=="-") $del_str = $add++;
+                if ($line[0]=="+") $class = "insert";
+                if ($line[0]=="-") $class = "delete";
+                
+                $part_1 .= "<div class='$class'> ".$del_str." </div>";
+                $part_2 .= "<div class='$class'> ".$add_str." </div>";                
+                $part_3 .= "<div class='$class'>".htmlspecialchars(substr($line,1))." </div>";
+                
             }
-
+            
+            $diff_html .= "<div class='hunk'>";
+            $diff_html .= "<div class='$staged number_del ui-state-default'>".$part_1."</div>";
+            $diff_html .= "<div class='$staged number_add ui-state-default'>".$part_2."</div>";
+            $diff_html .= "<div class='$staged diff_line ui-state-default'>".$part_3."</div>";
+            $diff_html .= "</div>";
         }
-        $diff_html .= "</tbody></table></td>";
+        
+        $diff_html .= "</div>";
+        
         return $diff_html;
     }
 }

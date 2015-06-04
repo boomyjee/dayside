@@ -121,7 +121,7 @@
                     <? endif ?>
                     <td class="empty"></td>
                 </tr>
-                <tr class='diff_html'></tr>
+                <tr><td class="diff_html ui-state-default" colspan='5'></td></tr>
             <? endforeach ?>
         </table>
     </div>
