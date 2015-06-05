@@ -19,7 +19,52 @@ dayside.plugins.git_commit = $.Class.extend({
         });
     },
     
+    openTab: function (path) {
+        var tab = new dayside.plugins.git_commit.projectTab({path:path});
+        
+        var id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
+        dayside.editor.mainPanel.addTab(tab,id,"center");
+        tab.tabPanel.selectTab(tab);        
+    }
+});
+    
+dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
+    serialize: function (tab) {
+        return {path:tab.options.path};
+    },
+    deserialize: function (data) {
+        return new this({path:data.path});
+    },
+},{
+    init: function (o) {
+
+        var path = o.path;
+        var rel = path.substring(FileApi.root.length);
+        if (rel[0]=='/') rel = rel.substring(1);
+        
+        var ajax_url = FileApi.ajax_url + "?" + $.param({_type:"git_commit",path:path});
+        
+        this._super({label:"Commit: /" + rel,closable:true,path:path});
+        
+        this.element.addClass('git-commit-tab');
+        this.ajax_url = ajax_url;
+        this.path = path;
+        
+        this.initTabHandlers();
+        
+        var me = this;
+        $.ajax({
+            url: ajax_url,
+            type: "POST",
+            success: function(html) {
+                me.element.html(html);
+            }
+        });
+    },
+    
     initTabHandlers: function (tab) { 
+        var tab = this;
+        
         function reloadTab(data,resType,cb) {
             
             if($.isPlainObject(data)){   
@@ -304,48 +349,7 @@ dayside.plugins.git_commit = $.Class.extend({
             $tr_diff_html.toggle();             
         });
                 
-    },
-                      
-    openTab: function (path) {
-        
-        var rel = path.substring(FileApi.root.length);
-        if (rel[0]=='/') rel = rel.substring(1);
-        
-        var ajax_url = FileApi.ajax_url + "?" + $.param({_type:"git_commit",path:path});
-        
-        var tab = new dayside.plugins.git_commit.projectTab({path:rel});
-        
-        var tab = ui.panel({label:"Commit: /" + rel,closable:true});
-        
-        tab.element.addClass('git-commit-tab');
-        tab.ajax_url = ajax_url;
-        tab.path = path;
-        
-        this.initTabHandlers(tab);
-        
-        $.ajax({
-            url: ajax_url,
-            type: "POST",
-            success: function(html) {
-                tab.element.html(html);
-            }
-        });
-        
-        var id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
-        dayside.editor.mainPanel.addTab(tab,id,"center");
-        tab.tabPanel.selectTab(tab);        
-    }
-});
-    
-dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
-    serialize: function () {
-    
-    },
-    deserialize: function () {
-    
-    },
-},{
-    
+    }    
 });
     
     
