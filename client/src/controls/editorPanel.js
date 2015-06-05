@@ -271,8 +271,10 @@ teacss.ui.editorPanel = (function($){
             this.element.appendTo("body").addClass("teacss-ui");
             
             // tabs state save
+            
+            var old_addTab = this.tabsForFiles.addTab;
             this.tabsForFiles.addTab = function (tab) {
-                this.tabsForFiles.prototype.addTab.apply(this,arguments);
+                old_addTab.apply(this,arguments);
                 if (!me.loadingTabs) setTimeout(me.saveTabs,1);
                 tab.bind("close",function(){setTimeout(me.saveTabs,1)});
             }
@@ -356,11 +358,14 @@ teacss.ui.editorPanel = (function($){
             var list = dayside.storage.get("tabs");
             if (list && $.isArray(list)) setTimeout(function () {
                 $.each(list,function(){
-                    var cls = $.Class.getObject(new this.cls);
+                    var cls = $.Class.getObject(this.cls);
                     if (cls && cls.deserialize) {
                         var tab = cls.deserialize(this.data);
-                        if (this.selected) {
-                            me.tabsForFiles.selectTab(tab);
+                        if (tab) {
+                            me.tabsForFiles.addTab(tab);
+                            if (this.selected) {
+                                me.tabsForFiles.selectTab(tab);
+                            }
                         }
                     }
                 });
