@@ -67,6 +67,12 @@ dayside.plugins.git_commit = $.Class.extend({
             });
         }
         
+        function showError(text) {
+            tab.element.find(".ui-state-error").text(text);
+            var $diff_scroll_wrap =  $(tab.element).find(".diff_scroll_wrap");
+            $diff_scroll_wrap.animate({ scrollTop: 0 }, 600);
+        }
+
         function tpl(one_status) {
             return $("<tr class='file ui-widget-content ui-state-default'>").attr("data-file", one_status.file).attr("data-status", JSON.stringify(one_status)).append(
                 $("<td class='checkbox'>").append(
@@ -144,8 +150,8 @@ dayside.plugins.git_commit = $.Class.extend({
                 'json',
                 function(data) {
                     if (data.error) {
-                        tab.element.find(".ui-state-error").text(data.error);
-                        chbox.checked = !chbox.checked; 
+                        chbox.checked = !chbox.checked;
+                        showError(data.error);
                         return;
                     }
                     $(chbox).removeClass("partial");
@@ -186,7 +192,7 @@ dayside.plugins.git_commit = $.Class.extend({
                 'json',
                 function(data) { 
                     if(data.error){
-                        tab.element.find(".ui-state-error").text(data.error);
+                        showError(data.error);
                         return;
                     }            
                     $tr.next().andSelf().remove();
@@ -313,7 +319,7 @@ dayside.plugins.git_commit = $.Class.extend({
                     function(data) { 
                         if(data.error){
                             $diff_html.removeClass('load_diff').toggle();
-                            tab.element.find(".ui-state-error").text(data.error);
+                            showError(data.error);
                             return;
                         } else {
                             $diff_html.removeClass('load_diff').html(data.diff_html);                            
