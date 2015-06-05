@@ -17817,8 +17817,14 @@ $.widget("ui.plupload", {
 
 } (window, document, plupload, mOxie, jQuery)); ;
 teacss.ui.codeTab = (function($){
-    return teacss.ui.Panel.extend({
-        tabs: []
+    return teacss.ui.Panel.extend("teacss.ui.codeTab",{
+        tabs: [],
+        serialize: function (tab) {
+            return tab.options.file;
+        },
+        deserialize: function (data) {
+            return new this({file:data,closable:true});
+        }
     },{
         init: function (options) {
             this._super(options);
@@ -18820,11 +18826,13 @@ teacss.ui.editorPanel = (function($){
             this.element.appendTo("body").addClass("teacss-ui");
             
             // tabs state save
-            this.bind("codeTabCreated",function(b,tab){
-                setTimeout(me.saveTabs,1);
-                tab.bind("close",function(){setTimeout(me.saveTabs,1)});
-            });
             
+            var old_addTab = this.tabsForFiles.addTab;
+            this.tabsForFiles.addTab = function (tab) {
+                old_addTab.apply(this,arguments);
+                if (!me.loadingTabs) setTimeout(me.saveTabs,1);
+                tab.bind("close",function(){setTimeout(me.saveTabs,1)});
+            }
             this.tabsForFiles.bind("select",function(){ me.saveTabs() });
             this.tabsForFiles.bind("sortstop",function(){ me.saveTabs() });
             
@@ -18885,6 +18893,7 @@ teacss.ui.editorPanel = (function($){
             });
         },
         saveTabs: function () {
+            if (this.loadingTabs) return;
             var list = [];
             teacss.jQuery(".ui-tabs-panel").each(function(){
                 var tab = teacss.jQuery(this).data("tab");
@@ -18892,23 +18901,31 @@ teacss.ui.editorPanel = (function($){
                 var active_href = $(this).parent().find("> .ui-tabs-nav .ui-tabs-active a").attr("href");
                 var selected = ("#"+id)==active_href;
                 
-                if (tab && tab.Class==teacss.ui.codeTab) {
-                    list.push({file:tab.options.file,selected:selected});
+                if (tab && tab.Class.serialize) {
+                    list.push({cls:tab.Class.fullName,data:tab.Class.serialize(tab),selected:selected});
                 }
             });
             dayside.storage.set("tabs",list);
         },
         loadTabs: function () {
+            this.loadingTabs = true;
             var me = this;
             var list = dayside.storage.get("tabs");
             if (list && $.isArray(list)) setTimeout(function () {
                 $.each(list,function(){
-                    var tab = new teacss.ui.codeTab({file:this.file,closable:true,editorPanel:me});
-                    me.tabsForFiles.push(tab);
-                    if (this.selected)
-                        me.tabsForFiles.selectTab(tab);
+                    var cls = $.Class.getObject(this.cls);
+                    if (cls && cls.deserialize) {
+                        var tab = cls.deserialize(this.data);
+                        if (tab) {
+                            me.tabsForFiles.addTab(tab);
+                            if (this.selected) {
+                                me.tabsForFiles.selectTab(tab);
+                            }
+                        }
+                    }
                 });
             },1);
+            this.loadingTabs = false;
         }
         
     });
