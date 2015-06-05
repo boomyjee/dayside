@@ -1,11 +1,4 @@
 (function ($,ui) {
-    
-dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
-    serialize: function () {},
-    deserialize: function () {},
-},{
-    
-});
 
 dayside.plugins.git_commit = $.Class.extend({
     init: function (options) {
@@ -342,6 +335,17 @@ dayside.plugins.git_commit = $.Class.extend({
         dayside.editor.mainPanel.addTab(tab,id,"center");
         tab.tabPanel.selectTab(tab);        
     }
+});
+    
+dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
+    serialize: function () {
+    
+    },
+    deserialize: function () {
+    
+    },
+},{
+    
 });
     
     
