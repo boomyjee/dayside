@@ -157,7 +157,8 @@ dayside.plugins.git_commit = $.Class.extend({
                         showError(data.error);
                         return;
                     }
-                    $(chbox).removeClass("partial");                    
+                    $(chbox).removeClass("partial");
+                    $(chbox).parents("tr.file").attr("data-status",JSON.stringify(data.status));
 
                     if(data.extra_status && data.extra_status.length>1) {                   
                         tr_file.next().after(tpl(data.extra_status[1]));

@@ -147,7 +147,8 @@ class Controller {
         $res['status_hash'] = $this->data['status_hash'];        
         $res['state'] = $this->data['status'][$_POST['file']]['state'];
         $res['staged'] = $this->data['status'][$_POST['file']]['staged'];
-        if(@$_POST['need_diff']) {
+        $res['status'] = $this->data['status'][$_POST['file']];
+        if($_POST['need_diff']) {
             $res['diff_html'] = $this->diff_html($this->data['status'][$_POST['file']]);
         }
         
