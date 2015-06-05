@@ -267,6 +267,16 @@ dayside.plugins.git_commit = $.Class.extend({
             tab.element.find(".button-select-panel.show").removeClass("show");
         });
         
+        // скрытие по выбору элемента
+        $(tab.element).on('mousedown','.button-select-panel.show .combo-item',function(e) {
+            tab.element.find(".button-select-panel.show").removeClass("show");
+        });
+        
+        // но не скрывать по клику по другим частям уже открытой панель (например, полосе прокрутки)
+        $(tab.element).on('mousedown','.button-select-panel.show',function(e) {
+            e.stopPropagation();
+        });
+        
         // показывать/скрывать выпадающее меню для branch-ей и commit-ов
         $(tab.element).on("mousedown",".branch_list, .commit_list, .commit_select_menu",function(e){
             var panel = $(this).next(".button-select-panel");
