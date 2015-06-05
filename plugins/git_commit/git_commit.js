@@ -140,24 +140,26 @@ dayside.plugins.git_commit = $.Class.extend({
         $(tab.element).on("click","input.checkbox",function(e){
 
             var chbox = this;
-                      
+            var tr_file = $(chbox).parents("tr.file");
+            var td_diff_html = tr_file.next().children("td.diff_html");
+
             reloadTab(
                 {
                     ajax_action: 'change_staged',
                     stage_file: chbox.checked ? 1 : 0,
-                    file: $(this).parents("tr.file").data("file")
+                    file: tr_file.data("file"),
+                    need_diff: (td_diff_html.is(":visible")) ? true : false
                 },
                 'json',
-                function(data) {
+                function(data) {  
                     if (data.error) {
                         chbox.checked = !chbox.checked;
                         showError(data.error);
                         return;
                     }
-                    $(chbox).removeClass("partial");
-                    
-                    if(data.extra_status && data.extra_status.length>1) {
-                        var tr_file = $(chbox).parents("tr.file");                        
+                    $(chbox).removeClass("partial");                    
+
+                    if(data.extra_status && data.extra_status.length>1) {                   
                         tr_file.next().after(tpl(data.extra_status[1]));
                         tr_file.next().andSelf().replaceWith(tpl(data.extra_status[0]));
                     } 
@@ -173,7 +175,10 @@ dayside.plugins.git_commit = $.Class.extend({
                         });
                     }
                     else {
-                        $(chbox).parents("tr.file").find('td.state').text(data.state);
+                        tr_file.find('td.state').text(data.state);
+                        if(data.diff_html){                            
+                            td_diff_html.children(".delta").replaceWith(data.diff_html);
+                        }
                     }
                 }
             );
@@ -275,6 +280,16 @@ dayside.plugins.git_commit = $.Class.extend({
         // cкрытие выпадающего меню клику в другом месте
         $(document).mousedown(function(){
             tab.element.find(".button-select-panel.show").removeClass("show");
+        });
+        
+        // скрытие по выбору элемента
+        $(tab.element).on('mousedown','.button-select-panel.show .combo-item',function(e) {
+            tab.element.find(".button-select-panel.show").removeClass("show");
+        });
+        
+        // но не скрывать по клику по другим частям уже открытой панель (например, полосе прокрутки)
+        $(tab.element).on('mousedown','.button-select-panel.show',function(e) {
+            e.stopPropagation();
         });
         
         // показывать/скрывать выпадающее меню для branch-ей и commit-ов
