@@ -16,7 +16,37 @@ dayside.plugins.git_commit = $.Class.extend({
                     e.menu = e.inject(e.menu,'openGitCommit',menuItem,function (pk,pv,nk,nv) { return pk=="link"; });
                 }
             });
+            
+            dayside.editor.bind("editorOptions",function(b,e){
+                var path = e.tab.options.file;
+                if (path.indexOf("git_commit://")==0) e.options.readOnly = true;
+            });    
+            
+            dayside.editor.bind("codeTabCreated",function(b,tab){
+                var path = tab.options.file;
+                if (path.indexOf("git_commit://")==0) {
+                    var parts = path.split("/");
+                    var ref = parts[2];
+                    tab.options.label += ' (' + ref + ')';
+                }
+            });
         });
+        
+        var old_file = FileApi.file;
+        FileApi.file =  function (path,callback) {
+            if (path.indexOf("git_commit://")==0) {
+                var parts = path.split("/");
+                var ref = parts[2];
+                var root = decodeURIComponent(parts[3]);
+                var rel = parts.slice(4).join("/");
+                
+                FileApi.request('git_commit',{action:'show_file',path:root,file:rel,ref:ref},false,function(answer){
+                    callback(FileApi.cache[path] = answer.data);
+                });
+            } else {
+                return old_file.apply(this,arguments);
+            }
+        }
     },
     
     openTab: function (path) {
@@ -153,17 +183,29 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             
             reloadTab($(this).serialize()+"&action="+action);
         });
+        
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
-        $(tab.element).on("click",".diff_line .insert, .diff_line .context",function(e){
+        $(tab.element).on("click",".diff_line > div",function(e){
 
-            if(getSelection().toString()) return;
+            if (getSelection().toString()) return;
             
-            if($(tab.element).find(".view_type").data("value")!='working_tree' || $(this).hasClass("partial_staged")) return;
-
-            var line = $(this).parents('.hunk').find('.number_add > div').eq($(this).index()).text();
+            var $hunk = $(this).parents('.hunk').eq(0);
             var filename = $(this).parents('.delta').data('filename');
-
-            var new_tab = dayside.editor.selectFile(tab.path+"/"+filename);
+            var part,line,new_tab;
+            
+            if ($(this).hasClass('delete')) {
+                part = $hunk.data("parts")[0];
+                line = $hunk.find('.number_del > div').eq($(this).index()).text();
+            } else {
+                part = $hunk.data("parts")[1];
+                line = $hunk.find('.number_add > div').eq($(this).index()).text();
+            }
+            
+            if (part=='WT') {
+                new_tab = dayside.editor.selectFile(tab.path+"/"+filename);
+            } else {
+                new_tab = dayside.editor.selectFile("git_commit://"+part+"/"+encodeURIComponent(tab.path)+"/"+filename);
+            }
 
             function positionCursor() {
                 new_tab.editor.focus();
