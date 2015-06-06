@@ -207,6 +207,7 @@ class Controller {
         
     function diff_html($one_status,$commit_sha1,$commit_sha2) {
         
+        $wt_status = @$this->data['status'][$one_status['file']];
         $diff = $this->model->diff($one_status,$commit_sha1,$commit_sha2);
         
         $lines_staged = $diff['diff_staged'] ? explode("\n",$diff['diff_staged']) : array();
@@ -263,12 +264,11 @@ class Controller {
             
             $parts = [];
             if ($commit_sha1 && $commit_sha2) {
-                
                 if (!isset($last_commit)) {
                     $last_sha = $this->model->rev_parse("HEAD");
+
                     $commit_sha1 = $this->model->rev_parse($commit_sha1);
                     $commit_sha2 = $this->model->rev_parse($commit_sha2);
-                    $wt_status = @$this->data['status'][$one_status['file']];
                 }
                 
                 $parts[0] = $commit_sha1;
