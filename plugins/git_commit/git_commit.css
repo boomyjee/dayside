@@ -212,8 +212,8 @@
     content: "-";
     color: red;
 }
-.teacss-ui .git-commit-tab .diff_line .context:hover,
-.teacss-ui .git-commit-tab .diff_line .insert:hover {
+
+.teacss-ui .git-commit-tab .diff_line {
     cursor: pointer;
 } 
 .teacss-ui .git-commit-tab .delta .staged .info{

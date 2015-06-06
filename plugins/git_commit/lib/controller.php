@@ -15,23 +15,25 @@ class Controller {
         
         $hashErrorMessage = 'Status hash differs. Please, reload page.';
                          
-        $this->model = new Git($path);        
+        $this->model = new Git($path);
         $this->data = array();
-        $this->data['error'] = false;                
-        $this->working_tree();
-        $this->data['current_branch'] = $this->model->current_branch(); 
+        $this->data['error'] = false;
         
         $action = @$_POST['action'];
         if ($action=='refresh') $action = $_POST['previous_view_type'];
-        
+        if ($action=='show_file') return $this->$action();
+
+        $this->data['current_branch'] = $this->model->current_branch(); 
+        $this->working_tree();
+
         if ($action && method_exists($this,$action)) {
             if ($this->data['status_hash']!=@$_POST['status_hash'] && $action!='working_tree' && $action!='history') {
                 $this->data['error'] = $hashErrorMessage;
             } else {
                 $this->$action();                      
             }      
-        }   
-        
+        }
+
         $ajax_action = @$_POST['ajax_action'];
         if ($ajax_action && method_exists($this,$ajax_action)) {
             if ($this->data['status_hash']!=@$_POST['status_hash']) {
@@ -46,12 +48,18 @@ class Controller {
 		require_once __DIR__."/template.php";
 	}
     
+    function show_file() {
+        $ref = $_POST['ref'];
+        if ($ref=="index") $ref = "";
+        echo $this->model->show_file($_POST['file'],$ref);
+    }
+    
     function working_tree(){
         if ($this->data['error']) return;
         
         $this->data['view_type'] = 'working_tree';
         $this->data['all_branches'] = $this->model->get_branches(); 
-        $this->data['commits'] = $this->model->last_15_commits();
+        $this->data['commits'] = $this->model->last_commits(15);
         $this->data['status'] = $this->model->current_status();
         $this->data['status_hash'] = sha1(json_encode($this->data['status']));
         if(!empty($this->data['status'])){
@@ -73,7 +81,7 @@ class Controller {
         $this->data['view_type'] = 'history';    
         $this->data['selected_commit'] = substr($commit_sha,0,7);
         $this->data['current_branch'] = $name_branch;
-        $this->data['commits'] = $this->model->last_15_commits($name_branch);
+        $this->data['commits'] = $this->model->last_commits(15,$name_branch);
         $this->data['status'] = $this->model->history($commit_sha, $name_branch);
         $this->data['error'] = $this->model->error;
     }
@@ -198,6 +206,7 @@ class Controller {
         
         
     function diff_html($one_status,$commit_sha1,$commit_sha2) {
+        
         $diff = $this->model->diff($one_status,$commit_sha1,$commit_sha2);
         
         $lines_staged = $diff['diff_staged'] ? explode("\n",$diff['diff_staged']) : array();
@@ -252,7 +261,34 @@ class Controller {
                 
             }
             
-            $diff_html .= "<div class='hunk'>";
+            $parts = [];
+            if ($commit_sha1 && $commit_sha2) {
+                
+                if (!isset($last_commit)) {
+                    $last_sha = $this->model->rev_parse("HEAD");
+                    $commit_sha1 = $this->model->rev_parse($commit_sha1);
+                    $commit_sha2 = $this->model->rev_parse($commit_sha2);
+                    $wt_status = @$this->data['status'][$one_status['file']];
+                }
+                
+                $parts[0] = $commit_sha1;
+                $parts[1] = $commit_sha2;
+                
+                foreach ($parts as &$sha) {
+                    if ($last_sha==$sha && !$wt_status) $sha = 'WT';
+                }
+            } 
+            else {
+                if ($staged) {
+                    $parts[0] = 'HEAD';
+                    $parts[1] = 'index';
+                } else {
+                    $parts[0] = 'HEAD';
+                    $parts[1] = 'WT';
+                }
+            }
+            
+            $diff_html .= "<div class='hunk' data-parts='".json_encode($parts)."'>";
             $diff_html .= "<div class='$staged number_del ui-state-default'>".$part_1."</div>";
             $diff_html .= "<div class='$staged number_add ui-state-default'>".$part_2."</div>";
             $diff_html .= "<div class='$staged diff_line ui-state-default'>".$part_3."</div>";

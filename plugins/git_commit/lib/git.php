@@ -13,7 +13,7 @@ class Git {
     }
     
     function run_command($array_args) {
-        
+        $args = "";
         foreach($array_args as $v)
             $args .= ' '. escapeshellarg($v);
 
@@ -42,6 +42,14 @@ class Git {
         proc_close($process);
         
         return $this->content;
+    }
+    
+    function rev_parse($ref) {
+        return trim($this->run_command(array("rev-parse", "--short", $ref)));
+    }
+    
+    function show_file($file,$ref) {
+        return $this->run_command(array("show", $ref.":".$file));
     }
     
     function stage_all() {
@@ -99,8 +107,8 @@ class Git {
         return $result;
     }
     
-    function last_15_commits($name_branch=null) {
-        $commits = $this->run_command(array('log', '-15', '--pretty=format:%h>%H>%s', $name_branch));
+    function last_commits($count,$name_branch=null) {
+        $commits = $this->run_command(array('log', '-'.$count, '--pretty=format:%h>%H>%s', $name_branch));
         $arr_commits = preg_split("/\n/", $commits, -1, PREG_SPLIT_NO_EMPTY);
         $result = array();        
         foreach($arr_commits as $commit){

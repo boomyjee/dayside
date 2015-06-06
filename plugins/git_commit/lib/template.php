@@ -66,7 +66,7 @@
                     </button> 
                 </td>
                 <td class="commit_msg">
-                    <input name='commit_message' placeholder='commit message' value='<?= $commit_message ?>' /input>
+                    <input name='commit_message' placeholder='commit message' value='<?= @$commit_message ?>' /input>
                 </td>
                 <td class="commit_btn">
                     <button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' type='submit' name='action' value='commit'>
@@ -120,7 +120,7 @@
                         </td>
                     <? endif ?>
                     <td class='state'><?=$one['state']?></td>                    
-                    <td class='filename'><?=($one['old_file'])? $one['old_file']." -> ": ""?><?=$one['file']?></td>
+                    <td class='filename'><?=isset($one['old_file'])? $one['old_file']." -> ": ""?><?=$one['file']?></td>
                     <? if($view_type!="history"): ?>
                         <td class="checkout">                           
                             <button class='checkout_file ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close'>
