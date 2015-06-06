@@ -61,10 +61,11 @@ dayside.plugins.git_commit = $.Class.extend({
     
 dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.git_commit.projectTab",{
     serialize: function (tab) {
-        return {path:tab.options.path};
+        var view_type = tab.element.find(".view_type").data("value");
+        return {path:tab.options.path,view_type:view_type};
     },
     deserialize: function (data) {
-        return new this({path:data.path});
+        return new this({path:data.path,view_type:data.view_type});
     },
     hash: {}
 },{
@@ -76,54 +77,44 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         
         var ajax_url = FileApi.ajax_url + "?" + $.param({_type:"git_commit",path:path});
         
-        this._super({label:"Commit: /" + rel,closable:true,path:path});
+        this._super($.extend({label:"Commit: /" + rel,closable:true},o));
         
         this.element.addClass('git-commit-tab');
         this.ajax_url = ajax_url;
         this.path = path;
         
         this.initTabHandlers();
-        this.refresh();
+        this.reloadTab({action:this.options.view_type || 'working_tree'});
         
         this.id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
         this.Class.hash[path] = this;
     },
     
-    refresh: function () {
-        var me = this;
+    reloadTab: function(data,resType,cb) {
+        var tab = this;
+        if($.isPlainObject(data)){   
+            $.extend(data,{status_hash:tab.element.find("#status_hash").val()});
+        }
+        if (resType!='json') tab.element.empty();
+
         $.ajax({
-            url: me.ajax_url,
+            url: tab.ajax_url,
             type: "POST",
-            success: function(html) {
-                me.element.html(html);
+            dataType: resType,                
+            data: data,                                
+            success: function (res) {
+                if (resType!='json') tab.element.html(res);
+                if (resType=='json' && res.status_hash) {
+                    tab.element.find("[name=status_hash]").val(res.status_hash);
+                }
+                if (cb) cb(res);
             }
         });
     },
     
     initTabHandlers: function (tab) { 
         var tab = this;
-        
-        function reloadTab(data,resType,cb) {
-            
-            if($.isPlainObject(data)){   
-                $.extend(data,{status_hash:tab.element.find("#status_hash").val()});
-            }
-            if (resType!='json') tab.element.empty();
-            
-            $.ajax({
-                url: tab.ajax_url,
-                type: "POST",
-                dataType: resType,                
-                data: data,                                
-                success: function (res) {
-                    if (resType!='json') tab.element.html(res);
-                    if (resType=='json' && res.status_hash) {
-                        tab.element.find("[name=status_hash]").val(res.status_hash);
-                    }
-                    if (cb) cb(res);
-                }
-            });
-        }
+        var reloadTab = function (data,resType,cb) { tab.reloadTab(data,resType,cb); }
         
         function reloadCodeTab(one_tab) {
             FileApi.file(one_tab.options.file,function (answer){
@@ -316,7 +307,9 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         // переключение view_type
         $(tab.element).on("mousedown",".view_type",function(){
             reloadTab({
-                action: $(".view_type").data("value")=="working_tree" ? 'history' : 'working_tree'
+                action: tab.element.find(".view_type").data("value")=="working_tree" ? 'history' : 'working_tree'
+            },false,function(){
+                dayside.editor.saveTabs();
             });
         });         
         
