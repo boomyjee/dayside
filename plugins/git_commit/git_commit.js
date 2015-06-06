@@ -50,10 +50,11 @@ dayside.plugins.git_commit = $.Class.extend({
     },
     
     openTab: function (path) {
-        var tab = new dayside.plugins.git_commit.projectTab({path:path});
-        
-        var id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
-        dayside.editor.mainPanel.addTab(tab,id,"center");
+        var tab = dayside.plugins.git_commit.projectTab.hash[path];
+        if (!tab || !tab.tabPanel) {
+            tab = new dayside.plugins.git_commit.projectTab({path:path});
+            dayside.editor.mainPanel.addTab(tab,tab.id,"center");
+        }
         tab.tabPanel.selectTab(tab);        
     }
 });
@@ -65,6 +66,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
     deserialize: function (data) {
         return new this({path:data.path});
     },
+    hash: {}
 },{
     init: function (o) {
 
@@ -81,10 +83,16 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         this.path = path;
         
         this.initTabHandlers();
+        this.refresh();
         
+        this.id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
+        this.Class.hash[path] = this;
+    },
+    
+    refresh: function () {
         var me = this;
         $.ajax({
-            url: ajax_url,
+            url: me.ajax_url,
             type: "POST",
             success: function(html) {
                 me.element.html(html);
