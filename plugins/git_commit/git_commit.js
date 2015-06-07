@@ -184,7 +184,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         });
         
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
-        $(tab.element).on("click",".diff_line > div",function(e){
+        $(tab.element).on("click",".diff_line .insert,.diff_line .delete,.diff_line .context",function(e){
 
             if (getSelection().toString()) return;
             

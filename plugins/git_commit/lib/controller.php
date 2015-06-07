@@ -260,17 +260,25 @@ class Controller {
                     $class = "info";
                 }
 
-                if (!$was_header) continue;
                 if ($line[0]=="\\") continue;
-
-                if ($line[0]==" " || $line[0]=="+") $add_str = $del++;
-                if ($line[0]==" " || $line[0]=="-") $del_str = $add++;
-                if ($line[0]=="+") $class = "insert";
-                if ($line[0]=="-") $class = "delete";
+                if (!$was_header) {
+                    if (strpos($line,"diff")===0) continue;
+                    if (strpos($line,"index")===0) continue;
+                    if (strpos($line,"+++")===0) continue;
+                    if (strpos($line,"---")===0) continue;
+                    $class = "pre_header";
+                    $out = $line;
+                } else {
+                    if ($line[0]==" " || $line[0]=="+") $add_str = $del++;
+                    if ($line[0]==" " || $line[0]=="-") $del_str = $add++;
+                    if ($line[0]=="+") $class = "insert";
+                    if ($line[0]=="-") $class = "delete";
+                    $out = substr($line,1);
+                }
                 
                 $part_1 .= "<div class='$class'> ".$del_str." </div>";
                 $part_2 .= "<div class='$class'> ".$add_str." </div>";                
-                $part_3 .= "<div class='$class'>".htmlspecialchars(substr($line,1))." </div>";
+                $part_3 .= "<div class='$class'>".htmlspecialchars($out)." </div>";
                 
             }
             
