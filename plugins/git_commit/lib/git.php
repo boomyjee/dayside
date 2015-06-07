@@ -108,12 +108,12 @@ class Git {
     }
     
     function last_commits($count,$name_branch=null) {
-        $commits = $this->run_command(array('log', '-'.$count, '--pretty=format:%h>%H>%s', $name_branch));
+        $commits = $this->run_command(array('log', '--max-count='.$count, '--pretty=format:%h>%H>%s', $name_branch));
         $arr_commits = preg_split("/\n/", $commits, -1, PREG_SPLIT_NO_EMPTY);
         $result = array();        
         foreach($arr_commits as $commit){
             $arr = explode(">",$commit);
-            $result[] = array("sha_short"=>$arr[0],"sha_full"=>$arr[1],"message"=>$arr[2]);
+            $result[$arr[1]] = array("sha_short"=>$arr[0],"sha_full"=>$arr[1],"message"=>$arr[2]);
         }
         return $result;
     }
@@ -125,10 +125,6 @@ class Git {
     
     function commit($message) {
         return $this->run_command(array("commit", "-m", escapeshellarg($message)));
-    }
-    
-    function last_commit_in_branch($branch_name=null) {
-        return $this->run_command(array('log', '--pretty=format:%H', '-1', $branch_name)); 
     }
     
     function diff($one_status,$commit_sha1=false,$commit_sha2=false) {
@@ -164,9 +160,9 @@ class Git {
         return $res;
     }
     
-    function history($commit_sha, $name_branch=null) {
+    function history($commit_sha, $name_branch=null,$depth=1) {
         $status = array();
-        $status_string = $this->run_command(array("diff", "--name-status", '--find-renames', $commit_sha."^", $commit_sha));
+        $status_string = $this->run_command(array("diff", "--name-status", '--find-renames', $commit_sha."~".$depth, $commit_sha));
         if ($this->error) return $status;
         
         $status_lines = preg_split("/\\r\\n|\\r|\\n/", $status_string, -1,  PREG_SPLIT_NO_EMPTY);        

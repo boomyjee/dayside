@@ -40,15 +40,34 @@
                     <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
                         <span class="ui-button-text">
                             <div class="combo-item">
-                                <span class="combo-label"><?=$selected_commit?></span>
+                                <span class="combo-label"><?=substr($selected_commit_sha,0,7)?></span>
                             </div>
                         </span>
                     </div>  
                     <div class="button-select-panel teacss-ui">
                         <div>
-                            <? $selected = false;?>
-                            <? foreach($commits as $commit):?>
-                                <div data-value="<?=$commit["sha_full"]?>" class="commit combo-item <?= ($commit['sha_short']==$selected_commit)?'selected':''?>">                                
+                            <? foreach($last_commits as $commit):?>
+                                <div data-value="<?=$commit["sha_full"]?>" class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
+                                    <span class="combo-label" >
+                                        <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
+                                        <p class="commit_message" ><?=(100<strlen($commit['message'])) ? addslashes(substr($commit['message'],0,100)).'...' : $commit['message']?></p>
+                                    </span>
+                                </div>
+                            <? endforeach ?>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
+                        <span class="ui-button-text">
+                            <div class="combo-item">
+                                <span class="combo-label"><?="~".$history_depth?></span>
+                            </div>
+                        </span>
+                    </div>  
+                    <div class="button-select-panel teacss-ui">
+                        <div>
+                            <? foreach($after_commits as $n=>$commit):?>
+                                <div data-value="<?=($n+1)?>" class="history_depth combo-item <?= (($n+1)==$history_depth)?'selected':''?>">
                                     <span class="combo-label" >
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
                                         <p class="commit_message" ><?=(100<strlen($commit['message'])) ? addslashes(substr($commit['message'],0,100)).'...' : $commit['message']?></p>
@@ -88,7 +107,8 @@
             <input type='hidden' id='status_hash' name='status_hash' value='<?=$status_hash?>'>
             <input type='hidden' name='previous_view_type' value='<?=$view_type?>'>
             <input type='hidden' name='selected_branch' value='<?=$current_branch?>'>
-            <input type='hidden' name='selected_commit' value='<?=$selected_commit?>'>
+            <input type='hidden' name='selected_commit' value='<?=$selected_commit_sha?>'>
+            <input type='hidden' name='history_depth' value='<?=$history_depth?>'>
         </tr>
     </table>    
     <div class="diff_scroll_wrap">
