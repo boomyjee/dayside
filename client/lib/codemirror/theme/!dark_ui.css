@@ -2,7 +2,7 @@
 
 .dark-ui .jstree-default.jstree-focused > ul { background: transparent; }
 .dark-ui .jstree-default a { color: #e0e0e0; }
-.dark-ui .jstree-default .jstree-clicked { background: #6A9FB5; border-color: transparent; }
+.dark-ui .jstree-default .jstree-clicked { background: #293F48; border-color: transparent; }
 .dark-ui .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
 .dark-ui .jstree-default ins {
     background-image: url("../../jstree/themes/default/d-dark.png");
