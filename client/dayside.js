@@ -18081,6 +18081,44 @@ teacss.ui.filePanel = (function($){
             
             this.tree = $("<div>").css({position:'absolute',left:0,right:0,top:0,bottom:0,overflow:'auto'}).appendTo(this.element);
             this.tree
+                .bind("open_node.jstree create_node.jstree clean_node.jstree refresh.jstree",function (e,data) {
+                    var obj = data.rslt.obj;
+                    var inst = data.inst;
+                    obj = !obj || obj == -1 ? inst.get_container().find("> ul > li") : inst._get_node(obj);
+                    if(obj === false) { return; }
+                    obj.each(function(n,node){
+                        if (node.ondragover) return;
+                        if (!$(node).data("folder")) return;
+                        
+                        node.ondragover = function() { return false; };
+                        node.ondragleave = function() { return false; };
+                        node.ondrop = function(event) {
+                            if (me.droppingFile) return;
+                            me.droppingFile = true;
+                            setTimeout(function(){
+                                me.droppingFile = false;
+                            });
+                            
+                            var path = $(node).attr("rel");
+                            if (!me.uploadDialog) {
+                                me.uploadDialog = teacss.ui.uploadDialog({
+                                    jupload: me.options.jupload,
+                                    jupload_data: me.options.jupload_data
+                                });
+                            }
+                            
+                            if (event && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length) {
+                                var files = [];
+                                for (var i = 0; i < event.dataTransfer.files.length; i++) {
+                                    files.push(event.dataTransfer.files.item(i));
+                                }
+                                me.uploadDialog.open(path,me.tree,$(node),files);
+                            }
+                            return false;
+                        };            
+                    });
+                    
+                })
                 .bind("dblclick.jstree", function (e, data) {
                     var link = $(e.target).closest("a");
                     if (link.length) {
@@ -18970,9 +19008,13 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
                 silverlight_xap_url : 'http://rawgithub.com/moxiecode/moxie/master/bin/silverlight/Moxie.cdn.xap',
                 complete: function () {
                     me.tree.jstree('refresh',me.node);
+                },
+                init: {
+                    Init: function () {
+                        me.initParams();
+                    }
                 }
             });
-            me.initParams();
         },1);
         
         this.java_panel.bind("select",function(){
@@ -19027,6 +19069,10 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
             data.uploader.setOption("url",
                 FileApi.ajax_url+"?"+teacss.jQuery.param({path:this.path,_type:"upload"})
             );
+            if (this.filesToAdd) {
+                data.uploader.addFile(this.filesToAdd);
+                this.filesToAdd = false;
+            }
         }
     },
     
@@ -19040,12 +19086,13 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
         }
     },
     
-    open: function (path,tree,node) {
+    open: function (path,tree,node,filesToAdd) {
         this._super();
     
         this.path = path;
         this.tree = tree;
         this.node = node;
+        this.filesToAdd = filesToAdd;
         
         this.initJavaParams();
         this.initParams();

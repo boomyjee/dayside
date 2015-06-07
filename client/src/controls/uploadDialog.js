@@ -38,9 +38,13 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
                 silverlight_xap_url : 'http://rawgithub.com/moxiecode/moxie/master/bin/silverlight/Moxie.cdn.xap',
                 complete: function () {
                     me.tree.jstree('refresh',me.node);
+                },
+                init: {
+                    Init: function () {
+                        me.initParams();
+                    }
                 }
             });
-            me.initParams();
         },1);
         
         this.java_panel.bind("select",function(){
@@ -95,6 +99,10 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
             data.uploader.setOption("url",
                 FileApi.ajax_url+"?"+teacss.jQuery.param({path:this.path,_type:"upload"})
             );
+            if (this.filesToAdd) {
+                data.uploader.addFile(this.filesToAdd);
+                this.filesToAdd = false;
+            }
         }
     },
     
@@ -108,12 +116,13 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
         }
     },
     
-    open: function (path,tree,node) {
+    open: function (path,tree,node,filesToAdd) {
         this._super();
     
         this.path = path;
         this.tree = tree;
         this.node = node;
+        this.filesToAdd = filesToAdd;
         
         this.initJavaParams();
         this.initParams();
