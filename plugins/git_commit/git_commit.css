@@ -175,9 +175,8 @@
     display: block;
     min-height: 0;
 }
-.teacss-ui .git-commit-tab .branch_name .button-select-panel {
-    overflow: overlay;
-    max-height: 400px;
+.teacss-ui .git-commit-tab .button-select-panel {
+    overflow-y: auto;
 }
 .teacss-ui .git-commit-tab .hunk {
     display: table-row;
