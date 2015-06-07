@@ -75,9 +75,9 @@ class Controller {
         }
         $this->data['history_depth'] = $history_depth = @$_POST['history_depth'] ?: 1;
         
-        $commits = $this->model->last_commits(30,$name_branch);
+        $commits = $name_branch ? $this->model->last_commits(30,$name_branch) : array();
         $commit_sha = @$_POST['selected_commit'];
-        if (!isset($commits[$commit_sha])) $commit_sha = array_keys($commits)[0];
+        if (!isset($commits[$commit_sha])) $commit_sha = @array_keys($commits)[0];
         
         $last_commits = array();
         $after_commits = array();
@@ -94,7 +94,7 @@ class Controller {
         $this->data['last_commits'] = $last_commits;
         $this->data['after_commits'] = $after_commits;
         $this->data['selected_commit_sha'] = $commit_sha;
-        $this->data['status'] = $this->model->history($commit_sha, $name_branch, $history_depth);
+        $this->data['status'] = $commit_sha ? $this->model->history($commit_sha, $name_branch, $history_depth) : array();
         $this->data['error'] = $this->model->error;
     }
         

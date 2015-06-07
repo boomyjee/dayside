@@ -21,10 +21,11 @@
                 <div class="ui-button ui-widget ui-state-default icon-button icon-button branch_list" role="button">
                     <span class="ui-button-text">
                         <div class="combo-item">
-                            <span class="combo-label"><?=$current_branch?></span>
+                            <span class="combo-label"><?=$current_branch?:"master"?></span>
                         </div>
                     </span>
                 </div>  
+                <? if (!empty($all_branches)): ?>
                 <div class="button-select-panel teacss-ui">
                     <div>
                         <? foreach($all_branches as $branch):?>
@@ -34,16 +35,18 @@
                         <? endforeach ?>
                     </div>
                 </div>
+                <? endif ?>
             </td>
             <? if($view_type=="history"): ?>
                 <td class="commit_name">
                     <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
                         <span class="ui-button-text">
                             <div class="combo-item">
-                                <span class="combo-label"><?=substr($selected_commit_sha,0,7)?></span>
+                                <span class="combo-label"><?=$selected_commit_sha ? substr($selected_commit_sha,0,7) : "(empty)"?></span>
                             </div>
                         </span>
                     </div>  
+                    <? if (!empty($last_commits)): ?>
                     <div class="button-select-panel teacss-ui">
                         <div>
                             <? foreach($last_commits as $commit):?>
@@ -57,6 +60,7 @@
                             <? endforeach ?>
                         </div>
                     </div>
+                    <? endif ?>
                     
                     <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
                         <span class="ui-button-text">
@@ -65,6 +69,7 @@
                             </div>
                         </span>
                     </div>  
+                    <? if (!empty($after_commits)): ?>
                     <div class="button-select-panel teacss-ui">
                         <div>
                             <? foreach($after_commits as $n=>$commit):?>
@@ -78,6 +83,7 @@
                             <? endforeach ?>
                         </div>
                     </div>
+                    <? endif ?>
                 </td>
             <? endif ?>
             <? if($view_type!="history"): ?>
@@ -131,7 +137,13 @@
             </tr>
             <? if (empty($status)): ?>
                 <tr class="file ui-widget-content ui-state-default">
-                    <td colspan="5">Nothing to commit, working directory clean</td>
+                    <td colspan="5">
+                        <? if($view_type=="history"): ?>
+                            No changes to display
+                        <? else: ?>
+                            Nothing to commit, working directory clean
+                        <? endif ?>
+                    </td>
                 </tr>
             <? endif ?>
             <? foreach ($status as $one): ?>
