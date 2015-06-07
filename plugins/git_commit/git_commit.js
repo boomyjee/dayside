@@ -398,6 +398,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             var show = panel.hasClass("show");
             tab.element.find(".button-select-panel.show").removeClass("show");
             panel.toggleClass("show",!show);
+            panel.css({maxHeight:$(window).height() - $(this).offset().top - 30});
             e.stopPropagation();
         });
         
