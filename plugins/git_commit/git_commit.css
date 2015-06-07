@@ -231,6 +231,8 @@
 .teacss-ui .git-commit-tab .diff_html {
     display: none;
     background: #FFF 50% 50% repeat-x;
+    border-left: none;
+    border-right: none;
 }
 .teacss-ui .git-commit-tab .diff_html.load_diff:before {
     content: "⇣";
