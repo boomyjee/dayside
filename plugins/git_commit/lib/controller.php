@@ -18,6 +18,8 @@ class Controller {
         $this->model = new Git($path);
         $this->data = array();
         $this->data['error'] = false;
+        $this->data['selected_commit_sha'] = false;
+        $this->data['history_depth'] = 1;
         
         $action = @$_POST['action'];
         if ($action=='refresh') $action = $_POST['previous_view_type'];
@@ -59,7 +61,6 @@ class Controller {
         
         $this->data['view_type'] = 'working_tree';
         $this->data['all_branches'] = $this->model->get_branches(); 
-        $this->data['commits'] = $this->model->last_commits(15);
         $this->data['status'] = $this->model->current_status();
         $this->data['status_hash'] = sha1(json_encode($this->data['status']));
         if(!empty($this->data['status'])){
@@ -72,17 +73,27 @@ class Controller {
         if(!$name_branch){
             $name_branch = $this->data['current_branch'];
         }
+        $this->data['history_depth'] = $history_depth = @$_POST['history_depth'] ?: 1;
         
+        $commits = $this->model->last_commits(30,$name_branch);
         $commit_sha = @$_POST['selected_commit'];
-        if(!$commit_sha){ 
-            $commit_sha = $this->model->last_commit_in_branch($name_branch);
+        if (!isset($commits[$commit_sha])) $commit_sha = array_keys($commits)[0];
+        
+        $last_commits = array();
+        $after_commits = array();
+        $after_current = false;
+        foreach ($commits as $sha=>$one) {
+            if (count($last_commits)<15) $last_commits[] = $one;
+            if ($after_current && count($after_commits)<15) $after_commits[] = $one;
+            if ($sha==$commit_sha) $after_current = true;
         }
         
         $this->data['view_type'] = 'history';    
-        $this->data['selected_commit'] = substr($commit_sha,0,7);
         $this->data['current_branch'] = $name_branch;
-        $this->data['commits'] = $this->model->last_commits(15,$name_branch);
-        $this->data['status'] = $this->model->history($commit_sha, $name_branch);
+        $this->data['last_commits'] = $last_commits;
+        $this->data['after_commits'] = $after_commits;
+        $this->data['selected_commit_sha'] = $commit_sha;
+        $this->data['status'] = $this->model->history($commit_sha, $name_branch, $history_depth);
         $this->data['error'] = $this->model->error;
     }
         

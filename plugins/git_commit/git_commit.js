@@ -353,8 +353,19 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             if ($(this).is(".selected")) return;
             reloadTab({
                 action: 'history',
-                selected_branch: $(".branch.selected").data("value"),
+                selected_branch: tab.element.find(".branch.selected").data("value"),
                 selected_commit: $(this).data("value")
+            });
+        });
+        
+        // переключение history_depth
+        $(tab.element).on("mousedown",".history_depth",function(){
+            if ($(this).is(".selected")) return;
+            reloadTab({
+                action: 'history',
+                selected_branch: tab.element.find(".branch.selected").data("value"),
+                selected_commit: tab.element.find(".commit.selected").data("value"),
+                history_depth: $(this).data("value")
             });
         });
         
@@ -404,8 +415,8 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             var commit_sha1 = '',commit_sha2 = '';
             
             if ($(".view_type").data("value")=='history') {
-                commit_sha2 = $(".commit.selected").data("value");
-                commit_sha1 = commit_sha2+"^";
+                commit_sha2 = tab.element.find("input[name=selected_commit]").val();
+                commit_sha1 = commit_sha2+"~"+tab.element.find("input[name=history_depth]").val();
             }           
             
             $diff_html.toggle();
