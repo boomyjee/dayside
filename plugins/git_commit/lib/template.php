@@ -47,10 +47,11 @@
                     <div class="button-select-panel teacss-ui">
                         <div>
                             <? foreach($last_commits as $commit):?>
-                                <div data-value="<?=$commit["sha_full"]?>" class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
-                                    <span class="combo-label" >
+                                <? $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                                <div data-value="<?=$commit["sha_full"]?>" <?=$title?> class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
+                                    <span class="combo-label">
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
-                                        <p class="commit_message" ><?=(100<strlen($commit['message'])) ? addslashes(substr($commit['message'],0,100)).'...' : $commit['message']?></p>
+                                        <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
                                     </span>
                                 </div>
                             <? endforeach ?>
@@ -67,10 +68,11 @@
                     <div class="button-select-panel teacss-ui">
                         <div>
                             <? foreach($after_commits as $n=>$commit):?>
-                                <div data-value="<?=($n+1)?>" class="history_depth combo-item <?= (($n+1)==$history_depth)?'selected':''?>">
+                                <? $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                                <div data-value="<?=($n+1)?>" <?=$title?> class="history_depth combo-item <?= (($n+1)==$history_depth)?'selected':''?>">
                                     <span class="combo-label" >
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
-                                        <p class="commit_message" ><?=(100<strlen($commit['message'])) ? addslashes(substr($commit['message'],0,100)).'...' : $commit['message']?></p>
+                                        <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
                                     </span>
                                 </div>
                             <? endforeach ?>
