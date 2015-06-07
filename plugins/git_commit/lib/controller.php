@@ -83,6 +83,7 @@ class Controller {
         $after_commits = array();
         $after_current = false;
         foreach ($commits as $sha=>$one) {
+            $one['excerpt'] = strlen($one['message'])<100 ? $one['message'] : substr($one['message'],0,100)."...";
             if (count($last_commits)<15) $last_commits[] = $one;
             if ($after_current && count($after_commits)<15) $after_commits[] = $one;
             if ($sha==$commit_sha) $after_current = true;
