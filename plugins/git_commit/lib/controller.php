@@ -77,7 +77,7 @@ class Controller {
         
         $commits = $name_branch ? $this->model->last_commits(30,$name_branch) : array();
         $commit_sha = @$_POST['selected_commit'];
-        if (!isset($commits[$commit_sha])) $commit_sha = @array_keys($commits)[0];
+        if (!isset($commits[$commit_sha])) $commit_sha = @array_shift(array_keys($commits));
         
         $last_commits = array();
         $after_commits = array();
@@ -282,7 +282,7 @@ class Controller {
                 
             }
             
-            $parts = [];
+            $parts = array();
             if ($commit_sha1 && $commit_sha2) {
                 if (!isset($last_commit)) {
                     $last_sha = $this->model->rev_parse("HEAD");
