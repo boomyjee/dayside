@@ -21,10 +21,12 @@
                     }
                     var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
                     var deps = {}, count = 0;
-
+                    
                     while (m=r.exec(text)) {
-                        deps[resolve(m[2],path)] = 1;
-                        count++;
+                        if (m[1]==m[3]) {
+                            deps[resolve(m[2],path)] = 1;
+                            count++;
+                        }
                     }
 
                     var loaded = 0;
