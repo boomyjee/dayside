@@ -97,7 +97,7 @@ class Proxy {
     
     static function run() {
         $self = "http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
-        $path_self = $_SERVER['PATH_TRANSLATED'];
+        $path_self = @$_SERVER['PATH_TRANSLATED'] ?: $_SERVER['SCRIPT_FILENAME'];
         
         $a = strlen($self);
         $b = strlen($path_self);
