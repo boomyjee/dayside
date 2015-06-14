@@ -309,7 +309,7 @@ class FileApi {
             $za = new \ZipArchive;
             $dir = sys_get_temp_dir() .'/'. uniqid(); 
             mkdir($dir);
-            $zip_file_name = $dir.'/dayside.zip';
+            $zip_file_name = count($path) > 1 ?  $dir.'/files.zip' : $dir."/".pathinfo($path[0], PATHINFO_FILENAME).".zip";
             
             $res = $za->open($zip_file_name, ZipArchive::CREATE);
             if($res === TRUE) {
