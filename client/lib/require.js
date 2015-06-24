@@ -57,12 +57,7 @@
                 var js = this.wrap(path);
                 js += "("+path_s+");//# sourceURL="+path;
                 
-                try {
-                    var res = eval(js);
-                } catch (e) {
-                    console.debug(path);
-                    throw(e);
-                }
+                var res = eval(js);
                 callback(res);
             },
             build: function (path,callback) {
@@ -196,13 +191,7 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 var text = cache.files[path] = xhr.status==200 ? xhr.responseText:false;
-                try 
-                {
-                    callback(text);
-                } 
-                catch (e) {
-                    setTimeout(function(){ throw e; },1);
-                }
+                callback(text);
             }
         }
         xhr.open('GET', path, async);
