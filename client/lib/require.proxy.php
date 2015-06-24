@@ -1,4 +1,4 @@
-<? if (!isset($_GET['url'])): ?>
+<? if (!isset($_REQUEST['url'])): ?>
 <? header("Content-Type: application/javascript") ?>
 (function(){
 var scripts = document.getElementsByTagName("script");
@@ -19,17 +19,39 @@ for (var s=0;s < scripts.length;s++) {
             },async);
 
         };
-        teacss.getFile_original = teacss.getFile;
         teacss.getFile = function (path,callback) {
             if (teacss.files[path]) return callback(teacss.files[path]);
-            var url = proxy_url + "?tea=1&url="+encodeURIComponent(path);
-            teacss.getFile_original(url,function(text){
-                var json = JSON.parse(text);
-                for (var key in json) {
-                    teacss.files[key] = json[key];
+            
+            require.proxy_queue = require.proxy_queue || [];
+            require.proxy_queue.push({url:path,callback:callback});
+
+            clearTimeout(require.proxy_timeout);
+            require.proxy_timeout = setTimeout(function(){
+                var url = proxy_url + "?tea=1";
+                var params = "";
+                for (var q=0;q < require.proxy_queue.length;q++) {
+                    params += "url[]="+encodeURIComponent(require.proxy_queue[q].url)+"&";
                 }
-                callback(teacss.files[path]);
-            });
+                var queue = require.proxy_queue;
+                require.proxy_queue = [];
+
+                var xhr = (window.ActiveXObject) ? new ActiveXObject("Microsoft.XMLHTTP") : (XMLHttpRequest && new XMLHttpRequest()) || null;
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        var text = xhr.status==200 ? xhr.responseText:false;
+                        var json = JSON.parse(text);
+                        for (var key in json) {
+                            teacss.files[key] = json[key];
+                        }
+                        for (var q=0;q < queue.length;q++) {
+                            queue[q].callback(teacss.files[queue[q].url]);
+                        }
+                    }
+                }
+                xhr.open('POST',url, true);
+                xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                xhr.send(params);
+            },1);
         }
         break;
     }
@@ -86,12 +108,14 @@ class Proxy {
         preg_match_all($pattern,$text,$matches);
         
         foreach ($matches[2] as $rel) {
-            $abs_url = self::rel2abs($rel,$url);
-            $ext = pathinfo($abs_url, PATHINFO_EXTENSION);
-            if (!$ext) {
-                $abs_url = $abs_url.".".(self::$tea ? "tea" : "js");
+            if ($matches[1]==$matches[3]) {
+                $abs_url = self::rel2abs($rel,$url);
+                $ext = pathinfo($abs_url, PATHINFO_EXTENSION);
+                if (!$ext) {
+                    $abs_url = $abs_url.".".(self::$tea ? "tea" : "js");
+                }
+                self::process($abs_url);
             }
-            self::process($abs_url);
         }
     }
     
@@ -110,7 +134,11 @@ class Proxy {
         self::$base_path = substr($path_self,0,strlen($path_self)-$i);
         
         self::$tea = isset($_GET['tea']);
-        self::process($_GET['url']);
+        
+        $urls = $_REQUEST['url'];
+        if (!is_array($urls)) $urls = array($urls);
+        foreach ($urls as $url) self::process($url);
+        
         echo json_encode(self::$cache);
     }
 }
