@@ -1,62 +1,72 @@
 <? if (!isset($_REQUEST['url'])): ?>
 <? header("Content-Type: application/javascript") ?>
+//<script>
 (function(){
 var scripts = document.getElementsByTagName("script");
 for (var s=0;s < scripts.length;s++) {
     var script = scripts[s];
     if (script.src.indexOf("require.proxy.php")!=-1) {
         var proxy_url = script.src;
-        window.require.extensions.js.pre = function (path,callback,async) {
-            if (window.require.cache.files[path]) return callback();
-            window.require.getFile(proxy_url+"?url="+encodeURIComponent(path),function(text){
-                var ret = JSON.parse(text);
-                for (var key in ret) {
-                    var text = ret[key];
-                    if (text===false) throw "Proxy could not load module on path "+key;
-                    window.require.cache.files[key] = text;
-                }
-                callback();
-            },async);
+        
+        window.require.proxy_queue = {tea:[],js:[]};
+        window.require.proxy_get = function (path,callback,async,isTea) {
+            var qkey = isTea ? 'tea':'js';
+            var queue = window.require.proxy_queue[qkey];
+            queue.push({url:path,callback:callback});
 
-        };
-        teacss.getFile = function (path,callback) {
-            if (teacss.files[path]) return callback(teacss.files[path]);
-            
-            require.proxy_queue = require.proxy_queue || [];
-            require.proxy_queue.push({url:path,callback:callback});
-
-            clearTimeout(require.proxy_timeout);
-            require.proxy_timeout = setTimeout(function(){
-                var url = proxy_url + "?tea=1";
+            clearTimeout(require['proxy_timeout_'+qkey]);
+            require['proxy_timeout_'+qkey] = setTimeout(function(){
+                var url = proxy_url + (isTea ? "?tea=1" : '');
+                
                 var params = "";
-                for (var q=0;q < require.proxy_queue.length;q++) {
-                    params += "url[]="+encodeURIComponent(require.proxy_queue[q].url)+"&";
+                for (var q=0;q<queue.length;q++) {
+                    params += "url[]="+encodeURIComponent(queue[q].url)+"&";
                 }
-                var queue = require.proxy_queue;
-                require.proxy_queue = [];
+                require.proxy_queue[qkey] = [];
 
                 var xhr = (window.ActiveXObject) ? new ActiveXObject("Microsoft.XMLHTTP") : (XMLHttpRequest && new XMLHttpRequest()) || null;
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4) {
                         var text = xhr.status==200 ? xhr.responseText:false;
                         var json = JSON.parse(text);
-                        for (var key in json) {
-                            teacss.files[key] = json[key];
-                        }
-                        for (var q=0;q < queue.length;q++) {
-                            queue[q].callback(teacss.files[queue[q].url]);
+                        
+                        if (isTea) {
+                            for (var key in json) {
+                                teacss.files[key] = json[key];
+                            }
+                            for (var q=0;q < queue.length;q++) {
+                                queue[q].callback(teacss.files[queue[q].url]);
+                            }
+                        } else {
+                            for (var key in json) {
+                                if (json[key]===false) throw "Proxy could not load module on path "+key;
+                                window.require.cache.files[key] = json[key];
+                            }
+                            for (var q=0;q < queue.length;q++) {
+                                queue[q].callback();
+                            }
                         }
                     }
                 }
-                xhr.open('POST',url, true);
+                xhr.open('POST',url,async);
                 xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
                 xhr.send(params);
             },1);
+        }
+        
+        window.require.extensions.js.pre = function (path,callback,async) {
+            if (window.require.cache.files[path]) return callback();
+            require.proxy_get(path,callback,async,false);
+        };
+        teacss.getFile = function (path,callback) {
+            if (teacss.files[path]) return callback(teacss.files[path]);
+            require.proxy_get(path,callback,true,true);
         }
         break;
     }
 }
 })();
+//</script>
 
 <? die(); endif;
 
