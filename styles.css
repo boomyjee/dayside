@@ -1,0 +1,36 @@
+@media screen and (min-width: 960px) {
+
+}
+@media screen and (min-width: 480px) {
+
+}
+@media screen and (min-width: 320px) {
+
+}
+
+body{
+	width: 80%;
+	margin: auto;
+}
+table {
+	width: 80%;
+	margin: auto;
+	border-collapse: collapse;	
+}
+table, th, td {
+	border: 1px solid black;
+}
+
+td{
+
+}
+#feedback-form{
+	width: 80%;
+	margin: auto;
+
+}
+#buttons{
+	width: 80%;
+	max-width: 400px;
+	margin: auto;
+}
