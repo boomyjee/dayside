@@ -136,22 +136,22 @@ class Git {
         if ($commit_sha1 && $commit_sha2) {
             $file_2 = $one_status['file'];
             $file_1 = isset($one_status['old_file']) ? $one_status['old_file'] : $file_2;
-            $res['diff_staged'] = $this->run_command(array('diff', '--find-renames', $commit_sha1, $commit_sha2, '--', $file_1, $file_2)); 
+            $res['diff_staged'] = $this->run_command(array('diff', '-b', '--ignore-blank-lines', '--find-renames', $commit_sha1, $commit_sha2, '--', $file_1, $file_2)); 
         } 
         else {
             $head_file = @$one_status['old_file']?:$one_status['file'];
             
             if ($one_status['staged']) {
-                $res['diff_staged'] = $this->run_command(array('diff', '--cached', '--find-renames', '--', $one_status['file'],$head_file));
+                $res['diff_staged'] = $this->run_command(array('diff', '-b', '--ignore-blank-lines', '--cached', '--find-renames', '--', $one_status['file'],$head_file));
             } else {
                 $res['diff_staged'] = "";
             }
             
             if (!$one_status['staged'] || $one_status['partial']) {
                 if ($one_status['state'][0]=='?') {
-                    $res['diff_wt'] = $this->run_command(array('diff', '--', '/dev/null', $head_file));
+                    $res['diff_wt'] = $this->run_command(array('diff', '-b', '--ignore-blank-lines', '--', '/dev/null', $head_file));
                 } else {
-                    $res['diff_wt'] = $this->run_command(array('diff', 'HEAD', '--find-renames', '--', $one_status['file'], $head_file));
+                    $res['diff_wt'] = $this->run_command(array('diff', '-b', '--ignore-blank-lines', 'HEAD', '--find-renames', '--', $one_status['file'], $head_file));
                 }
             } else {
                 $res['diff_wt'] = "";
@@ -162,7 +162,7 @@ class Git {
     
     function history($commit_sha, $name_branch=null,$depth=1) {
         $status = array();
-        $status_string = $this->run_command(array("diff", "--name-status", '--find-renames', $commit_sha."~".$depth, $commit_sha));
+        $status_string = $this->run_command(array("diff", '-b', '--ignore-blank-lines', "--name-status", '--find-renames', $commit_sha."~".$depth, $commit_sha));
         if ($this->error) return $status;
         
         $status_lines = preg_split("/\\r\\n|\\r|\\n/", $status_string, -1,  PREG_SPLIT_NO_EMPTY);        
