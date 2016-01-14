@@ -53,7 +53,7 @@
                                 <? $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
                                 <div data-value="<?=$commit["sha_full"]?>" <?=$title?> class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
                                     <span class="combo-label">
-                                        <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
+                                        <p class="commit_sha_short"><b><?=$commit['sha_short']?></b> (<?=$commit['date']?>)</p>   
                                         <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
                                     </span>
                                 </div>
