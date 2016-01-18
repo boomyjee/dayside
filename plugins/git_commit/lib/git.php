@@ -108,7 +108,7 @@ class Git {
     }
     
     function last_commits($count,$name_branch=null) {
-        $commits = $this->run_command(array('log', '--max-count='.$count, '--pretty=format:%h>%H>%cd>%s', '--date=short', $name_branch));
+        $commits = $this->run_command(array('log', '--max-count='.$count, '--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch));
         $arr_commits = preg_split("/\n/", $commits, -1, PREG_SPLIT_NO_EMPTY);
         $result = array();        
         foreach($arr_commits as $commit){
