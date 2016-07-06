@@ -6273,7 +6273,7 @@ window.CodeMirror = (function() {
     else if (confirm(shortText)) fs[0]();
   }
   function parseQuery(query) {
-    var isRE = query.match(/^\/(.*)\/([a-z]*)$/);
+    var isRE = query.match(/^\/(.+)\/([a-z]*)$/);
     return isRE ? new RegExp(isRE[1], isRE[2].indexOf("i") == -1 ? "" : "i") : query;
   }
   var queryDialog =
@@ -16199,10 +16199,12 @@ jQuery.cookie = function(name, value, options) {
                     }
                     var m,r = /require\(\s*('|")(.*?)('|")\s*\)/g;
                     var deps = {}, count = 0;
-
+                    
                     while (m=r.exec(text)) {
-                        deps[resolve(m[2],path)] = 1;
-                        count++;
+                        if (m[1]==m[3]) {
+                            deps[resolve(m[2],path)] = 1;
+                            count++;
+                        }
                     }
 
                     var loaded = 0;
@@ -16233,12 +16235,7 @@ jQuery.cookie = function(name, value, options) {
                 var js = this.wrap(path);
                 js += "("+path_s+");//# sourceURL="+path;
                 
-                try {
-                    var res = eval(js);
-                } catch (e) {
-                    console.debug(path);
-                    throw(e);
-                }
+                var res = eval(js);
                 callback(res);
             },
             build: function (path,callback) {
@@ -16372,13 +16369,7 @@ jQuery.cookie = function(name, value, options) {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 var text = cache.files[path] = xhr.status==200 ? xhr.responseText:false;
-                try 
-                {
-                    callback(text);
-                } 
-                catch (e) {
-                    setTimeout(function(){ throw e; },1);
-                }
+                callback(text);
             }
         }
         xhr.open('GET', path, async);
