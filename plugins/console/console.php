@@ -452,7 +452,7 @@ $autocomplete = array(
         }
     </style>
 <?php } ?>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     /**
      *  History of commands.
