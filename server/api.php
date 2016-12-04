@@ -49,6 +49,7 @@ class FileApi {
     function _pathFromUrl($url) {
         $url = explode('/',$url,4);
         $url = @$url[3] ? "/".$url[3] : "";
+        $url = str_replace("..","_");
         
         $base = substr($_SERVER['REQUEST_URI'],0,strlen($_SERVER['REQUEST_URI'])-strlen($_SERVER['QUERY_STRING']));
         $base = preg_replace('/(\/)?('.basename($_SERVER["PHP_SELF"]).')?\??$/i','',$base);
