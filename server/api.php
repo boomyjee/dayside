@@ -42,14 +42,24 @@ class FileApi {
             $test = @$_COOKIE['editor_auth'];
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
+        
+        $this->csrfRequired();
+        
         $_type = $_type ? : $_REQUEST['_type'];
         $this->{$_type}();
+    }
+    
+    function csrfRequired() {
+        setcookie('editor_csrf', @$_COOKIE['editor_csrf'] ? :bin2hex(openssl_random_pseudo_bytes(32)),0,'/');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!@$_POST['_csrf'] || $_POST['_csrf']!=@$_COOKIE['editor_csrf']) { echo "auth_error"; die(); }
+        }
     }
     
     function _pathFromUrl($url) {
         $url = explode('/',$url,4);
         $url = @$url[3] ? "/".$url[3] : "";
-        $url = str_replace("..","_");
+        $url = str_replace("..","_",$url);
         
         $base = substr($_SERVER['REQUEST_URI'],0,strlen($_SERVER['REQUEST_URI'])-strlen($_SERVER['QUERY_STRING']));
         $base = preg_replace('/(\/)?('.basename($_SERVER["PHP_SELF"]).')?\??$/i','',$base);
