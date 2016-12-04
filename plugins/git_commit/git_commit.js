@@ -75,12 +75,9 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         var rel = path.substring(FileApi.root.length);
         if (rel[0]=='/') rel = rel.substring(1);
         
-        var ajax_url = FileApi.ajax_url + "?" + $.param({_type:"git_commit",path:path});
-        
         this._super($.extend({label:"Commit: /" + rel,closable:true},o));
         
         this.element.addClass('git-commit-tab');
-        this.ajax_url = ajax_url;
         this.path = path;
         
         this.initTabHandlers();
@@ -93,22 +90,20 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
     reloadTab: function(data,resType,cb) {
         var tab = this;
         if($.isPlainObject(data)){   
-            $.extend(data,{status_hash:tab.element.find("#status_hash").val()});
+            $.extend(data,{
+                status_hash:tab.element.find("#status_hash").val(),
+                path: this.path
+            });
         }
         if (resType!='json') tab.element.empty();
-
-        $.ajax({
-            url: tab.ajax_url,
-            type: "POST",
-            dataType: resType,                
-            data: data,                                
-            success: function (res) {
-                if (resType!='json') tab.element.html(res);
-                if (resType=='json' && res.status_hash) {
-                    tab.element.find("[name=status_hash]").val(res.status_hash);
-                }
-                if (cb) cb(res);
+        
+        FileApi.request('git_commit',data,resType=='json',function(answer) {
+            var res = answer.data;
+            if (resType!='json') tab.element.html(res);
+            if (resType=='json' && res.status_hash) {
+                tab.element.find("[name=status_hash]").val(res.status_hash);
             }
+            if (cb) cb(res);
         });
     },
     
@@ -180,7 +175,11 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             if (clicked && clicked.val()) action = clicked.val();
             $(this).data("clicked",false);
             
-            reloadTab($(this).serialize()+"&action="+action);
+            var data = {action:action};
+            $.each($(this).serializeArray(),function(){
+                data[this.name] = this.value;
+            });
+            reloadTab(data);
         });
         
         // только в working tree при клике на строку в diff-е переход и фокусировка на эту же строку в оригинальном файле 
