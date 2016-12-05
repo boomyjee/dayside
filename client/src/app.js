@@ -49,10 +49,24 @@ window.dayside = window.dayside || (function(){
         }
         dayside.options = options = $.extend(defaults,options);
         
+        var csrf_token = (document.cookie.match('(^|; )editor_csrf=([^;]*)') || [])[2] || '';  
+        $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+            if (options.type.toLowerCase() === "post") {
+                if (options.data instanceof FormData) {
+                    options.data.append('_csrf', csrf_token);
+                } else {
+                    options.data = options.data || "";
+                    options.data += options.data ? "&" : "";
+                    options.data += '_csrf' + "=" + csrf_token;
+                }
+            }
+        });
+        
         teacss.jQuery(function ($){
             FileApi.root = options.root;
             FileApi.ajax_url = options.ajax_url;
             FileApi.auth_error = options.auth_error;
+            FileApi.csrf_token = csrf_token;
             
             dayside.loaded = false;
             var editor = new teacss.ui.editorPanel({
