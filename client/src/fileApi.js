@@ -26,10 +26,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
             }
         }
         
-        var csrf = document.cookie.match('(^|; )editor_csrf=([^;]*)')[2];
         $.ajax({
             url: FileApi.ajax_url,
-            data: $.extend(data,{type:type,_type:type,_csrf:csrf}),
+            data: $.extend(data,{type:type,_type:type}),
             async: this._async,
             type: "POST",
             success: function (answer) {
