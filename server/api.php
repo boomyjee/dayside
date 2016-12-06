@@ -51,6 +51,7 @@ class FileApi {
     
     function csrfRequired() {
         setcookie('editor_csrf', @$_COOKIE['editor_csrf'] ? :bin2hex(openssl_random_pseudo_bytes(32)),0,'/');
+        if (!isset($_COOKIE['editor_csrf'])) return;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!@$_POST['_csrf'] || $_POST['_csrf']!=@$_COOKIE['editor_csrf']) { echo "auth_error"; die(); }
         }
