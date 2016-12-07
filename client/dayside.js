@@ -19005,7 +19005,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
                         me.initParams();
                     }
                 },
-                multipart_params: {_csrf:FileApi.csrf_token}
+                multipart_params: {_csrf:FileApi.getCSRFToken()}
             });
         },1);
         
@@ -19023,7 +19023,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
         if (me.uploadPanel) return;
         
         var formdata = me.options.jupload_data || {};
-        formdata = $.extend(formdata,{path:FileApi.root,_type:"upload",_csrf:FileApi.csrf_token});
+        formdata = $.extend(formdata,{path:FileApi.root,_type:"upload",_csrf:FileApi.getCSRFToken()});
         var inputs = "";
         for (var key in formdata)
             inputs += '<input type="hidden" name="'+key+'" value="'+formdata[key]+'">';
@@ -19397,6 +19397,10 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (callback) callback(answer);
         });        
     }
+    
+    FileApi.getCSRFToken = function() {
+        return (document.cookie.match('(^|; )editor_csrf=([^;]*)') || [])[2] || '';
+    }
         
     for (var key in FileApi) {
         var f = FileApi[key];
@@ -19464,15 +19468,14 @@ window.dayside = window.dayside || (function(){
         }
         dayside.options = options = $.extend(defaults,options);
         
-        var csrf_token = (document.cookie.match('(^|; )editor_csrf=([^;]*)') || [])[2] || '';  
         $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
             if (options.type.toLowerCase() === "post") {
                 if (options.data instanceof FormData) {
-                    options.data.append('_csrf', csrf_token);
+                    options.data.append('_csrf', FileApi.getCSRFToken());
                 } else {
                     options.data = options.data || "";
                     options.data += options.data ? "&" : "";
-                    options.data += '_csrf' + "=" + csrf_token;
+                    options.data += '_csrf' + "=" + FileApi.getCSRFToken();
                 }
             }
         });
@@ -19481,7 +19484,6 @@ window.dayside = window.dayside || (function(){
             FileApi.root = options.root;
             FileApi.ajax_url = options.ajax_url;
             FileApi.auth_error = options.auth_error;
-            FileApi.csrf_token = csrf_token;
             
             dayside.loaded = false;
             var editor = new teacss.ui.editorPanel({

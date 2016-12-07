@@ -44,7 +44,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
                         me.initParams();
                     }
                 },
-                multipart_params: {_csrf:FileApi.csrf_token}
+                multipart_params: {_csrf:FileApi.getCSRFToken()}
             });
         },1);
         
@@ -62,7 +62,7 @@ teacss.ui.uploadDialog = teacss.ui.dialog.extend({
         if (me.uploadPanel) return;
         
         var formdata = me.options.jupload_data || {};
-        formdata = $.extend(formdata,{path:FileApi.root,_type:"upload",_csrf:FileApi.csrf_token});
+        formdata = $.extend(formdata,{path:FileApi.root,_type:"upload",_csrf:FileApi.getCSRFToken()});
         var inputs = "";
         for (var key in formdata)
             inputs += '<input type="hidden" name="'+key+'" value="'+formdata[key]+'">';
