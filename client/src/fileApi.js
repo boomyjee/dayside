@@ -177,6 +177,10 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (callback) callback(answer);
         });        
     }
+    
+    FileApi.getCSRFToken = function() {
+        return (document.cookie.match('(^|; )editor_csrf=([^;]*)') || [])[2] || '';
+    }
         
     for (var key in FileApi) {
         var f = FileApi[key];
