@@ -28,7 +28,9 @@ class FileApi {
         if (!$fileapi_hash) {
             if (isset($_POST['password'])) {
                 $fileapi_hash = sha1($_POST['password']);
-                file_put_contents($password_path,'<?php $fileapi_hash="'.$fileapi_hash.'";');
+                if (!file_put_contents($password_path,'<?php $fileapi_hash="'.$fileapi_hash.'";')) {
+                    echo "ERROR: Can't write password file"; die();
+                }
             } else {
                 echo "auth_empty"; die(); 
             }
