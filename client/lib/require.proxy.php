@@ -78,7 +78,7 @@ class Proxy {
     
     static function resolve($url) {
         if (strpos($url,"uxcandy.com")!==false) {
-            $path = preg_replace("/http\:\/\/uxcandy\.com\/\~([A-Za-z0-9_-]+)/","/var/www/uxcandy_$1/data/public_html",$url);
+            $path = preg_replace("/https?\:\/\/uxcandy\.com\/\~([A-Za-z0-9_-]+)/","/var/www/uxcandy_$1/data/public_html",$url);
             return $path;
         }
         
