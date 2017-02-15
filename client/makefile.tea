@@ -1,5 +1,5 @@
 Script {
-    @import "lib/codemirror/codemirror.tea";
+    @append "lib/monaco/min/vs/loader.js";
     
     @append "lib/jstree/jquery.jstree.js";
     @append "lib/jstree/jquery.cookie.js";
@@ -24,4 +24,6 @@ Script {
 }
 
 @append "lib/jstree/themes/default/style.css";
+@append "lib/theme/dark_ui.css";
+@import "lib/theme/background.tea";
 @import "src/style.tea";

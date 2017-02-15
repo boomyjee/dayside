@@ -69,12 +69,6 @@ teacss.ui.codeTab = (function($){
                 }
             });
             
-            this.bind("select",function(o,e){
-                setTimeout(function(){
-                    if (me.editor) me.editor.refresh();
-                },1);
-            });
-            
             FileApi.events.bind("move",function(o,e){
                 if (e.path==me.options.file) me.options.file = e.new_path;
             });
@@ -103,62 +97,60 @@ teacss.ui.codeTab = (function($){
             var me = this;
             var file = this.options.file;
             var data = FileApi.cache[file];
-
-            this.editorElement.html("");
-
             var parts = file.split(".");
             var ext = parts[parts.length-1];
 
-            var mode = undefined;
-            if (ext=='css') mode = 'css';
-            if (ext=='tea') mode = 'teacss';
-            if (ext=='php') mode = 'application/x-httpd-php';
-            if (ext=='js')  mode = 'javascript';
-            if (ext=='haml') mode = 'css';
-            if (ext=='liquid') mode = 'liquid';
-            if (ext=='xml') mode = 'xml';
-            if (ext=="yaml") mode = 'yaml';
-            if (ext=='coffee') mode = 'coffeescript';
-            if (ext=='htm' || ext=='html' || ext=='tpl') mode = 'application/x-httpd-php';
-            if (ext=="md") mode = "gfm";
-            if (ext=="java") mode = "text/x-java";
-            if (ext=="h") mode = "text/x-c++hdr";
-            if (ext=="c") mode = "text/x-c++src";
-            if (ext=="cc") mode = "text/x-c++src";
-            if (ext=="cpp") mode = "text/x-c++src";
-            if (ext=="py") mode = "python";
+            this.editorElement.html("");
+            
+            var lang = undefined;
+            if (ext=='css') lang = 'css';
+            if (ext=='tea') lang = 'teacss';
+            if (ext=='php') lang = 'php';
+            if (ext=='js')  lang = 'javascript';
+            if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
             
             var editorOptions = {
                 value:data,
                 lineNumbers:true,
-                mode: mode,
-                tabMode:"shift",
-                gutters: ["CodeMirror-linenumbers"],
-                extraKeys: {
-                    "Tab": "indentMore", 
-                    "Shift-Tab": "indentLess",
-                    "Ctrl-Space": "autocomplete",
-                    "Ctrl-S": function () {
+                language: lang,
+                theme:'vs',
+                fontFamily: 'monospace',
+                automaticLayout: true
+            };
+            
+            var args = {options:editorOptions,tab:me};
+            dayside.editor.trigger("editorOptions",args);
+            editorOptions = args.options;            
+            
+            function makeEditor() {
+                
+                var tabs = me.element.parent().parent();
+                var tab = tabs.find("a[href=#"+me.options.id+"]").parent();
+                tab.attr("title",me.options.file);
+                
+                require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/min/vs' }});
+                require(['vs/editor/editor.main'], function() {
+                    
+                    editorOptions.value = data;
+                    me.editor = monaco.editor.create(me.editorElement[0], editorOptions);
+                    
+                    me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
                         if (me.changed) {
                             setTimeout(function(){
                                 me.saveFile();
                             },100);
                         }
-                    }
-                },
-                theme:'no-direct-theme'
-            };
-            
-            var args = {options:editorOptions,tab:me};
-            dayside.editor.trigger("editorOptions",args);
-            editorOptions = args.options;
-            
-            function makeEditor() {
-                me.editor = CodeMirror(me.editorElement[0],editorOptions);
-                dayside.editor.trigger("editorCreated",{cm:me.editor,tab:me});
-                me.trigger("editorCreated",{cm:me.editor,tab:me});
-                me.editor.on("change",function(){ me.editorChange(); })
-                me.restoreState();
+                    });                    
+                    
+                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
+                    me.trigger("editorCreated",{editor:me.editor,tab:me});
+                    
+                    var model = me.editor.getModel();
+                    model.onDidChangeContent(function(){ me.editorChange(); });
+                    if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
+                    
+                    me.restoreState();                    
+                });            
             }
             
             if (this.editorElement.is(":visible")) {
@@ -168,15 +160,14 @@ teacss.ui.codeTab = (function($){
                     setTimeout(makeEditor);
                     me.unbind("select",f);
                 });
-            }
+            }            
         },
         saveState: function () {
             var me = this;
             var data = dayside.storage.get("codeTabState");
             if (!data) data = {};
             if (this.editor) {
-                var si = me.editor.getScrollInfo();
-                data[me.options.file] = {x:si.left,y:si.top};
+                data[me.options.file] = {viewState:this.editor.saveViewState()};
             } else {
                 data[me.options.file] = this.colorPicker.value;
             }
@@ -190,15 +181,16 @@ teacss.ui.codeTab = (function($){
                 var data = stateData[me.options.file];
                 if (this.editor) {
                     setTimeout(function(){
-                        me.editor.scrollTo(data.x,data.y);
+                        if (data.viewState) me.editor.restoreViewState(data.viewState);
                     },1);
                 } else {
                     this.colorPicker.setValue(data);
                     this.colorPicker.trigger("change");
                 }
             }
-            if (this.editor)
-                this.editor.on("scroll",function(){me.saveState()});
+            if (this.editor) {
+                this.editor.onDidScrollChange(function(){me.saveState()});
+            }
         },
         editorChange: function() {
             if (!this.editor) return;
@@ -240,9 +232,6 @@ teacss.ui.codeTab = (function($){
         },
         onSelect: function () {
             var me = this;
-            setTimeout(function(){
-                if (me.editor) me.editor.refresh();
-            },100);
         }
     });
 })(teacss.jQuery);

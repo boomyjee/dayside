@@ -1,0 +1,62 @@
+.dark-ui .teacss-ui .ui-tabs-nav li.changed a { color: #ccc; }
+
+.dark-ui .jstree-default.jstree-focused > ul { background: transparent; }
+.dark-ui .jstree-default a { color: #e0e0e0; }
+.dark-ui .jstree-default .jstree-clicked { background: #293F48; border-color: transparent; }
+.dark-ui .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
+.dark-ui .jstree-default ins {
+    background-image: url("../jstree/themes/default/d-dark.png");
+}
+
+.dark-ui .jstree li.hidden > a, 
+.dark-ui .jstree li.hidden > a > .jstree-icon:after
+{
+    color: #ccc;
+}
+
+.dark-ui .teacss-ui .ui-state-default a {
+    color: #999;
+}
+
+.dark-ui .teacss-ui .ui-widget-content a {
+    color: #aaa;
+}
+
+.dark-ui .teacss-ui .file-search-tab a:hover {
+    color: #333;
+}
+
+.dark-ui .teacss-ui .ui-state-default, 
+.dark-ui .teacss-ui .ui-widget-content .ui-state-default, 
+.dark-ui .teacss-ui .ui-widget-header .ui-state-default,
+.dark-ui .teacss-ui .ui-widget-content
+{
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .ui-state-active, 
+.dark-ui .teacss-ui .ui-widget-content .ui-state-active, 
+.dark-ui .teacss-ui .ui-widget-header .ui-state-active {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .ui-state-active a {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .button-select-panel {
+    color: #e0e0e0;
+    border-color: transparent;
+}
+
+.dark-ui .teacss-ui .dayside-statusbar {
+    color: #e0e0e0;
+}
+
+.dark-ui .teacss-ui .icon-button span.ui-button-text {
+    background:  transparent;
+}
+
+.dark-ui .teacss-ui .combo-item.selected {
+    background: rgba(255,119,0,0.3) !important;
+}
