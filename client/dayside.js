@@ -2043,7 +2043,11 @@ window.CodeMirror = (function() {
       var top = cm.doc.scrollTop, bot = top + display.wrapper.clientHeight;
       if (pixels < 0) top = Math.max(0, top + pixels - 50);
       else bot = Math.min(cm.doc.height, bot + pixels + 50);
-      updateDisplay(cm, [], {top: top, bottom: bot});
+     
+      if (chrome)
+        updateDisplay(cm, []); // dayside fix: update whole viewport because of chrome bug
+      else
+        updateDisplay(cm, [], {top: top, bottom: bot});
     }
 
     if (wheelSamples < 20) {
