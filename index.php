@@ -23,7 +23,7 @@
             <script>
                 dayside({preview:false});
                 dayside.plugins.pixlr();
-                dayside.plugins.xdebug();
+                //dayside.plugins.xdebug();
                 dayside.plugins.console();
                 dayside.plugins.git_commit();
                 // dayside.plugins.collaborate();

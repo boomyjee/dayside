@@ -1,0 +1,76 @@
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+
+.scrollbars(bg) {
+    @ var c1 = color(bg).mul(1); c1.a = 0.8;
+    @ var c2 = color(bg).mul(1); c2.a = 0.4;
+    ::-webkit-scrollbar-thumb {
+        background: @c1; 
+    }
+    ::-webkit-scrollbar-thumb:window-inactive {
+        background: @c2; 
+    }        
+}
+.scrollbars('white');
+
+.bg_color(cls,bg,sec) {
+    @ var color = "#"+bg;
+    @ sec = sec ? "#"+sec : lighten(color,5);
+    
+    .@{'theme-'+cls} {
+        background: @color;
+        
+         > .teacss-ui,
+        .jstree-default.jstree-focused,
+        .jstree-default.jstree-focused > ul,
+        .teacss-ui .ui-widget-header .ui-state-active,
+        .teacss-ui .ui-state-default, 
+        .teacss-ui .ui-widget-content .ui-state-default, 
+        .teacss-ui .ui-widget-header .ui-state-default,
+        .teacss-ui .ui-widget-content
+        {
+            background: @color;
+        }
+        
+        .teacss-ui .ui-tabs .ui-tabs-nav,
+        .teacss-ui .dayside-config-dialog  > .ui-dialog-content > .ui-tabs .ui-tabs-nav
+        {
+            background: @darken(color,5);
+        }
+        
+        .teacss-ui .ui-widget-header .ui-state-active,
+        .teacss-ui .ui-state-default, 
+        .teacss-ui .ui-widget-content .ui-state-default, 
+        .teacss-ui .ui-widget-header .ui-state-default,
+        .teacss-ui .dayside-statusbar
+        {
+            border-color: @sec;
+        }
+        .teacss-ui .button-select-panel,
+        .teacss-ui .editorPanel-toolbar,
+        .teacss-ui .dayside-statusbar {
+            background: @sec;
+        }
+        .ui-splitter { 
+            background: @sec !important; 
+        }
+        .scrollbars(lighten(color,20));
+    }
+}
+
+.bg_color('vs-dark','1e1e1e');
+.bg_color('hc-black','000000');
