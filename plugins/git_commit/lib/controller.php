@@ -228,7 +228,7 @@ class Controller {
         $add = false;
         $del = false;
         
-        $diff_html = "<div class='delta CodeMirror cm-s-no-direct-theme' data-filename='".$one_status['file']."'>";
+        $diff_html = "<div class='delta code-text' data-filename='".$one_status['file']."'>";
 
         foreach (array('staged'=>$lines_staged,'wt'=>$lines_wt) as $line_src => $lines) {
             

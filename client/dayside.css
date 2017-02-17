@@ -264,8 +264,9 @@
 .jstree-icon.zop {
     background: url(src/../lib/jstree/icons/zip.png) 0 0 !important;
 }
-.CodeMirror .fold-gutter {
-    width: 0.8em;
+.code-text {
+    font-family: monospace;
+    line-height: 1em;
 }
 #teacss-layer {
     position: absolute;

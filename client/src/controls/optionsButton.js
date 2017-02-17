@@ -101,7 +101,14 @@ ui.optionsButton = teacss.ui.Button.extend({
                 e.updateOptions(this.editorOptions);
                 e.getModel().updateOptions(this.editorOptions.modelOptions);
             }
-        }             
+        }         
+
+        // create dynamic CSS node to reflect fontSize changes for CodeMirror
+        var styles = $("#ideStyles");
+        if (styles.length==0) {
+            styles = $("<style>").attr({type:"text/css",id:"ideStyles"}).appendTo("head");
+        }
+        styles.html(".code-text {font-size:"+value.fontSize+"px !important; }");
     }  
 });
     
