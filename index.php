@@ -13,8 +13,6 @@
             <script src="client/dayside.js"></script>
             <link href="client/dayside.css" rel="stylesheet" type="text/css">
             <script src="plugins/pixlr/pixlr.js"></script>
-            <script src="plugins/xdebug/xdebug.js"></script>
-            <link href="plugins/xdebug/xdebug.css" rel="stylesheet" type="text/css">
             <script src="plugins/console/console.js"></script>
             <script src="plugins/git_commit/git_commit.js"></script>
             <link href="plugins/git_commit/git_commit.css" rel="stylesheet" type="text/css">
