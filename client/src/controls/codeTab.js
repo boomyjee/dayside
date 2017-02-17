@@ -108,6 +108,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='php') lang = 'php';
             if (ext=='js')  lang = 'javascript';
             if (ext=='ts')  lang = 'typescript';
+            if (ext=='py')  lang = 'python';
             if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
             
             var editorOptions = {
