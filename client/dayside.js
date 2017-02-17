@@ -6583,6 +6583,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='tea') lang = 'teacss';
             if (ext=='php') lang = 'php';
             if (ext=='js')  lang = 'javascript';
+            if (ext=='ts')  lang = 'typescript';
             if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
             
             var editorOptions = {
@@ -6591,7 +6592,8 @@ teacss.ui.codeTab = (function($){
                 language: lang,
                 theme:'vs',
                 fontFamily: 'monospace',
-                automaticLayout: true
+                automaticLayout: true,
+                autoClosingBrackets: false
             };
             
             var args = {options:editorOptions,tab:me};
@@ -6608,8 +6610,7 @@ teacss.ui.codeTab = (function($){
                 require(['vs/editor/editor.main'], function() {
                     
                     editorOptions.value = data;
-                    me.editor = monaco.editor.create(me.editorElement[0], editorOptions);
-                    
+                    me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
                     me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
                         if (me.changed) {
                             setTimeout(function(){
