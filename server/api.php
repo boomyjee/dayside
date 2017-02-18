@@ -583,4 +583,21 @@ class FileApi {
         $params = escapeshellarg(json_encode($params));
         echo shell_exec("python ".$server_path." restart ".$params." 2>&1");
     }
+
+    function php_server_start() {
+        $server_path = realpath(__DIR__."/../../daysidePHPServer/server/server.php"); 
+        if (!$server_path) {
+            echo "Can't find server/server.php";
+            return;
+        }
+        $params = @$this->phpServerParams ?: array(
+            'authInclude' =>  __FILE__,
+            'authFunction' => array('\FileApi','remote_auth')
+        );
+        $params = array_merge($params,array(
+            'port' => (int)(@$_REQUEST['port'] ?:8000)
+        ));
+        $params = escapeshellarg(json_encode($params));
+        echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
+    }    
 }
