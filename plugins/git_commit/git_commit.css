@@ -4,7 +4,7 @@
 .teacss-ui .git-commit-tab .hide{
     display: none;
 }
-.teacss-ui .git-commit-tab .CodeMirror {
+.teacss-ui .git-commit-tab .code-text {
     position: relative;
     width: 100%;
 }
