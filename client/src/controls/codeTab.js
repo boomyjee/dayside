@@ -82,8 +82,7 @@ teacss.ui.codeTab = (function($){
             });
             FileApi.events.bind("remove",function(o,e){
                 if (e.path==me.options.file) {
-                    var id = me.element.parent().attr("id");
-                    me.element.parent().parent().tabs("remove","#"+id);
+                    if (me.tabPanel) me.tabPanel.closeTab(me,true);
                 }
             });
             
