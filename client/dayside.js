@@ -7797,9 +7797,16 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
                 
                 if (text) {
                     function editorCreated() {
-                        var cm = tab.editor;
-                        CodeMirror.commands.clearSearch(cm);
-                        CodeMirror.commands.findNext(cm,false,text);
+                        require(['vs/editor/contrib/find/common/findController'],function(fc){
+                            setTimeout(function(){
+                                var efc = fc.CommonFindController.get(tab.editor);
+                                efc.setSearchString(text);
+                                if (!efc.getState().matchCase) efc.toggleCaseSensitive();
+                                efc.start({});
+                                efc.moveToNextMatch();
+                            },2);
+                            // 2 is an ugly hack because of 1 timeout in tab.restoreState
+                        })
                     }
 
                     if (tab.editor) 
