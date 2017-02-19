@@ -6482,6 +6482,19 @@ teacss.ui.codeTab = (function($){
         },
         deserialize: function (data) {
             return new this({file:data,closable:true});
+        },
+        languageFromFilename: function (file) {
+            var parts = file.split(".");
+            var ext = parts[parts.length-1];
+            var lang = undefined;
+            if (ext=='css') lang = 'css';
+            if (ext=='tea') lang = 'teacss';
+            if (ext=='php') lang = 'php';
+            if (ext=='js')  lang = 'javascript';
+            if (ext=='ts')  lang = 'typescript';
+            if (ext=='py')  lang = 'python';
+            if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
+            return lang;            
         }
     },{
         init: function (options) {
@@ -6572,20 +6585,10 @@ teacss.ui.codeTab = (function($){
             var me = this;
             var file = this.options.file;
             var data = FileApi.cache[file];
-            var parts = file.split(".");
-            var ext = parts[parts.length-1];
 
             this.editorElement.html("");
             
-            var lang = undefined;
-            if (ext=='css') lang = 'css';
-            if (ext=='tea') lang = 'teacss';
-            if (ext=='php') lang = 'php';
-            if (ext=='js')  lang = 'javascript';
-            if (ext=='ts')  lang = 'typescript';
-            if (ext=='py')  lang = 'python';
-            if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
-            
+            var lang = this.Class.languageFromFilename(file);
             var editorOptions = {
                 value:data,
                 lineNumbers:true,
