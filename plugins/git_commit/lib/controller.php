@@ -278,7 +278,7 @@ class Controller {
                 
                 $part_1 .= "<div class='$class'> ".$del_str." </div>";
                 $part_2 .= "<div class='$class'> ".$add_str." </div>";                
-                $part_3 .= "<div class='$class'>".htmlspecialchars($out)." </div>";
+                $part_3 .= "<div class='$class'>".htmlspecialchars(rtrim($out))." </div>";
                 
             }
             
