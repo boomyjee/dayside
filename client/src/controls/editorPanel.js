@@ -196,6 +196,12 @@ teacss.ui.editorPanel = (function($){
     return teacss.ui.panel.extend({
         
         selectFile: function (file) {
+            var tab = this.openFile(file,true);
+            this.tabsForFiles.selectTab(tab);
+            return tab;
+        },
+
+        openFile: function (file) {
             var me = this;
             var ui = teacss.ui;
             var tab;
@@ -204,10 +210,9 @@ teacss.ui.editorPanel = (function($){
                     tab = ui.codeTab.tabs[i];
             }
             if (!tab) {
-                tab = ui.codeTab({file:file,closable:true,editorPanel:me});
+                tab = ui.codeTab({file:file,closable:true,editorPanel:me,invisibleEditorCreate:true});
                 me.tabsForFiles.addTab(tab);
             }
-            me.tabsForFiles.selectTab(tab);
             return tab;
         },
         
@@ -271,7 +276,6 @@ teacss.ui.editorPanel = (function($){
             this.element.appendTo("body").addClass("teacss-ui");
             
             // tabs state save
-            
             var old_addTab = this.tabsForFiles.addTab;
             this.tabsForFiles.addTab = function (tab) {
                 old_addTab.apply(this,arguments);

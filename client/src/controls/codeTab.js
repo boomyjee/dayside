@@ -155,7 +155,7 @@ teacss.ui.codeTab = (function($){
                 });            
             }
             
-            if (this.editorElement.is(":visible")) {
+            if (this.editorElement.is(":visible") || me.options.invisibleEditorCreate) {
                 makeEditor();
             } else {
                 var f = this.bind("select",function(){
