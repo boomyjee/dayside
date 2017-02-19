@@ -6558,8 +6558,7 @@ teacss.ui.codeTab = (function($){
             });
             FileApi.events.bind("remove",function(o,e){
                 if (e.path==me.options.file) {
-                    var id = me.element.parent().attr("id");
-                    me.element.parent().parent().tabs("remove","#"+id);
+                    if (me.tabPanel) me.tabPanel.closeTab(me,true);
                 }
             });
             
@@ -6625,6 +6624,7 @@ teacss.ui.codeTab = (function($){
                     
                     var model = me.editor.getModel();
                     model.onDidChangeContent(function(){ me.editorChange(); });
+                    model.setEOL('\n');
                     if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
                     
                     me.restoreState();                    

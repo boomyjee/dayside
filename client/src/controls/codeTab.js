@@ -148,6 +148,7 @@ teacss.ui.codeTab = (function($){
                     
                     var model = me.editor.getModel();
                     model.onDidChangeContent(function(){ me.editorChange(); });
+                    model.setEOL('\n');
                     if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
                     
                     me.restoreState();                    
