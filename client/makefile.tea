@@ -1,5 +1,12 @@
 Script {
+    @append {
+        var require_bkup = window.require;
+    }
     @append "lib/monaco/min/vs/loader.js";
+    @append {
+        monaco_require = require;
+        window.require = require_bkup;
+    }
     
     @append "lib/jstree/jquery.jstree.js";
     @append "lib/jstree/jquery.cookie.js";
