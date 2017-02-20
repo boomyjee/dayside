@@ -65,7 +65,7 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
                 
                 if (text) {
                     function editorCreated() {
-                        require(['vs/editor/contrib/find/common/findController'],function(fc){
+                        monaco_require(['vs/editor/contrib/find/common/findController'],function(fc){
                             setTimeout(function(){
                                 var efc = fc.CommonFindController.get(tab.editor);
                                 efc.setSearchString(text);
