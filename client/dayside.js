@@ -6627,17 +6627,16 @@ teacss.ui.codeTab = (function($){
                             },100);
                         }
                     });                    
-                    
-                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
-                    me.trigger("editorCreated",{editor:me.editor,tab:me});
-                    
+
                     var model = me.editor.getModel();
                     model.setEOL('\n');
                     model.setValue(data);
                     model.onDidChangeContent(function(){ me.editorChange(); });
                     if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
+                    me.restoreState();
                     
-                    me.restoreState();                    
+                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
+                    me.trigger("editorCreated",{editor:me.editor,tab:me});
                 });            
             }
             
@@ -6668,9 +6667,7 @@ teacss.ui.codeTab = (function($){
             if (stateData && stateData[me.options.file]) {
                 var data = stateData[me.options.file];
                 if (this.editor) {
-                    setTimeout(function(){
-                        if (data.viewState) me.editor.restoreViewState(data.viewState);
-                    },1);
+                    if (data.viewState) me.editor.restoreViewState(data.viewState);
                 } else {
                     this.colorPicker.setValue(data);
                     this.colorPicker.trigger("change");
@@ -7812,14 +7809,11 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
                 if (text) {
                     function editorCreated() {
                         monaco_require(['vs/editor/contrib/find/common/findController'],function(fc){
-                            setTimeout(function(){
-                                var efc = fc.CommonFindController.get(tab.editor);
-                                efc.setSearchString(text);
-                                if (!efc.getState().matchCase) efc.toggleCaseSensitive();
-                                efc.start({});
-                                efc.moveToNextMatch();
-                            },2);
-                            // 2 is an ugly hack because of 1 timeout in tab.restoreState
+                            var efc = fc.CommonFindController.get(tab.editor);
+                            efc.setSearchString(text);
+                            if (!efc.getState().matchCase) efc.toggleCaseSensitive();
+                            efc.start({});
+                            efc.moveToNextMatch();
                         })
                     }
 

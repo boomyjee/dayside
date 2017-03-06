@@ -206,8 +206,10 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             }
 
             function positionCursor() {
+                var position = {lineNumber: parseInt(line), column: 1};
                 new_tab.editor.focus();
-                new_tab.editor.setCursor({line:line-1,ch:0},{scroll:true});
+                new_tab.editor.setPosition(position);
+                new_tab.editor.revealLineInCenter(position.lineNumber);
             }
 
             if (new_tab.editor) {
@@ -215,7 +217,6 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             } else {
                 new_tab.bind("editorCreated",function(){
                     positionCursor();
-                    new_tab.saveState();
                 });
             } 
 

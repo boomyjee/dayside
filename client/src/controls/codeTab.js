@@ -144,17 +144,16 @@ teacss.ui.codeTab = (function($){
                             },100);
                         }
                     });                    
-                    
-                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
-                    me.trigger("editorCreated",{editor:me.editor,tab:me});
-                    
+
                     var model = me.editor.getModel();
                     model.setEOL('\n');
                     model.setValue(data);
                     model.onDidChangeContent(function(){ me.editorChange(); });
                     if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
+                    me.restoreState();
                     
-                    me.restoreState();                    
+                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
+                    me.trigger("editorCreated",{editor:me.editor,tab:me});
                 });            
             }
             
@@ -185,9 +184,7 @@ teacss.ui.codeTab = (function($){
             if (stateData && stateData[me.options.file]) {
                 var data = stateData[me.options.file];
                 if (this.editor) {
-                    setTimeout(function(){
-                        if (data.viewState) me.editor.restoreViewState(data.viewState);
-                    },1);
+                    if (data.viewState) me.editor.restoreViewState(data.viewState);
                 } else {
                     this.colorPicker.setValue(data);
                     this.colorPicker.trigger("change");
