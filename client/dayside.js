@@ -6619,7 +6619,6 @@ teacss.ui.codeTab = (function($){
                 monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/min/vs' }});
                 monaco_require(['vs/editor/editor.main'], function() {
                     
-                    editorOptions.value = data;
                     me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
                     me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
                         if (me.changed) {
@@ -6633,8 +6632,9 @@ teacss.ui.codeTab = (function($){
                     me.trigger("editorCreated",{editor:me.editor,tab:me});
                     
                     var model = me.editor.getModel();
-                    model.onDidChangeContent(function(){ me.editorChange(); });
                     model.setEOL('\n');
+                    model.setValue(data);
+                    model.onDidChangeContent(function(){ me.editorChange(); });
                     if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
                     
                     me.restoreState();                    
