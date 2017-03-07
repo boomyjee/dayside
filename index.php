@@ -3,10 +3,10 @@
     <head>
         <title>DaysIDE</title>
         <meta charset="utf-8">
-        <? if (isset($_GET['dev'])): ?>
+        <?php if (isset($_GET['dev'])): ?>
             <script tea="server/assets/index.tea"></script>
             <script src="server/assets/teacss/teacss.js"></script>
-        <? else: ?>
+        <?php else: ?>
             <script src="server/assets/teacss/teacss.js"></script>
             <script src="server/assets/teacss/teacss-ui.js"></script>
             <link href="server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
@@ -25,7 +25,7 @@
                 dayside.plugins.git_commit();
                 // dayside.plugins.collaborate();
             </script>
-        <? endif ?>
+        <?php endif ?>
     </head>
     <body>
         Welcome to DaysIDE

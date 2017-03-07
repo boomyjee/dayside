@@ -1,4 +1,4 @@
-<? include __DIR__."/../../server/build.php" ?>
+<?php include __DIR__."/../../server/build.php" ?>
 <!doctype html>
 <html>
     <head>
@@ -13,7 +13,7 @@
         <script src="../../client/dayside.js"></script>
         <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
         
-        <? if (build("makefile.tea",false,"collaborate.js",__DIR__)!='dev'): ?>
+        <?php if (build("makefile.tea",false,"collaborate.js",__DIR__)!='dev'): ?>
             <script>
                 dayside.plugins.collaborate();
                 dayside({
@@ -21,6 +21,6 @@
                     ajax_url: teacss.path.absolute("./demo.php")
                 });
             </script>
-        <? endif ?>
+        <?php endif ?>
     </head>
 </html>      
