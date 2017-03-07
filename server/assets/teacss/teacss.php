@@ -32,8 +32,8 @@ function teacss($makefile,$css,$js,$dir,$dev) {
     } else {
         echo ob_get_clean();
         ?>
-            <? if ($js): ?><script src="<?=$js?>"></script><? endif ?>
-            <? if ($css): ?><link href="<?=$css?>" rel="stylesheet" type="text/css"><? endif ?>
+            <?php if ($js): ?><script src="<?=$js?>"></script><?php endif ?>
+            <?php if ($css): ?><link href="<?=$css?>" rel="stylesheet" type="text/css"><?php endif ?>
         <?
         return 'release';
     }

@@ -25,19 +25,19 @@
                         </div>
                     </span>
                 </div>  
-                <? if (!empty($all_branches)): ?>
+                <?php if (!empty($all_branches)): ?>
                 <div class="button-select-panel teacss-ui">
                     <div>
-                        <? foreach($all_branches as $branch):?>
+                        <?php foreach($all_branches as $branch):?>
                             <div data-value="<?=htmlspecialchars($branch)?>" class="branch combo-item <?= ($branch==$current_branch)?'selected':''?>">                                
                                 <span class="combo-label"><?=$branch?></span>
                             </div>
-                        <? endforeach ?>
+                        <?php endforeach ?>
                     </div>
                 </div>
-                <? endif ?>
+                <?php endif ?>
             </td>
-            <? if($view_type=="history"): ?>
+            <?php if($view_type=="history"): ?>
                 <td class="commit_name">
                     <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
                         <span class="ui-button-text">
@@ -46,21 +46,21 @@
                             </div>
                         </span>
                     </div>  
-                    <? if (!empty($last_commits)): ?>
+                    <?php if (!empty($last_commits)): ?>
                     <div class="button-select-panel teacss-ui">
                         <div>
-                            <? foreach($last_commits as $commit):?>
-                                <? $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                            <?php foreach($last_commits as $commit):?>
+                                <?php $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
                                 <div data-value="<?=$commit["sha_full"]?>" <?=$title?> class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
                                     <span class="combo-label">
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b> <?=$commit['date']?></p>   
                                         <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
                                     </span>
                                 </div>
-                            <? endforeach ?>
+                            <?php endforeach ?>
                         </div>
                     </div>
-                    <? endif ?>
+                    <?php endif ?>
                     
                     <div class="ui-button ui-widget ui-state-default icon-button commit_list" role="button">
                         <span class="ui-button-text">
@@ -69,24 +69,24 @@
                             </div>
                         </span>
                     </div>  
-                    <? if (!empty($after_commits)): ?>
+                    <?php if (!empty($after_commits)): ?>
                     <div class="button-select-panel teacss-ui">
                         <div>
-                            <? foreach($after_commits as $n=>$commit):?>
-                                <? $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                            <?php foreach($after_commits as $n=>$commit):?>
+                                <?php $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
                                 <div data-value="<?=($n+1)?>" <?=$title?> class="history_depth combo-item <?= (($n+1)==$history_depth)?'selected':''?>">
                                     <span class="combo-label" >
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
                                         <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
                                     </span>
                                 </div>
-                            <? endforeach ?>
+                            <?php endforeach ?>
                         </div>
                     </div>
-                    <? endif ?>
+                    <?php endif ?>
                 </td>
-            <? endif ?>
-            <? if($view_type!="history"): ?>
+            <?php endif ?>
+            <?php if($view_type!="history"): ?>
                 <td class="stage">
                     <button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' type='submit' name='action' value='stage_all'>
                         <span class="ui-button-text">Stage All</span>
@@ -109,7 +109,7 @@
                         </div>
                     </div>
                 </td>
-            <? endif ?>
+            <?php endif ?>
             <td class="empty" style="width: 100%;"></td>
 
             <input type='hidden' id='status_hash' name='status_hash' value='<?=$status_hash?>'>
@@ -125,47 +125,47 @@
                 <td colspan="5"><div class="ui-state-error ui-corner-all"><?= $error ?></div></td>            
             </tr>
             <tr class="filelist_header ui-state-default">
-                <? if($view_type!="history"): ?>
+                <?php if($view_type!="history"): ?>
                     <th class="staged ui-state-default">Staged</th>
-                <? endif ?>
+                <?php endif ?>
                 <th class="state ui-state-default">State</th> 
                 <th class="filename ui-state-default">Filename</th>
-                <? if($view_type!="history"): ?>
+                <?php if($view_type!="history"): ?>
                     <th class="checkout ui-state-default">Checkout</th>
-                <? endif ?>
+                <?php endif ?>
                 <th class="empty ui-state-default"></th>
             </tr>
-            <? if (empty($status)): ?>
+            <?php if (empty($status)): ?>
                 <tr class="file ui-widget-content ui-state-default">
                     <td colspan="5">
-                        <? if($view_type=="history"): ?>
+                        <?php if($view_type=="history"): ?>
                             No changes to display
-                        <? else: ?>
+                        <?php else: ?>
                             Nothing to commit, working directory clean
-                        <? endif ?>
+                        <?php endif ?>
                     </td>
                 </tr>
-            <? endif ?>
-            <? foreach ($status as $one): ?>
+            <?php endif ?>
+            <?php foreach ($status as $one): ?>
                 <tr data-file='<?=htmlspecialchars($one['file'])?>' data-status="<?=htmlspecialchars(json_encode($one))?>" class="file ui-widget-content ui-state-default">
-                    <? if($view_type!="history"): ?>
+                    <?php if($view_type!="history"): ?>
                         <td class="checkbox">
                             <input class='checkbox <?=$one['partial'] ? 'partial' : '' ?>' <?=$one['staged'] ? 'checked' : '' ?> type='checkbox'>
                         </td>
-                    <? endif ?>
+                    <?php endif ?>
                     <td class='state'><?=$one['state']?></td>                    
                     <td class='filename'><?=isset($one['old_file'])? $one['old_file']." -> ": ""?><?=$one['file']?></td>
-                    <? if($view_type!="history"): ?>
+                    <?php if($view_type!="history"): ?>
                         <td class="checkout">                           
                             <button class='checkout_file ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close'>
                                 <span class="ui-button-icon-primary ui-icon ui-icon-closethick"></span>
                             </button>
                         </td>
-                    <? endif ?>
+                    <?php endif ?>
                     <td class="empty"></td>
                 </tr>
                 <tr><td class="diff_html ui-state-default" colspan='5'></td></tr>
-            <? endforeach ?>
+            <?php endforeach ?>
         </table>
     </div>
 </form>

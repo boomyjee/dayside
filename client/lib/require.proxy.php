@@ -1,5 +1,5 @@
-<? if (!isset($_REQUEST['url'])): ?>
-<? header("Content-Type: application/javascript") ?>
+<?php if (!isset($_REQUEST['url'])): ?>
+<?php header("Content-Type: application/javascript") ?>
 //<script>
 (function(){
 var scripts = document.getElementsByTagName("script");
@@ -68,7 +68,7 @@ for (var s=0;s < scripts.length;s++) {
 })();
 //</script>
 
-<? die(); endif;
+<?php die(); endif;
 
 class Proxy {
     static $base_url;
