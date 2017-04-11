@@ -14,6 +14,7 @@ teacss.ui.codeTab = (function($){
             if (ext=='css') lang = 'css';
             if (ext=='tea') lang = 'teacss';
             if (ext=='php') lang = 'php';
+            if (ext=='phtml') lang = 'php';
             if (ext=='js')  lang = 'javascript';
             if (ext=='ts')  lang = 'typescript';
             if (ext=='py')  lang = 'python';
