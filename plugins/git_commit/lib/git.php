@@ -186,6 +186,7 @@ class Git {
     }
     
     function current_status($file=null) {
+        if (!$file) $file = '.';
         $status = array();
         $string = $this->run_command(array("status", "--porcelain", "--untracked-files", $file));
         if ($this->error) return $status;
