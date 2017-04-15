@@ -4,5 +4,4 @@ server/password.php
 # temp pid file for xdebug
 plugins/xdebug/proxy/proxy.pid
 
-client/lib/monaco/dev/
 client/lib/monaco/min-maps/

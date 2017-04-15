@@ -6617,7 +6617,7 @@ teacss.ui.codeTab = (function($){
                 var tab = tabs.find("a[href=#"+me.options.id+"]").parent();
                 tab.attr("title",me.options.file);
                 
-                monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/min/vs' }});
+                monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/dev/vs' }});
                 monaco_require(['vs/editor/editor.main'], function() {
                     
                     me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
