@@ -6678,6 +6678,16 @@ teacss.ui.codeTab = (function($){
                 this.editor.onDidScrollChange(function(){me.saveState()});
             }
         },
+        editorReady: function (callback) {
+            var me = this;
+            if (me.editor) {
+                callback.call(me,me.editor);
+            } else {
+                this.bind("editorCreated",function(){
+                    callback.call(me,me.editor);
+                });
+            }
+        },
         editorChange: function() {
             if (!this.editor) return;
             
