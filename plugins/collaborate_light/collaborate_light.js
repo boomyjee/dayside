@@ -42,7 +42,6 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                 }
             });
             me.button.element.appendTo(dayside.editor.toolbar.element);
-            me.connect();
         });
     },
 
@@ -52,16 +51,6 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
             if (tab.changed) changed = true;
         });
         return changed;
-    },
-
-    tryLoseLead: function () {
-        var me = this;
-        if (!me.connected) return;
-        if (me.current_leader!=me.ref_user.key) return;
-
-        if (!me.isChanged()) {
-            me.ref_root.child("edits").remove();
-        }
     },
 
     setReadonly: function (flag) {
@@ -113,15 +102,19 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
             changeLeader(track.id);
             snapshot.ref.on("value",function (leader_snapshot){
-                if (leader_snapshot.val()==null) {
-                    changeLeader(null);
-                }
+                if (!leader_snapshot.val()) changeLeader(null);
             });
             return;
         }
 
         if (me.current_leader==me.ref_user.key) {
-            me.tryLoseLead();
+            // timeout needed to catch all sequential monaco changed events before checking editor value
+            clearTimeout(me.loseLeadTimeout);
+            me.loseLeadTimeout = setTimeout(function(){
+                if (!me.isChanged()) {
+                    me.ref_root.child("edits").remove();
+                }
+            },1);
             return;
         }
 

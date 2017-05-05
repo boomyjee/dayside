@@ -19,6 +19,9 @@
                 root: teacss.path.absolute("./../../../"),
                 ajax_url: teacss.path.absolute("./demo.php")
             });
+            dayside.ready(function(){
+                dayside.plugins.collaborate_light.instance.connect();
+            });
         </script>
     </head>
     <body>
