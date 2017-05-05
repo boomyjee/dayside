@@ -6709,6 +6709,11 @@ teacss.ui.codeTab = (function($){
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
             var text = this.editor.getValue();
+
+            var saving_event = {text:text,cancel:false};
+            this.trigger("saving",saving_event);
+            if (saving_event.cancel) return;
+
             FileApi.save(this.options.file,text,function(answer){
                 var data = answer.error || answer.data;
                 if (data=="ok") {

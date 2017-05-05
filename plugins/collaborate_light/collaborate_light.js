@@ -17,10 +17,14 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                         me.changed(tab,editor,{type:'close',file:tab.options.file});
                     }
                 });
+                tab.bind("saving",function(o,e){
+                    if (me.readonly) e.cancel = true;
+                });
+
                 tab.editor.updateOptions({readOnly:me.readonly ? true:false});
 
                 editor.getModel().onDidChangeContent(function(e){ 
-                    var e_copy = $.extend(true,{type:'change',selections:editor.getSelections(),file:tab.options.file},e);
+                    var e_copy = $.extend(true,{type:'change',file:tab.options.file},e);
                     me.changed(tab,editor,e_copy);
                 });      
                 
@@ -66,21 +70,34 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         if (!this.connected) return;
 
         if (event.type=='change') {
-            if (me.current_leader && me.current_leader != me.ref_user.key && !me.readonly) {
-                me.disconnect();
-                return;
-            }
-            if (!me.current_leader) {
-                var ref_edit = me.ref_root.child("edits").push();
-                ref_edit.set({type:"leader",id:me.ref_user.key});
-                ref_edit.onDisconnect().remove();
+            if (me.current_leader && me.current_leader.locked) {
+                if (me.current_leader.id != me.ref_user.key && !me.readonly) {
+                    me.disconnect();
+                    return;
+                }
+            } else {
+                var ref_leader = me.ref_root.child("leader");
+                ref_leader.set({id:me.ref_user.key,locked:true});
+                ref_leader.onDisconnect().remove();
             }
         }
 
-        if (me.current_leader==me.ref_user.key) {
+        if (me.current_leader && me.current_leader.id==me.ref_user.key) {
             var ref_edit = me.ref_root.child("edits").push();
             ref_edit.set(event);
             ref_edit.onDisconnect().remove();
+        }
+    },
+
+    leaderChanged: function (snapshot) {
+        var me = this;
+        me.current_leader = snapshot.val();
+
+        if (me.current_leader && me.current_leader.locked) {
+            me.setReadonly(me.current_leader.id != me.ref_user.key);
+        } else {
+            me.setReadonly(false);
+            if (me.isChanged()) me.disconnect();
         }
     },
 
@@ -89,34 +106,19 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         var me = this;
         var track = snapshot.val();
 
-        if (track.type=="leader") {
-            function changeLeader(id) {
-                me.current_leader = id;
-                if (me.current_leader && me.current_leader != me.ref_user.key) {
-                    me.setReadonly(true);
-                } else {
-                    me.setReadonly(false);
-                    if (!me.current_leader && me.isChanged()) me.disconnect();
-                }
-            }
-
-            changeLeader(track.id);
-            snapshot.ref.on("value",function (leader_snapshot){
-                if (!leader_snapshot.val()) changeLeader(null);
-            });
-            return;
-        }
-
-        if (me.current_leader==me.ref_user.key) {
+        if (me.current_leader && me.current_leader.id==me.ref_user.key) {
             // timeout needed to catch all sequential monaco changed events before checking editor value
             clearTimeout(me.loseLeadTimeout);
             me.loseLeadTimeout = setTimeout(function(){
                 if (!me.isChanged()) {
                     me.ref_root.child("edits").remove();
+                    me.ref_root.child("leader").set({id:me.ref_user.key,locked:false});
                 }
             },1);
             return;
         }
+
+        console.debug(track);
 
         function findTab(found_callback) {
             for (var i=0;i<ui.codeTab.tabs.length;i++) {
@@ -142,9 +144,18 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                     [edit],
                     function () {
                         setTimeout(function(){
-                            tab.editor.revealRangeInCenterIfOutsideViewport(track.selections[0]);
+                            var position = {
+                                column: track.range.startColumn,
+                                lineNumber: track.range.startLineNumber
+                            };
+                            if (track.range.startLineNumber==track.range.endLineNumber) {
+                                position.column += track.text.length;
+                            }
+
+                            tab.editor.revealPositionInCenterIfOutsideViewport(position);
+                            tab.editor.setPosition(position);
                         },1);
-                        return track.selections;
+                        return tab.editor.getSelections();
                     }
                 );
             });
@@ -153,6 +164,8 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         if (track.type=='close') {
             findTab(function(){
                 this.tabPanel.closeTab(this,true);
+                var index = this.Class.tabs.indexOf(this);
+                if (index!=-1) this.Class.tabs.splice(index, 1);
             });
         }
 
@@ -207,6 +220,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         }
 
         me.ref_root.child("edits").on("child_added",$.proxy(me.editCreated,me));
+        me.ref_root.child("leader").on("value",$.proxy(me.leaderChanged,me));
 
         me.button.element.css({background:"#f90"});        
         me.connected = true;
@@ -222,8 +236,10 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
         if (me.ref_root) {
             me.ref_root.child("edits").off("child_added");
-            if (me.current_leader==me.ref_user.key) {
+
+            if (me.current_leader && me.current_leader.id==me.ref_user.key) {
                 me.ref_root.child("edits").remove();
+                me.ref_root.child("leader").remove();
             }
 
             firebase.database().goOffline();
