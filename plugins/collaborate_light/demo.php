@@ -4,6 +4,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
     
 require __DIR__."/../../server/api.php";
+require __DIR__."/../../plugins/git_commit/api.php";
 require __DIR__."/api.php";
 
 class FirepadApi extends FileApi {

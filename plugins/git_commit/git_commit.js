@@ -1,9 +1,10 @@
 (function ($,ui) {
 
-dayside.plugins.git_commit = $.Class.extend({
+dayside.plugins.git_commit = ui.Control.extend({
     init: function (options) {
-        this.options = $.extend({},options);        
-        var me = this;        
+        this._super(options);
+        var me = this;   
+        this.Class.instance = me;     
         dayside.ready(function(){
             dayside.editor.filePanel.bind("contextMenu",function(b,e){
                 if (e.node.data("folder") && e.node.find(">ul>li[rel$='/.git']").length) {
@@ -55,7 +56,8 @@ dayside.plugins.git_commit = $.Class.extend({
             tab = new dayside.plugins.git_commit.projectTab({path:path});
             dayside.editor.mainPanel.addTab(tab,tab.id,"center");
         }
-        tab.tabPanel.selectTab(tab);        
+        tab.tabPanel.selectTab(tab);
+        return tab;
     }
 });
     
@@ -81,10 +83,18 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         this.path = path;
         
         this.initTabHandlers();
-        this.reloadTab({action:this.options.view_type || 'working_tree'});
+
+        var e = {
+            tab:this,
+            initialState: {action:this.options.view_type || 'working_tree'}
+        };
+        dayside.plugins.git_commit.instance.trigger("tabCreated",e);
+        if (e.initialState) this.reloadTab(e.initialState);
         
         this.id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
         this.Class.hash[path] = this;
+
+        
     },
     
     reloadTab: function(data,resType,cb) {
