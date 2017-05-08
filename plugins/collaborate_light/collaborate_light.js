@@ -1,21 +1,24 @@
 (function($,ui){
     
 dayside.plugins.collaborate_light = teacss.ui.Control.extend({
+
     init: function (o) {
         var me = this;
-        this._super(o);
+        this._super($.extend({
+            allowedEvents: ['open','close','save','change','scroll']
+        },o));
         
         dayside.plugins.collaborate_light.instance = me;
 
-        if (dayside.plugins.git_commit && false) {
+        if (dayside.plugins.git_commit && me.eventAllowed('git_commit')) {
             dayside.plugins.git_commit.instance.bind("tabCreated",function(b,e){
                 var tab = e.tab;
-                if (me.openingRemoteTab) {
+                if (me.processing && me.currentTrack.type=='git_commit') {
                     e.initialState = false;
                 }
                 setTimeout(function(){
                     tab.observer = new MutationObserver(function(mutations){
-                        if (me.openingRemoteTab) return;
+                        if (me.processing && me.currentTrack.type=='git_commit') return;
                         var sendEvent = false;
                         mutations.forEach(function(m){
                             if (m.type=='attributes' && m.attributeName=='id') return;
@@ -23,7 +26,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                             sendEvent = true;
                         });
                         if (!sendEvent) return;
-                        me.changed(tab,false,{type:'git_commit',path:tab.options.path,html:tab.element.html()});
+                        me.remoteEvent(tab,false,{type:'git_commit',path:tab.options.path,html:tab.element.html()});
                     });
                     tab.observer.observe(tab.element.get(0),{ attributes: true, childList: true, characterData: true, subtree: true });
                 },1);
@@ -38,7 +41,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
                 tab.bind("close",function(o,e){ 
                     if (!e.cancel) {
-                        me.changed(tab,editor,{type:'close',file:tab.options.file});
+                        me.remoteEvent(tab,editor,{type:'close',file:tab.options.file});
                     }
                 });
                 tab.bind("saving",function(o,e){
@@ -49,12 +52,27 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
                 editor.getModel().onDidChangeContent(function(e){ 
                     var e_copy = $.extend(true,{type:'change',file:tab.options.file},e);
-                    me.changed(tab,editor,e_copy);
+                    me.remoteEvent(tab,editor,e_copy);
                 });      
+
+                if (me.eventAllowed('scroll')) {
+                    editor.onDidScrollChange(function(){
+                        if (me.processing) return;
+                        clearTimeout(editor.collaborateScrollTimeout);
+                        editor.collaborateScrollTimeout = setTimeout(function(){
+                            me.remoteEvent(tab,editor,{type:'scroll',file:tab.options.file,viewState:JSON.stringify(tab.editor.saveViewState())});
+                        },100);
+                    });
+                }
                 
                 tab.bind("codeSaved",function(){
-                    me.changed(tab,editor,{type:'save',file:tab.options.file});
+                    me.remoteEvent(tab,editor,{type:'save',file:tab.options.file});
                 });
+
+                if (me.processing && me.currentTrack.type=='open' && me.processing.file==tab.options.file) {
+                } else {
+                    me.remoteEvent(tab,editor,{type:'open',file:tab.options.file,viewState:JSON.stringify(tab.editor.saveViewState())});
+                }
             });
 
 
@@ -73,6 +91,10 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         });
     },
 
+    eventAllowed(type) {
+        return this.options.allowedEvents.indexOf(type)!=-1;
+    },
+
     isChanged: function () {
         var changed = false;
         ui.codeTab.tabs.forEach(function(tab){
@@ -89,11 +111,9 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         });
     },
 
-    openGitCommitTab: function(path,html) {
+    openGitCommitTab: function(path,html,done_cb) {
 
         var me = this;
-        me.openingRemoteTab = true;
-
         console.debug('loading git_commit');
         
         var tab = dayside.plugins.git_commit.instance.openTab(path);
@@ -101,27 +121,26 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
         setTimeout(function(){
             console.debug('END loading git_commit');
-            me.openingRemoteTab = false;
+            done_cb();
         },1);
 
         return tab;
     },
 
-    changed: function (tab,editor,event) {
+    remoteEvent: function (tab,editor,event) {
         var me = this;
         if (!this.connected) return;
+        if (!me.eventAllowed(event.type)) return;
 
-        if (event.type=='change' || event.type=='git_commit') {
-            if (me.current_leader && me.current_leader.locked) {
-                if (me.current_leader.id != me.ref_user.key && !me.readonly) {
-                    me.disconnect();
-                    return;
-                }
-            } else {
-                var ref_leader = me.ref_root.child("leader");
-                ref_leader.set({id:me.ref_user.key,locked:true});
-                ref_leader.onDisconnect().remove();
+        if (me.current_leader && me.current_leader.locked) {
+            if (me.current_leader.id != me.ref_user.key && !me.readonly && event.type=='changed') {
+                me.disconnect();
+                return;
             }
+        } else {
+            var ref_leader = me.ref_root.child("leader");
+            ref_leader.set({id:me.ref_user.key,locked:true});
+            ref_leader.onDisconnect().remove();
         }
 
         if (me.current_leader && me.current_leader.id==me.ref_user.key) {
@@ -133,21 +152,47 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
     leaderChanged: function (snapshot) {
         var me = this;
-        me.current_leader = snapshot.val();
-
-        if (me.current_leader && me.current_leader.locked) {
-            me.setReadonly(me.current_leader.id != me.ref_user.key);
-        } else {
-            me.setReadonly(false);
-            if (me.isChanged()) me.disconnect();
-        }
+        me.processNextEvent(function(processed_cb){
+            me.current_leader = snapshot.val();
+            if (me.current_leader && me.current_leader.locked) {
+                me.setReadonly(me.current_leader.id != me.ref_user.key);
+            } else {
+                me.setReadonly(false);
+                if (me.isChanged()) me.disconnect();
+            }
+            processed_cb();
+        });
     },
 
-    edit_id: 123456,
     editCreated: function (snapshot) {
         var me = this;
         var track = snapshot.val();
+        me.processNextEvent(function(processed_cb){
+            me.currentTrack = track;
+            me.processTrack(track,function(){
+                me.currentTrack = false;
+                processed_cb();
+            });
+        });
+    },
 
+    process_queue: [],
+    processNextEvent: function(ev) {
+        var me = this;
+        if (ev) me.process_queue.push(ev);
+        if (!me.process_queue.length) return;
+        if (me.processing) return;
+
+        me.processing = me.process_queue.shift();
+        me.processing(function(){
+            me.processing = false;
+            me.processNextEvent()
+        });
+    },
+
+    edit_id: 123456,
+    processTrack: function(track,done_cb) {
+        var me = this;
         if (me.current_leader && me.current_leader.id==me.ref_user.key) {
             // timeout needed to catch all sequential monaco changed events before checking editor value
             clearTimeout(me.loseLeadTimeout);
@@ -157,6 +202,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                     me.ref_root.child("leader").set({id:me.ref_user.key,locked:false});
                 }
             },1);
+            done_cb();
             return;
         }
 
@@ -166,15 +212,34 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
             for (var i=0;i<ui.codeTab.tabs.length;i++) {
                 if (ui.codeTab.tabs[i].options.file==track.file) {
                     var tab = ui.codeTab.tabs[i];
-                    tab.editorReady(found_callback);
+                    tab.editorReady(function(){
+                        found_callback.call(this);
+                        done_cb();
+                    });
                     return;
                 }
             }
+            done_cb();
         }
 
         if (track.type=='git_commit') {
-            me.openGitCommitTab(track.path,track.html);
+            me.openGitCommitTab(track.path,track.html,done_cb);
         }
+
+        if (track.type=='open') {
+            var tab = dayside.editor.selectFile(track.file);
+            tab.editorReady(function(){
+                tab.editor.restoreViewState(JSON.parse(track.viewState));
+                done_cb();
+            });
+        }
+
+        if (track.type=='scroll') {
+            findTab(function(){
+                var tab = this;
+                tab.editor.restoreViewState(JSON.parse(track.viewState));
+            });
+        }        
 
         if (track.type=='change') {
             var tab = dayside.editor.selectFile(track.file);
@@ -200,6 +265,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
                             tab.editor.revealPositionInCenterIfOutsideViewport(position);
                             tab.editor.setPosition(position);
+                            done_cb();
                         },1);
                         return tab.editor.getSelections();
                     }
