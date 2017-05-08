@@ -217,7 +217,7 @@ class Controller {
     }
         
         
-    function diff_html($one_status,$commit_sha1,$commit_sha2) {
+    function diff_html($one_status,$commit_sha1="",$commit_sha2="") {
         
         $wt_status = @$this->data['status'][$one_status['file']];
         $diff = $this->model->diff($one_status,$commit_sha1,$commit_sha2);
