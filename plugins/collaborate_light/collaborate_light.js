@@ -6,6 +6,30 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         this._super(o);
         
         dayside.plugins.collaborate_light.instance = me;
+
+        if (dayside.plugins.git_commit && false) {
+            dayside.plugins.git_commit.instance.bind("tabCreated",function(b,e){
+                var tab = e.tab;
+                if (me.openingRemoteTab) {
+                    e.initialState = false;
+                }
+                setTimeout(function(){
+                    tab.observer = new MutationObserver(function(mutations){
+                        if (me.openingRemoteTab) return;
+                        var sendEvent = false;
+                        mutations.forEach(function(m){
+                            if (m.type=='attributes' && m.attributeName=='id') return;
+                            if ($(m.target).parents(".panel_buttons").length) return;
+                            sendEvent = true;
+                        });
+                        if (!sendEvent) return;
+                        me.changed(tab,false,{type:'git_commit',path:tab.options.path,html:tab.element.html()});
+                    });
+                    tab.observer.observe(tab.element.get(0),{ attributes: true, childList: true, characterData: true, subtree: true });
+                },1);
+                
+            })
+        }
         
         dayside.ready(function(){
             dayside.editor.bind("editorCreated",function(b,e){
@@ -65,11 +89,29 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         });
     },
 
+    openGitCommitTab: function(path,html) {
+
+        var me = this;
+        me.openingRemoteTab = true;
+
+        console.debug('loading git_commit');
+        
+        var tab = dayside.plugins.git_commit.instance.openTab(path);
+        tab.element.html(html);
+
+        setTimeout(function(){
+            console.debug('END loading git_commit');
+            me.openingRemoteTab = false;
+        },1);
+
+        return tab;
+    },
+
     changed: function (tab,editor,event) {
         var me = this;
         if (!this.connected) return;
 
-        if (event.type=='change') {
+        if (event.type=='change' || event.type=='git_commit') {
             if (me.current_leader && me.current_leader.locked) {
                 if (me.current_leader.id != me.ref_user.key && !me.readonly) {
                     me.disconnect();
@@ -128,6 +170,10 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                     return;
                 }
             }
+        }
+
+        if (track.type=='git_commit') {
+            me.openGitCommitTab(track.path,track.html);
         }
 
         if (track.type=='change') {
