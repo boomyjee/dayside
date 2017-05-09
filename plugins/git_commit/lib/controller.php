@@ -30,19 +30,26 @@ class Controller {
         $this->working_tree();
 
         if ($action && method_exists($this,$action)) {
-            if ($this->data['status_hash']!=@$_POST['status_hash'] && $action!='working_tree' && $action!='history') {
-                $this->data['error'] = $hashErrorMessage;
-            } else {
-                $this->$action();                      
-            }      
+            if ($action=='working_tree') $this->$action();
+            elseif ($action=='history') $this->$action();
+            else {
+                if ($this->data['status_hash']!=@$_POST['status_hash']) {
+                    $this->data['error'] = $hashErrorMessage;
+                } else {
+                    $this->$action();                      
+                }      
+            }
         }
 
         $ajax_action = @$_POST['ajax_action'];
         if ($ajax_action && method_exists($this,$ajax_action)) {
-            if ($this->data['status_hash']!=@$_POST['status_hash']) {
-                echo json_encode(array('error' => $hashErrorMessage));
-            } else {
-                $this->$ajax_action();
+            if ($ajax_action=='diff' && !empty($_POST['commit_sha1']) && !empty($_POST['commit_sha2'])) $this->$ajax_action();
+            else {
+                if ($this->data['status_hash']!=@$_POST['status_hash']) {
+                    echo json_encode(array('error' => $hashErrorMessage));
+                } else {
+                    $this->$ajax_action();
+                }
             }
             die();
         }
