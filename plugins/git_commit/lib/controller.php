@@ -26,6 +26,7 @@ class Controller {
         if ($action=='show_file') return $this->$action();
 
         $this->data['current_branch'] = $this->model->current_branch(); 
+        $this->data['show_diffs'] = $_POST['show_diffs'];
         $this->working_tree();
 
         if ($action && method_exists($this,$action)) {

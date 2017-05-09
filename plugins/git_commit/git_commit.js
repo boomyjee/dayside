@@ -105,11 +105,19 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
                 path: this.path
             });
         }
-        if (resType!='json') tab.element.empty();
+
+        var diffScrollTop;
+        if (resType!='json') {
+            diffScrollTop = $(tab.element).find(".diff_scroll_wrap").scrollTop();
+            tab.element.empty();
+        }
         
         FileApi.request('git_commit',data,resType=='json',function(answer) {
             var res = answer.data;
-            if (resType!='json') tab.element.html(res);
+            if (resType!='json') {
+                tab.element.html(res);
+                $(tab.element).find(".diff_scroll_wrap").scrollTop(diffScrollTop);
+            }
             if (resType=='json' && res.status_hash) {
                 tab.element.find("[name=status_hash]").val(res.status_hash);
             }
@@ -117,7 +125,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         });
     },
     
-    initTabHandlers: function (tab) { 
+    initTabHandlers: function () { 
         var tab = this;
         var reloadTab = function (data,resType,cb) { tab.reloadTab(data,resType,cb); }
         
@@ -189,6 +197,15 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             $.each($(this).serializeArray(),function(){
                 data[this.name] = this.value;
             });
+
+            var diffs = [];
+            $(this).find("tr.file").each(function(){
+                var tr_file = $(this);
+                var td_diff_html = tr_file.next().children("td.diff_html");
+                if (td_diff_html.is(":visible")) diffs.push(tr_file.data("file"));
+            });
+            if (diffs.length) data.show_diffs = diffs;
+
             reloadTab(data);
         });
         
@@ -261,7 +278,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
                         tr_file.next().andSelf().replaceWith(tpl(data.extra_status[0]));
                     } 
                     else if(data.extra_status && data.extra_status.length==1) {
-                        $("tr.file").each(function(){
+                        tab.element.find("tr.file").each(function(){
                             var filename = $(this).data("file");
                             if (filename==data.extra_status[0].file){
                                 $(this).next().andSelf().remove();
@@ -327,7 +344,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         $(tab.element).on("mousedown",".branch",function(){
             
             var $this = $(this);
-            var view_type = $(".view_type").data("value");
+            var view_type = tab.element.find(".view_type").data("value");
             
             if (view_type=="working_tree") {
                 var changed = false;
@@ -383,7 +400,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         $(tab.element).on("mousedown",".amend",function(){
             reloadTab({
                 action: 'amend',
-                message: $("input[name=commit_message]").val()
+                message: tab.element.find("input[name=commit_message]").val()
             });
         });
         
@@ -419,13 +436,13 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         
         // показывать/скрывать diff 
         $(tab.element).on("click","td.filename",function(){  
-            
+
             var $tr = $(this).parent('tr.file')
             var $diff_html = $tr.next().children(".diff_html");
             
             var commit_sha1 = '',commit_sha2 = '';
             
-            if ($(".view_type").data("value")=='history') {
+            if (tab.element.find(".view_type").data("value")=='history') {
                 commit_sha2 = tab.element.find("input[name=selected_commit]").val();
                 commit_sha1 = commit_sha2+"~"+tab.element.find("input[name=history_depth]").val();
             }           

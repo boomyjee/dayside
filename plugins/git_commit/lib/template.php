@@ -164,7 +164,21 @@
                     <?php endif ?>
                     <td class="empty"></td>
                 </tr>
-                <tr><td class="diff_html ui-state-default" colspan='5'></td></tr>
+                <? 
+                    if (in_array($one['file'],$show_diffs)) {
+                        if ($view_type=='history') {
+                            $sha1 = $selected_commit_sha;
+                            $sha2 = $selected_commit_sha."~".$history_depth;
+                        } else {
+                            $sha1 = "";
+                            $sha2 = "";
+                        }
+                        $diff = $this->diff_html($one,$sha1,$sha2);
+                    } else {
+                        $diff = "";
+                    }
+                ?>
+                <tr><td class="diff_html ui-state-default" style="<?=$diff ? 'display:table-cell':''?>" colspan='5'><?=$diff?></td></tr>
             <?php endforeach ?>
         </table>
     </div>
