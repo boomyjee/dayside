@@ -5,32 +5,55 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
     init: function (o) {
         var me = this;
         this._super($.extend({
-            allowedEvents: ['open','close','save','change','scroll']
+            allowedEvents: ['open','close','save','change','scroll','git_commit','git_commit_scroll']
         },o));
         
         dayside.plugins.collaborate_light.instance = me;
 
         if (dayside.plugins.git_commit && me.eventAllowed('git_commit')) {
-            dayside.plugins.git_commit.instance.bind("tabCreated",function(b,e){
-                var tab = e.tab;
-                if (me.processing && me.currentTrack.type=='git_commit') {
-                    e.initialState = false;
-                }
-                setTimeout(function(){
-                    tab.observer = new MutationObserver(function(mutations){
-                        if (me.processing && me.currentTrack.type=='git_commit') return;
-                        var sendEvent = false;
-                        mutations.forEach(function(m){
-                            if (m.type=='attributes' && m.attributeName=='id') return;
-                            if ($(m.target).parents(".panel_buttons").length) return;
-                            sendEvent = true;
+            dayside.plugins.git_commit.instance.bind("tabCreated",function(b,tab){
+                if (me.eventAllowed('git_commit_scroll')) {
+                    tab.bind("reloaded",function(){
+                        $(tab.element).find(".diff_scroll_wrap").each(function(){
+                            this.onscroll = function () {
+                                if (me.processing) return;
+                                clearTimeout(tab.diffScrollTimeout);
+
+                                var wrap = $(this);
+                                tab.diffScrollTimeout = setTimeout(function(){
+
+                                    var off = wrap.offset();
+                                    off.left += 200;
+                                    off.top += wrap.height()*0.5;
+
+                                    var el = document.elementFromPoint(off.left,off.top);
+
+                                    if (!$(el).parents(wrap).length) return;
+
+                                    var path = $(el).parentsUntil(tab.element).addBack();
+                                    var scrollTo = path.get().map(function (item) {
+                                        var self = $(item),
+                                            id = item.id ? '#' + item.id : '',
+                                            clss = item.classList.length ? item.classList.toString().split(' ').map(function (c) {
+                                                return '.' + c;
+                                            }).join('') : '',
+                                            name = item.nodeName.toLowerCase(),
+                                            index = self.siblings(name).length ? ':nth-child(' + (self.index() + 1) + ')' : '';
+                                        return name + index + id + clss;
+                                    }).join(' > ');
+
+                                    me.remoteEvent(tab,false,{type:'git_commit_scroll',path:tab.options.path,scrollTo:scrollTo,state:tab.getCurrentState()});
+                                },100);
+                            }
                         });
-                        if (!sendEvent) return;
-                        me.remoteEvent(tab,false,{type:'git_commit',path:tab.options.path,html:tab.element.html()});
                     });
-                    tab.observer.observe(tab.element.get(0),{ attributes: true, childList: true, characterData: true, subtree: true });
-                },1);
-                
+                }
+
+                tab.bind("reloaded",function(){
+                    if (me.processing && me.currentTrack.type=='git_commit') return;
+                    if (me.processing && me.currentTrack.type=='git_commit_scroll') return;
+                    me.remoteEvent(tab,false,{type:'git_commit',path:tab.options.path,state:tab.getCurrentState()});
+                });
             })
         }
         
@@ -109,22 +132,6 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         ui.codeTab.tabs.forEach(function(tab){
             if (tab.editor) tab.editor.updateOptions({readOnly:flag});
         });
-    },
-
-    openGitCommitTab: function(path,html,done_cb) {
-
-        var me = this;
-        console.debug('loading git_commit');
-        
-        var tab = dayside.plugins.git_commit.instance.openTab(path);
-        tab.element.html(html);
-
-        setTimeout(function(){
-            console.debug('END loading git_commit');
-            done_cb();
-        },1);
-
-        return tab;
     },
 
     remoteEvent: function (tab,editor,event) {
@@ -223,7 +230,42 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         }
 
         if (track.type=='git_commit') {
-            me.openGitCommitTab(track.path,track.html,done_cb);
+            var tab = dayside.plugins.git_commit.instance.openTab(track.path,null);
+            if (!value_equals(tab.getCurrentState(),track.state)) {
+                tab.reloadTab(track.state,false,function(){
+                    setTimeout(done_cb,1);
+                });
+            } else {
+                done_cb();
+            }
+        }
+
+        if (track.type=='git_commit_scroll') {
+
+            function doScroll() {
+                var el = tab.element.find("> "+track.scrollTo);
+                if (el.length) {
+                    var el_off = el.offset();
+
+                    var wrap = tab.element.find(".diff_scroll_wrap");
+                    var off = wrap.offset();
+                    off.top += wrap.height()*0.5;
+
+                    wrap.scrollTop(wrap.scrollTop() + el_off.top - off.top);
+                    setTimeout(done_cb,1);
+                } else {
+                    done_cb();
+                }
+            }
+
+            var tab = dayside.plugins.git_commit.instance.openTab(track.path,null);
+            if (!value_equals(tab.getCurrentState(),track.state)) {
+                tab.reloadTab(track.state,false,function(){
+                    setTimeout(doScroll,1);
+                });
+            } else {
+                doScroll();
+            }
         }
 
         if (track.type=='open') {

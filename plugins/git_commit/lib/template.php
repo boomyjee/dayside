@@ -165,10 +165,10 @@
                     <td class="empty"></td>
                 </tr>
                 <? 
-                    if (in_array($one['file'],$show_diffs)) {
+                    if (!empty($show_diffs) && in_array($one['file'],$show_diffs)) {
                         if ($view_type=='history') {
-                            $sha1 = $selected_commit_sha;
-                            $sha2 = $selected_commit_sha."~".$history_depth;
+                            $sha1 = $selected_commit_sha."~".$history_depth;
+                            $sha2 = $selected_commit_sha;
                         } else {
                             $sha1 = "";
                             $sha2 = "";
