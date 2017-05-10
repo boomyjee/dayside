@@ -50,11 +50,13 @@ dayside.plugins.git_commit = ui.Control.extend({
         }
     },
     
-    openTab: function (path) {
+    openTab: function (path,initialState) {
         var tab = dayside.plugins.git_commit.projectTab.hash[path];
         if (!tab || !tab.tabPanel) {
-            tab = new dayside.plugins.git_commit.projectTab({path:path});
+            tab = new dayside.plugins.git_commit.projectTab({path:path,initialState:initialState});
             dayside.editor.mainPanel.addTab(tab,tab.id,"center");
+        } else {
+            if (initialState) tab.reloadTab(initialState);
         }
         tab.tabPanel.selectTab(tab);
         return tab;
@@ -84,17 +86,32 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         
         this.initTabHandlers();
 
-        var e = {
-            tab:this,
-            initialState: {action:this.options.view_type || 'working_tree'}
-        };
-        dayside.plugins.git_commit.instance.trigger("tabCreated",e);
-        if (e.initialState) this.reloadTab(e.initialState);
+        dayside.plugins.git_commit.instance.trigger("tabCreated",this);
+
+        if (o.initialState!==null) {
+            this.reloadTab(o.initialState || {action:this.options.view_type || 'working_tree'});
+        }
         
         this.id = 'git_commit_'+path.replace(/[^0-9a-zA-Z]/g, "__");
         this.Class.hash[path] = this;
+    },
 
-        
+    getCurrentState: function() {
+        var tab = this;
+        var data = {
+            action: tab.element.find(".view_type").data("value")
+        };
+        $.each(tab.element.find("form").serializeArray(),function(){
+            data[this.name] = this.value;
+        });
+        var diffs = [];
+        tab.element.find("tr.file").each(function(){
+            var tr_file = $(this);
+            var td_diff_html = tr_file.next().children("td.diff_html");
+            if (td_diff_html.is(":visible")) diffs.push(tr_file.data("file"));
+        });
+        if (diffs.length) data.show_diffs = diffs;                    
+        return data;
     },
     
     reloadTab: function(data,resType,cb) {
@@ -122,6 +139,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
                 tab.element.find("[name=status_hash]").val(res.status_hash);
             }
             if (cb) cb(res);
+            tab.trigger("reloaded",res);
         });
     },
     
@@ -193,19 +211,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             if (clicked && clicked.val()) action = clicked.val();
             $(this).data("clicked",false);
             
-            var data = {action:action};
-            $.each($(this).serializeArray(),function(){
-                data[this.name] = this.value;
-            });
-
-            var diffs = [];
-            $(this).find("tr.file").each(function(){
-                var tr_file = $(this);
-                var td_diff_html = tr_file.next().children("td.diff_html");
-                if (td_diff_html.is(":visible")) diffs.push(tr_file.data("file"));
-            });
-            if (diffs.length) data.show_diffs = diffs;
-
+            var data = $.extend({},tab.getCurrentState(),{action:action});
             reloadTab(data);
         });
         
