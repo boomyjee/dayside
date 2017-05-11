@@ -331,6 +331,38 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         }
     },
 
+    getFirebaseRoot: function (cb) {
+        FileApi.request('firebase_init',{},true,function(ret){
+            if (ret.data.error) {
+                alert(ret.data.error);
+                return;
+            }
+            $.ajax({
+                dataType: 'script',
+                cache: true,
+                url: 'https://www.gstatic.com/firebasejs/3.9.0/firebase.js',
+                success: function () {
+                    var config = {
+                        apiKey: ret.data.api_key,
+                        databaseURL: ret.data.url
+                    };
+                    
+                    var app = firebase.initializeApp(config);
+
+                    app.auth().signInWithCustomToken(ret.data.token).catch(function(error) {
+                        alert(error.message);
+                    });
+
+                    var uid = 'dayside/'+FileApi.root.replace(/[^A-Za-z0-9_-]/g,'-');
+                    var ref_root = app.database().ref(uid);
+
+                    cb(app,ref_root);
+                }
+            });
+        });
+        
+    },
+
     connect: function () {
 
         var me = this;
@@ -340,35 +372,12 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         }
 
         if (!me.ref_root) {
-            FileApi.request('firebase_init',{},true,function(ret){
-                if (ret.data.error) {
-                    alert(ret.data.error);
-                    return;
-                }
-                $.ajax({
-                    dataType: 'script',
-                    cache: true,
-                    url: 'https://www.gstatic.com/firebasejs/3.9.0/firebase.js',
-                    success: function () {
-                        var config = {
-                            apiKey: ret.data.api_key,
-                            databaseURL: ret.data.url
-                        };
-                        firebase.initializeApp(config);
-
-                        firebase.auth().signInWithCustomToken(ret.data.token).catch(function(error) {
-                            alert(error.message);
-                        });
-
-                        var uid = 'dayside/'+FileApi.root.replace(/[^A-Za-z0-9_-]/g,'-');
-                        me.ref_root = firebase.database().ref(uid);
-
-                        me.ref_user = me.ref_root.child("users").push({name:"unknown"});
-                        me.ref_user.onDisconnect().remove();
-
-                        me.connect();
-                    }
-                });
+            me.getFirebaseRoot(function(app,ref_root){
+                me.firebase_app = app;
+                me.ref_root = ref_root;
+                me.ref_user = me.ref_root.child("users").push({name:"unknown"});
+                me.ref_user.onDisconnect().remove();
+                me.connect();
             });
             return;
         }
@@ -390,13 +399,14 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
 
         if (me.ref_root) {
             me.ref_root.child("edits").off("child_added");
+            me.ref_root.child("leader").off("value");
 
             if (me.current_leader && me.current_leader.id==me.ref_user.key) {
                 me.ref_root.child("edits").remove();
                 me.ref_root.child("leader").remove();
             }
 
-            firebase.database().goOffline();
+            me.firebase_app.database().goOffline();
             me.ref_root = false;
 
             console.debug("firebase disconnected");
