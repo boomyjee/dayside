@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Branch remover test</title>
+        
+        <script src="../../server/assets/teacss/teacss.js"></script>
+        
+        <script src="../../server/assets/teacss/teacss-ui.js"></script>
+        <link href="../../server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
+            
+        <script src="../../client/dayside.js"></script>
+        <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
+        
+        <script src="branch_remover.js"></script>
+        <script src="https://api.trello.com/1/client.js?key=a576b4502daefa888661c1b8bac015c3"></script>                
+        <script>
+            dayside.plugins.branch_remover();
+            dayside({
+                root: teacss.path.absolute("./../../../"),
+                ajax_url: teacss.path.absolute("./demo.php")
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
