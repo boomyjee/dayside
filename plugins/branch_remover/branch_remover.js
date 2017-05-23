@@ -39,49 +39,58 @@ dayside.plugins.branch_remover = $.Class.extend({
                 }
             });
 
-            var list_done_cache = {}
-            function isListDone(list_id,cb) {
-                if (list_id in list_done_cache) {
-                    cb(list_done_cache[list_id]);
+            var list_name_cache = {}
+            function getListName(list_id,cb) {
+                if (list_id in list_name_cache) {
+                    cb(list_name_cache[list_id]);
                 } else {
                     Trello.get(
                         '/lists/' + list_id,
                         function (list){
-                            list_done_cache[list_id] = list.name.indexOf("Done")!=-1;
-                            cb(list_done_cache[list_id]);
+                            list_name_cache[list_id] = list.name
+                            cb(list_name_cache[list_id]);
                         },
                         function () {
-                            list_done_cache[list_id] = false;
-                            cb(list_done_cache[list_id]);
+                            list_name_cache[list_id] = "error";
+                            cb(list_name_cache[list_id]);
                         }
                     );
                 }
             }
 
-            var done = branches.length;
             var branchesToDelete = [];
 
             function getTrelloInfo() {
-                branches.forEach(function(branch){
+                if (branches.length) {
+                    var branch = branches[0];
                     Trello.get(
                         '/cards/' + branch,
                         function (task) {
-                            isListDone(task.idList,function(listDone){
-                                if (listDone) {
+                            getListName(task.idList,function(listName){
+                                console.log(branches.length,branch,listName,task);
+                                if (listName.indexOf("Done")!=-1) {
                                     branchesToDelete.push(branch);
                                 }
                                 cardReady();
                             });
                         },
-                        function () {
+                        function (e) {
+                            console.log(branches.length,branch,'card error',e.responseText);
+                            if (e.responseText=='invalid id') {
+                                branchesToDelete.push(branch);
+                            }
                             cardReady();
                         }
                     );
-                });    
+
+
+                } else {
+                    showConfirm();
+                }
 
                 function cardReady() {
-                    done--;
-                    if (done==0) showConfirm();
+                    branches.shift();
+                    getTrelloInfo();
                 }
             }
 
