@@ -12,6 +12,7 @@ FileApi::extend('git_get_branches',function($self){
 
     $result = [];
     foreach($output as $branch){
+        if ($branch[0]=='*') continue;
         $result[] = trim($branch);
     }
    echo json_encode($result);
