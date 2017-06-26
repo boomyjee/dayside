@@ -1,0 +1,19 @@
+body {
+  padding: 0; }
+
+center {
+  width: 70%;
+  margin: auto;
+  float: left; }
+
+.rigth {
+  width: 30%;
+  margin: auto;
+  float: right; }
+
+a {
+  color: #5bc0de;
+  text-decoration: none; }
+  a:hover {
+    color: link-color-hover;
+    text-decoration: underline; }
