@@ -236,7 +236,7 @@ class Controller {
         $add = false;
         $del = false;
         
-        $diff_html = "<div class='delta code-text' data-filename='".$one_status['file']."'>";
+        $diff_html = "<div class='delta code-text' data-filename='".$one_status['file']."' data-old-filename='".(isset($one_status['old_file']) ? $one_status['old_file'] : '')."'>";
 
         foreach (array('staged'=>$lines_staged,'wt'=>$lines_wt) as $line_src => $lines) {
             

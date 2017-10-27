@@ -222,20 +222,24 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             
             var $hunk = $(this).parents('.hunk').eq(0);
             var filename = $(this).parents('.delta').data('filename');
+            var old_filename = $(this).parents('.delta').data('old-filename');
             var part,line,new_tab;
+            var filename_to_open;
             
             if ($(this).hasClass('delete')) {
                 part = $hunk.data("parts")[0];
                 line = $hunk.find('.number_del > div').eq($(this).index()).text();
+                filename_to_open = old_filename || filename;
             } else {
                 part = $hunk.data("parts")[1];
                 line = $hunk.find('.number_add > div').eq($(this).index()).text();
+                filename_to_open = filename;
             }
             
             if (part=='WT') {
-                new_tab = dayside.editor.selectFile(tab.path+"/"+filename);
+                new_tab = dayside.editor.selectFile(tab.path+"/"+filename_to_open);
             } else {
-                new_tab = dayside.editor.selectFile("git_commit://"+part+"/"+encodeURIComponent(tab.path)+"/"+filename);
+                new_tab = dayside.editor.selectFile("git_commit://"+part+"/"+encodeURIComponent(tab.path)+"/"+filename_to_open);
             }
 
             function positionCursor() {
