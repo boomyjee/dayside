@@ -46,19 +46,30 @@
                             </div>
                         </span>
                     </div>  
+                    <?php
+                        function commit_excerpt($text) {
+                            return strlen($text)<100 ? $text : substr($text,0,100)."...";
+                        };
+                    ?>
                     <?php if (!empty($last_commits)): ?>
-                    <div class="button-select-panel teacss-ui">
+                    <div class="button-select-panel teacss-ui last-commits">
                         <div>
                             <?php foreach($last_commits as $commit):?>
-                                <?php $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                                <?php $excerpt = commit_excerpt($commit['message']); ?>
+                                <?php $title = ($excerpt==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
                                 <div data-value="<?=$commit["sha_full"]?>" <?=$title?> class="commit combo-item <?= ($commit['sha_full']==$selected_commit_sha)?'selected':''?>">
                                     <span class="combo-label">
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b> <?=$commit['date']?></p>   
-                                        <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
+                                        <p class="commit_message" ><?=htmlspecialchars($excerpt)?></p>
                                     </span>
                                 </div>
                             <?php endforeach ?>
                         </div>
+                        <?php if ($history_show_more): ?> 
+                            <div class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only history-show-more"> 
+                                <span class="ui-button-text"><b>Show more</b></span> 
+                            </div> 
+                        <?php endif; ?>
                     </div>
                     <?php endif ?>
                     
@@ -70,16 +81,19 @@
                         </span>
                     </div>  
                     <?php if (!empty($after_commits)): ?>
-                    <div class="button-select-panel teacss-ui">
+                    <div class="button-select-panel teacss-ui after-commits">
                         <div>
-                            <?php foreach($after_commits as $n=>$commit):?>
-                                <?php $title = ($commit['excerpt']==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
-                                <div data-value="<?=($n+1)?>" <?=$title?> class="history_depth combo-item <?= (($n+1)==$history_depth)?'selected':''?>">
+                            <?php $i = 0; ?>
+                            <?php foreach($after_commits as $commit):?>
+                                <?php $excerpt = commit_excerpt($commit['message']); ?>
+                                <?php $title = ($excerpt==$commit['message']) ? '' : 'title="'.htmlspecialchars($commit['message']).'"'; ?>
+                                <div data-value="<?=($i+1)?>" <?=$title?> class="history_depth combo-item <?= (($i+1)==$history_depth)?'selected':''?>">
                                     <span class="combo-label" >
                                         <p class="commit_sha_short"><b><?=$commit['sha_short']?></b></p>   
-                                        <p class="commit_message" ><?=htmlspecialchars($commit['excerpt'])?></p>
+                                        <p class="commit_message" ><?=htmlspecialchars($excerpt)?></p>
                                     </span>
                                 </div>
+                                <?php $i++; ?>
                             <?php endforeach ?>
                         </div>
                     </div>

@@ -259,6 +259,19 @@
     padding-left: 10px;
 }
 
+.teacss-ui .history-show-more {
+    display: block;
+}
+
+.teacss-ui .git-blame-commit-info { 
+    float: left; 
+} 
+ 
+.teacss-ui .git-blame-commit-info[data-sha]:hover { 
+    text-decoration: underline; 
+    cursor: pointer;
+} 
+ 
 /* светлые темы */
 .teacss-ui .git-commit-tab .diff_line > div:hover {
     background-color: #F3F3F3;
@@ -285,7 +298,6 @@
     background-color: #FFECEC;
 }
 
-
 /* тёмные темы */
 .dark-ui .teacss-ui .git-commit-tab .diff_line > div:hover {
     background-color: #3A3A3A;
@@ -311,7 +323,6 @@
 .dark-ui .teacss-ui .git-commit-tab .diff_line .delete {
     background-color: #3C2222;
 }
-
 
 /* Error */
 .teacss-ui .git-commit-tab .ui-state-error:empty {

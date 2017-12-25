@@ -7572,16 +7572,19 @@ teacss.ui.editorPanel = (function($){
                                 }
                             }
                         }
-                            
+
                         if (!tab.options.closable) delete items.close;
                         if ($(this).siblings().length==0) {
                             delete items.closeOthers;
                             delete items.closeAll;
                         }
                         if (!$(this).hasClass("changed")) delete items.save;
+
+                        var params = {items:items};
+                        tab.trigger("contextmenu",params);         
                         
                         var pos = $(this).offset();
-                        $.vakata.context.show(items,false,pos.left,pos.top+$(this).height());
+                        $.vakata.context.show(params.items,false,pos.left,pos.top+$(this).height());
                         $("#vakata-contextmenu").addClass("jstree-default-context");
                     }
                     e.preventDefault();
