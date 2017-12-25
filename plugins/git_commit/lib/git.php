@@ -16,7 +16,7 @@ class Git {
         $args = "";
         foreach($array_args as $v)
             $args .= ' '. escapeshellarg($v);
-
+        
         $descriptorspec = array(
             0 => Array ('pipe', 'r'),  // stdin
             1 => Array ('pipe', 'w'),  // stdout
@@ -107,9 +107,21 @@ class Git {
         return $result;
     }
     
-    function last_commits($count,$name_branch=null) {
-        $commits = $this->run_command(array('log', '--max-count='.$count, '--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch));
-        $arr_commits = preg_split("/\n/", $commits, -1, PREG_SPLIT_NO_EMPTY);
+    function last_commits($name_branch, $count, $skip=false) { 
+        $git_output = $this->run_command(array_merge(
+            ['log', '--max-count='.$count], $skip ? ['--skip='.$skip] : [],
+            ['--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch]
+        ));
+        return $this->parse_commits($git_output);
+    }
+
+    function commits_until($name_branch, $commit_sha) {
+        $git_output = $this->run_command(['log', '--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch, $commit_sha.'^..HEAD']);
+        return $this->parse_commits($git_output);
+    }
+
+    function parse_commits($git_output) {
+        $arr_commits = preg_split("/\n/", $git_output, -1, PREG_SPLIT_NO_EMPTY);
         $result = array();        
         foreach($arr_commits as $commit){
             $arr = explode(">",$commit);
@@ -218,4 +230,20 @@ class Git {
         }        
         return $status;
     }
+
+    public function blame($file, $commit_sha=false) { 
+        $content = $this->run_command(array_merge(['blame', '-l', '-n', '--date=iso8601'], $commit_sha ? [$commit_sha] : [], ['--', $file])); 
+        $blame_lines = []; 
+        foreach (explode("\n", $content) as $line_str) { 
+            if (preg_match('#^([^\s]+)\s+(?:[^\s]+\s+?)?(\d+)\s+\((.+)\s+(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) \+\d{4}\s+(\d+)\) (.*)#', $line_str, $matches)) { 
+                $blame_lines[] = [ 
+                    'author' => trim($matches[3]), 
+                    'date' => $matches[4], 
+                    'commit_sha' => $matches[1],
+                    'content' => $matches[7] . PHP_EOL
+                ]; 
+            } 
+        } 
+        return $blame_lines;
+    }     
 }

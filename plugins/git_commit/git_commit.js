@@ -5,6 +5,7 @@ dayside.plugins.git_commit = ui.Control.extend({
         this._super(options);
         var me = this;   
         this.Class.instance = me;     
+        var blame_lines_cache = {}; 
         dayside.ready(function(){
             dayside.editor.filePanel.bind("contextMenu",function(b,e){
                 if (e.node.data("folder") && e.node.find(">ul>li[rel$='/.git']").length) {
@@ -15,37 +16,122 @@ dayside.plugins.git_commit = ui.Control.extend({
                         }
                     }
                     e.menu = e.inject(e.menu,'openGitCommit',menuItem,function (pk,pv,nk,nv) { return pk=="link"; });
-                }
+                }            
             });
             
             dayside.editor.bind("editorOptions",function(b,e){
                 var path = e.tab.options.file;
-                if (path.indexOf("git_commit://")==0) e.options.readOnly = true;
-            });    
+                if (path.indexOf("git_commit://")==0 || path.indexOf("git_blame://")==0) { 
+                     e.options.readOnly = true; 
+                }                 
+            }); 
+
+            dayside.editor.bind("editorCreated",function(b,e){
+                var tab = e.tab; 
+                var path = tab.options.file; 
+                if (path.indexOf("git_blame://")==0) { 
+                    var parts = path.split("/"); 
+                    var base_path = decodeURIComponent(parts[2]); 
+                    var branch = parts[3];
+                    var ref = parts[4];
+                    var file_path = parts.slice(5).join("/");
+
+                    var blame_lines = blame_lines_cache[path]; 
+                    var max_line_length = 0;
+                    var line_info = [];
+                    blame_lines.forEach(function(line,line_index){
+                        var commit_info = line.commit_sha.substring(0,8) + " " + line.author + " " + line.date + " ";
+                        var line_number = line_index + 1;
+                        var line_length = (commit_info + line_number).length;
+                        if (line_length > max_line_length) max_line_length = line_length;
+                        
+                        var sha_attr = 'data-sha="'+line.commit_sha+'"';
+                        if (line.commit_sha=="0000000000000000000000000000000000000000") sha_attr = "";
+
+                        line_info.push('<span class="git-blame-commit-info" '+sha_attr+'>'+commit_info+'</span>' + line_number); 
+                    });
+                    
+                    tab.editor.updateOptions({ 
+                        lineNumbersMinChars: max_line_length, 
+                        lineNumbers: function (number) { 
+                            return line_info[parseInt(number)-1] || number;
+                        } 
+                    });                     
+
+                    $(tab.element).on('click','.git-blame-commit-info[data-sha]',function(){ 
+                        me.openTab(base_path, {
+                            action: 'history', 
+                            selected_commit: $(this).data('sha'), 
+                            selected_branch: branch,
+                            'show_diffs[]': file_path,
+                        }); 
+                    }); 
+                } 
+            });             
             
-            dayside.editor.bind("codeTabCreated",function(b,tab){
-                var path = tab.options.file;
-                if (path.indexOf("git_commit://")==0) {
-                    var parts = path.split("/");
-                    var ref = parts[2];
-                    tab.options.label += ' (' + ref + ')';
+            dayside.editor.bind("codeTabCreated",function(b,tab) {
+                var parts, branch = '', ref = '';
+                if (tab.options.file.indexOf("git_commit://")==0 || tab.options.file.indexOf("git_blame://")==0) {
+                    parts = tab.options.file.split("/");
+                    branch = parts[3];
+                    ref = parts[4].substring(0,8);
+                    if (tab.options.file.indexOf("git_blame://")==0)
+                        tab.options.label += ' (blame)';
+                    if (ref && branch)
+                        tab.options.label += ' ('+branch+'/'+ref+')';
                 }
+
+                tab.bind('contextmenu', function(e, data) {
+                    if (tab.options.file.indexOf('git_blame://')==0) return;
+
+                    var path = tab.options.file;
+                    if (tab.options.file.indexOf('git_commit://')==0) {
+                        path = decodeURIComponent(parts[2])+"/"+parts.slice(5).join("/");
+                    }
+
+                    var base_node = null;
+                    dayside.editor.filePanel.tree.find('.jstree-open li').has(">ul>li[rel$='/.git']").each(function() {
+                        if (path.indexOf($(this).attr('rel')) === 0) {
+                            base_node = $(this);
+                            return false;
+                        }
+                    });
+                    if (!base_node) return;
+
+                    var base_path = base_node.attr('rel');
+                    var rel = path.replace(base_path+"/", ''); 
+                    data.items.gitBlame = {
+                        label: "Git blame",
+                        action: function () {
+                            dayside.editor.selectFile('git_blame://'+encodeURIComponent(base_path)+"/"+branch+"/"+ref+"/"+rel); 
+                        }
+                    }
+                });        
             });
         });
         
         var old_file = FileApi.file;
         FileApi.file =  function (path,callback) {
+            if (path.indexOf("git_commit://")==-1 && path.indexOf('git_blame://')==-1) {
+                return old_file.apply(this,arguments);
+            }
+
+            var parts = path.split("/");
+            var root = decodeURIComponent(parts[2]);
+            var ref = parts[4];
+            var rel = parts.slice(5).join("/");
             if (path.indexOf("git_commit://")==0) {
-                var parts = path.split("/");
-                var ref = parts[2];
-                var root = decodeURIComponent(parts[3]);
-                var rel = parts.slice(4).join("/");
-                
                 FileApi.request('git_commit',{action:'show_file',path:root,file:rel,ref:ref},false,function(answer){
                     callback(FileApi.cache[path] = answer.data);
                 });
-            } else {
-                return old_file.apply(this,arguments);
+            } else if (path.indexOf('git_blame://')==0) { 
+                FileApi.request('git_commit', {action:'blame',path:root,file:rel,ref:ref}, true, function (response) { 
+                    var blame_lines = response.data;
+                    blame_lines_cache[path] = blame_lines;
+                    var file_content = "";
+                    blame_lines.forEach(function(line){ file_content += line.content });
+                    callback(FileApi.cache[path] = file_content); 
+                });
             }
         }
     },
@@ -148,6 +234,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
         var reloadTab = function (data,resType,cb) { tab.reloadTab(data,resType,cb); }
         
         function reloadCodeTab(one_tab) {
+            if (one_tab.options.file.indexOf("git_commit://")==0 || one_tab.options.file.indexOf("git_blame://")==0) return; 
             FileApi.file(one_tab.options.file,function (answer){
                 if (!one_tab.editor) return;
                 if(one_tab.editor.getValue()==FileApi.cache[one_tab.options.file]) return;
@@ -223,6 +310,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             var $hunk = $(this).parents('.hunk').eq(0);
             var filename = $(this).parents('.delta').data('filename');
             var old_filename = $(this).parents('.delta').data('old-filename');
+            var branch = tab.element.find(".branch.selected").data("value"); 
             var part,line,new_tab;
             var filename_to_open;
             
@@ -239,7 +327,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             if (part=='WT') {
                 new_tab = dayside.editor.selectFile(tab.path+"/"+filename_to_open);
             } else {
-                new_tab = dayside.editor.selectFile("git_commit://"+part+"/"+encodeURIComponent(tab.path)+"/"+filename_to_open);
+                new_tab = dayside.editor.selectFile("git_commit://"+encodeURIComponent(tab.path)+"/"+branch+"/"+part+"/"+filename_to_open);
             }
 
             function positionCursor() {
@@ -340,7 +428,7 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
                 }
             );
         }); 
-        
+
         // переключение view_type
         $(tab.element).on("mousedown",".view_type",function(){
             reloadTab({
@@ -482,7 +570,19 @@ dayside.plugins.git_commit.projectTab = teacss.ui.panel.extend("dayside.plugins.
             }  
             $tr.toggleClass('active');
         });
-                
+
+        $(tab.element).on('click', '.history-show-more', function (e) { 
+            var commit_count = tab.element.find('.last-commits .commit').length;
+            var data = $.extend(tab.getCurrentState(),{ 
+                history_last_commit_limit: commit_count + 15,
+                path: tab.path
+            });
+
+            FileApi.request('git_commit',data,false,function(response) {
+                var html = $(response.data).find('.last-commits').html();
+                tab.element.find('.last-commits').html(html);
+            });
+        }); 
     }    
 });
     

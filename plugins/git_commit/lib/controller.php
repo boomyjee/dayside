@@ -23,7 +23,7 @@ class Controller {
         
         $action = @$_POST['action'];
         if ($action=='refresh') $action = $_POST['previous_view_type'];
-        if ($action=='show_file') return $this->$action();
+        if ($action=='show_file' || $action=='blame') return $this->$action();
 
         $this->data['current_branch'] = $this->model->current_branch(); 
         $this->data['show_diffs'] = @$_POST['show_diffs']?:[];
@@ -81,28 +81,25 @@ class Controller {
         if(!$name_branch){
             $name_branch = $this->data['current_branch'];
         }
-        $this->data['history_depth'] = $history_depth = @$_POST['history_depth'] ?: 1;
-        
-        $commits = $name_branch ? $this->model->last_commits(30,$name_branch) : array();
-        $commit_sha = @$_POST['selected_commit'];
-        if (!isset($commits[$commit_sha])) $commit_sha = @array_shift(array_keys($commits));
-        
-        $last_commits = array();
-        $after_commits = array();
-        $after_current = false;
-        foreach ($commits as $sha=>$one) {
-            $one['excerpt'] = strlen($one['message'])<100 ? $one['message'] : substr($one['message'],0,100)."...";
-            if (count($last_commits)<15) $last_commits[] = $one;
-            if ($after_current && count($after_commits)<15) $after_commits[] = $one;
-            if ($sha==$commit_sha) $after_current = true;
+
+        $history_last_commit_limit = isset($_POST['history_last_commit_limit']) ? $_POST['history_last_commit_limit'] : 15;
+        $last_commits = $this->model->last_commits($name_branch, $history_last_commit_limit);
+        $selected_commit_sha = isset($_POST['selected_commit']) ? $_POST['selected_commit'] : @array_shift(array_keys($last_commits));
+        if (!isset($last_commits[$selected_commit_sha])) {
+            $last_commits = $this->model->commits_until($name_branch, $selected_commit_sha);
         }
+
+        $skip = array_search($selected_commit_sha, array_keys($last_commits)) + 1;
+        $after_commits = $this->model->last_commits($name_branch, 15, $skip);
         
         $this->data['view_type'] = 'history';    
         $this->data['current_branch'] = $name_branch;
         $this->data['last_commits'] = $last_commits;
         $this->data['after_commits'] = $after_commits;
-        $this->data['selected_commit_sha'] = $commit_sha;
-        $this->data['status'] = $commit_sha ? $this->model->history($commit_sha, $name_branch, $history_depth) : array();
+        $this->data['selected_commit_sha'] = $selected_commit_sha;
+        $this->data['history_show_more'] = (bool)$this->model->last_commits($name_branch, 1, count($last_commits));
+        $this->data['history_depth'] = $history_depth = @$_POST['history_depth'] ?: 1;
+        $this->data['status'] = $selected_commit_sha ? $this->model->history($selected_commit_sha, $name_branch, $history_depth) : array();
         $this->data['error'] = $this->model->error;
     }
         
@@ -327,4 +324,11 @@ class Controller {
         
         return $diff_html;
     }
+
+    private function blame() {
+        $file = $_POST['file'];
+        $ref = isset($_POST['ref'])? $_POST['ref'] : false; 
+        $blame_lines = $this->model->blame($file, $ref);
+        echo json_encode($blame_lines); 
+    } 
 }
