@@ -89,16 +89,16 @@ dayside.plugins.git_commit = ui.Control.extend({
                         path = decodeURIComponent(parts[2])+"/"+parts.slice(5).join("/");
                     }
 
-                    var base_node = null;
-                    dayside.editor.filePanel.tree.find('.jstree-open li').has(">ul>li[rel$='/.git']").each(function() {
-                        if (path.indexOf($(this).attr('rel')) === 0) {
-                            base_node = $(this);
+                    var base_path = false;
+                    dayside.editor.filePanel.tree.find("li[rel$='/.git']").each(function() {
+                        var parent_rel = $(this).attr('rel').slice(0,-5);
+                        if (path.indexOf(parent_rel) === 0) {
+                            base_path = parent_rel;
                             return false;
                         }
                     });
-                    if (!base_node) return;
-
-                    var base_path = base_node.attr('rel');
+                    if (!base_path) return;
+                    
                     var rel = path.replace(base_path+"/", ''); 
                     data.items.gitBlame = {
                         label: "Git blame",
