@@ -71,7 +71,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
                     if (me.readonly) e.cancel = true;
                 });
 
-                tab.editor.updateOptions({readOnly:me.readonly ? true:false});
+                me.setTabReadonly(tab, me.readonly ? true : false);
 
                 editor.getModel().onDidChangeContent(function(e){ 
                     var e_copy = $.extend(true,{type:'change',file:tab.options.file},e);
@@ -126,11 +126,26 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         return changed;
     },
 
-    setReadonly: function (flag) {
+    setTabReadonly: function (tab, flag) {
+        if (flag) {
+            if (tab.collaborate_readonly_backup === undefined) {
+                tab.collaborate_readonly_backup = !!tab.editor._configuration.editor.readOnly;
+                this.readonly = flag;
+                tab.editor.updateOptions({readOnly:this.readonly});
+            }
+        } else {
+            if (tab.collaborate_readonly_backup !== undefined) {                
+                this.readonly = tab.collaborate_readonly_backup;
+                tab.editor.updateOptions({readOnly: this.readonly});
+                tab.collaborate_readonly_backup = undefined;
+            }
+        }
+    },
+
+    setTabsReadonly: function (flag) {
         var me = this;
-        me.readonly = flag;
         ui.codeTab.tabs.forEach(function(tab){
-            if (tab.editor) tab.editor.updateOptions({readOnly:flag});
+            if (tab.editor) me.setTabReadonly(tab, flag);
         });
     },
 
@@ -162,9 +177,9 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         me.processNextEvent(function(processed_cb){
             me.current_leader = snapshot.val();
             if (me.current_leader && me.current_leader.locked) {
-                me.setReadonly(me.current_leader.id != me.ref_user.key);
+                me.setTabsReadonly(me.current_leader.id != me.ref_user.key);
             } else {
-                me.setReadonly(false);
+                me.setTabsReadonly(false);
                 if (me.isChanged()) me.disconnect();
             }
             processed_cb();
@@ -394,7 +409,7 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         var me = this;
         me.button.element.css({background:""});
         me.connected = false;
-        me.setReadonly(false);
+        me.setTabsReadonly(false);
         me.current_leader = false;
 
         if (me.ref_root) {
