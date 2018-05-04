@@ -84,11 +84,16 @@ class Controller {
 
         $history_last_commit_limit = isset($_POST['history_last_commit_limit']) ? $_POST['history_last_commit_limit'] : 15;
         $last_commits = $this->model->last_commits($name_branch, $history_last_commit_limit);
-        $last_commit = @array_shift(array_keys($last_commits));
-        $selected_commit_sha = isset($_POST['selected_commit']) ? $_POST['selected_commit'] : $last_commit;
-        if (!isset($last_commits[$selected_commit_sha]) && $last_commit) {
-            $last_commits = $this->model->commits_between($selected_commit_sha, $last_commit);
+        $selected_commit_sha = false; 
+        if (isset($_POST['selected_commit'])) {
+            $post_sha = $_POST['selected_commit'];
+            if (!isset($last_commits[$post_sha])) {
+                $commits = $this->model->commits_between($post_sha, @array_shift(array_keys($last_commits)));
+                if (isset($commits[$post_sha])) $last_commits = $commits;
+            }
+            if (isset($last_commits[$post_sha])) $selected_commit_sha = $post_sha;
         }
+        if (!$selected_commit_sha) $selected_commit_sha = @array_shift(array_keys($last_commits));
 
         $skip = array_search($selected_commit_sha, array_keys($last_commits)) + 1;
         $after_commits = $this->model->last_commits($name_branch, 15, $skip);
