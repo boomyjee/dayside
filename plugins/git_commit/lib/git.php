@@ -115,8 +115,8 @@ class Git {
         return $this->parse_commits($git_output);
     }
 
-    function commits_until($name_branch, $commit_sha) {
-        $git_output = $this->run_command(['log', '--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch, $commit_sha.'^..HEAD']);
+    function commits_between($commit_sha1, $commit_sha2) {
+        $git_output = $this->run_command(['log', '--pretty=format:%h>%H>%cd>%s', '--date=iso8601', '--ancestry-path', $commit_sha1.'^..'.$commit_sha2]);
         return $this->parse_commits($git_output);
     }
 
