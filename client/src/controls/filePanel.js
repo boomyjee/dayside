@@ -226,6 +226,19 @@ teacss.ui.filePanel = (function($){
                             var path = node.attr("rel");
                             var file;
                             var res = {};
+
+                            res['open'] = {
+                                label : node.data('folder') ? 'Open folder' : 'Open file',
+                                action : function () {
+                                    if (node.data('folder')) {
+                                        me.tree.jstree('toggle_node', node);
+                                    } else {
+                                        if (me.options.onSelect)
+                                            me.options.onSelect(path);
+                                    }
+                                }
+                            }
+
                             res["link"] = {label:"Open web location",action:function(){
                                 window.open(path);
                             }}
