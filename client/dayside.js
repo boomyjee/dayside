@@ -6491,17 +6491,25 @@ teacss.ui.codeTab = (function($){
             return new this({file:data,closable:true});
         },
         languageFromFilename: function (file) {
+            var lang = undefined;
+            if (typeof monaco == "undefined") {
+                alert("You coudn't call this function until monaco is defined");
+                return lang;
+            }
+
             var parts = file.split(".");
             var ext = parts[parts.length-1];
-            var lang = undefined;
-            if (ext=='css') lang = 'css';
-            if (ext=='tea') lang = 'teacss';
-            if (ext=='php') lang = 'php';
-            if (ext=='phtml') lang = 'php';
-            if (ext=='js')  lang = 'javascript';
-            if (ext=='ts')  lang = 'typescript';
-            if (ext=='py')  lang = 'python';
-            if (ext=='htm' || ext=='html' || ext=='tpl') lang = 'php';
+            if (ext == 'htm' || ext == 'html' || ext == 'tpl') lang = 'php';
+            if (!lang) {
+                var monacoLanguages = monaco.languages.getLanguages();
+                for (var i = 0; i < monacoLanguages.length; i++) {
+                    var language = monacoLanguages[i];
+                    if (language.extensions.indexOf('.'+ext) !== -1) {
+                        lang = language.id;
+                        break;
+                    }
+                }
+            }
             return lang;            
         }
     },{
@@ -6596,11 +6604,9 @@ teacss.ui.codeTab = (function($){
 
             this.editorElement.html("");
             
-            var lang = this.Class.languageFromFilename(file);
             var editorOptions = {
                 value:data,
                 lineNumbers:true,
-                language: lang,
                 theme:'vs',
                 fontFamily: 'monospace',
                 automaticLayout: true,
@@ -6619,7 +6625,8 @@ teacss.ui.codeTab = (function($){
                 
                 monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/dev/vs' }});
                 monaco_require(['vs/editor/editor.main'], function() {
-                    
+                    editorOptions.language = me.Class.languageFromFilename(file);
+
                     me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
                     me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
                         if (me.changed) {
