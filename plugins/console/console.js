@@ -26,14 +26,19 @@ dayside.plugins.console = $.Class.extend({
         var rel = path.substring(FileApi.root.length);
         if (rel[0]=='/') rel = rel.substring(1);
         var consoleTab = ui.panel({label:"Console: /" + rel,closable:true});
-        consoleTab.frame = frame = $("<iframe>")
-            .attr("src", FileApi.ajax_url + "?" + $.param({_type:"console",path:path}))
-            .css({width: "100%", height: "100%"});
+        consoleTab.frame = frame = $("<iframe>").css({width: "100%", height: "100%"});
         consoleTab.push(consoleTab.frame);
         
         var id = 'console_'+path.replace(/[^0-9a-zA-Z]/g, "__");
         dayside.editor.mainPanel.addTab(consoleTab,id,"bottom");
         consoleTab.tabPanel.selectTab(consoleTab);
+
+        frame[0].path = path;
+        FileApi.request('console', {_type:"console",path:path}, false, function(answer) {
+            frame[0].contentDocument.open();
+            frame[0].contentDocument.write(answer.data);
+            frame[0].contentDocument.close();
+        });
     }
 });
     

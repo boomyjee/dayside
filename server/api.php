@@ -19,8 +19,8 @@ class FileApi {
             throw new \Exception('Method is not implemented');
         }
     }    
-    
-    function __construct($_type=false) {
+
+    function default_auth() {
         $fileapi_hash = false;
         $password_path = __DIR__."/password.php";
         if (file_exists($password_path)) include $password_path;
@@ -44,7 +44,10 @@ class FileApi {
             $test = @$_COOKIE['editor_auth'];
         
         if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
-        
+    }
+    
+    function __construct($_type=false) {
+        $this->auth();
         $this->csrfRequired();
         
         $_type = $_type ? : $_REQUEST['_type'];
@@ -601,3 +604,7 @@ class FileApi {
         echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
     }    
 }
+
+FileApi::extend('auth', function($self) {
+    $self->default_auth();
+});
