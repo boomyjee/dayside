@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Auth candy test</title>
+        
+        <script src="../../server/assets/teacss/teacss.js"></script>
+        
+        <script src="../../server/assets/teacss/teacss-ui.js"></script>
+        <link href="../../server/assets/teacss/teacss-ui.css" rel="stylesheet" type="text/css">
+        
+        <script src="../../client/dayside.js"></script>
+        <link href="../../client/dayside.css" rel="stylesheet" type="text/css">
+
+        <script src="auth_candy.js"></script>
+        <script>
+            dayside.plugins.auth_candy({host:'https://internal.uxcandy.com'});
+            dayside({
+                root: teacss.path.absolute("./../../../"),
+                ajax_url: teacss.path.absolute("./demo.php")
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

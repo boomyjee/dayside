@@ -51,16 +51,16 @@ if (is_readable($file = __DIR__ . '/console.config.php')) {
 
 // If we have a user command execute it.
 // Otherwise send user interface.
-if (isset($_GET['command'])) {
-    $userCommand = urldecode($_GET['command']);
+if (isset($_POST['command'])) {
+    $userCommand = urldecode($_POST['command']);
     $userCommand = escapeshellcmd($userCommand);
 } else {
     $userCommand = false;
 }
 
 // If can - get current dir.
-if ($allowChangeDir && isset($_GET['cd'])) {
-    $newDir = urldecode($_GET['cd']);
+if ($allowChangeDir && isset($_POST['cd'])) {
+    $newDir = urldecode($_POST['cd']);
     if (is_dir($newDir)) {
         $currentDir = $newDir;
     }
@@ -610,7 +610,8 @@ $autocomplete = array(
 
             if (command) {
                 input.addHistory(command);
-                $.get('', {'command': command, 'cd': window.currentDir}, function (output) {
+                window.parent.FileApi.request('console', {_type:"console", path:window.frameElement.path, 'command': command, 'cd': window.currentDir}, false, function (answer) {
+                    var output = answer.data;
                     var pattern = /^set current directory (.+?)$/i;
                     if (matches = output.match(pattern)) {
                         window.currentDir = matches[1];
@@ -620,14 +621,9 @@ $autocomplete = array(
                     } else {
                         screen.append(output);
                     }
-                })
-                    .fail(function () {
-                        screen.append("<span class='error'>Command is sent, but due to an HTTP error result is not known.</span>\n");
-                    })
-                    .always(function () {
-                        form.show();
-                        scroll();
-                    });
+                    form.show();
+                    scroll();
+                });
             } else {
                 form.show();
                 scroll();
