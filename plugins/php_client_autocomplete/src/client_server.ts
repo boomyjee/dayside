@@ -1,15 +1,13 @@
 'use strict';
 
 import { TextDocument } from 'vscode-languageserver';
-
-import { TreeBuilder } from "./hvy/treeBuilder";
 import { SuggestionBuilder } from './suggestionBuilder';
 import { DefinitionProvider } from "./providers/definition";
 import { Debug } from './util/Debug';
-
 import { DocumentSymbolProvider } from "./providers/documentSymbol";
 
 const util = require('util');
+const work = require('webworkify');
 
 import "./plugin.ts"
 declare var dayside: any;
@@ -71,11 +69,11 @@ var filesDb = {
 }
 
 var server = {
-    treeBuilder: new TreeBuilder(),
     fileTree: {},
     connected: false,
     diffTimeout: false,
     initPromise: false,
+    parseWorker: work(require('./parseWorker')),
 
     init: function () {
         var me = this;
@@ -83,6 +81,9 @@ var server = {
             filesDb.init();
             filesDb.findAll().then(function(res){
                 me.fileTree = res;
+                me.parseWorker.addEventListener('message', function(e){
+                    me.parsingFinished(e);
+                });
                 resolve();
             });
         });
@@ -147,6 +148,49 @@ var server = {
     parsingCallbacks: {},
     parsingState: {},
 
+    parsingFinished: function (e) {
+        var me = this;
+
+        var fileData = e.data;
+        var path = fileData.path;
+
+        var pre_obj = me.fileTree[path];
+        var pre_stamp = pre_obj && pre_obj.stamp ? pre_obj.stamp : 0;
+        var pre_size = pre_obj && pre_obj.size ? pre_obj.size : 0;
+
+        var obj:any = {};
+        obj.path = fileData.path;
+        obj.node = fileData.node;
+        obj.stamp = fileData.stamp==undefined ? pre_stamp : fileData.stamp;
+        obj.size = fileData.size==undefined ? pre_size : fileData.size;
+
+        if (fileData.stamp && fileData.size) {
+            if (obj.stableText==obj.text) {
+                obj.text = fileData.text;
+            }
+            obj.stableText = fileData.text;
+        } else {
+            obj.text = fileData.text;
+            if (pre_obj && pre_obj.stableText) {
+                obj.stableText = pre_obj.stableText;
+            }
+        }
+
+        me.fileTree[path] = obj;
+        filesDb.save(obj);
+        console.debug("DONE",path.replace(dayside.options.root,""));
+
+        me.parsingState[path]--;
+        if (me.parsingState[path]<=0) {
+            me.parsingCallbacks[path].forEach(function(cb){
+                cb.bind(me)();
+            });
+            delete me.parsingCallbacks[path];
+            me.parsingState[path] = 0;
+        }
+        
+    },
+
     parseFile: function (fileData) {
         var me = this;
         var path = fileData.path;
@@ -155,45 +199,7 @@ var server = {
         me.parsingCallbacks[path] = me.parsingCallbacks[path] || [];
 
         console.debug("PARSING",path.replace(dayside.options.root,""));
-
-        this.treeBuilder.Parse(fileData.text, path).then(result => {
-            var pre_obj = me.fileTree[path];
-            var pre_stamp = pre_obj && pre_obj.stamp ? pre_obj.stamp : 0;
-            var pre_size = pre_obj && pre_obj.size ? pre_obj.size : 0;
-
-            var obj:any = {};
-            obj.path = fileData.path;
-            obj.node = result.tree;
-            obj.stamp = fileData.stamp==undefined ? pre_stamp : fileData.stamp;
-            obj.size = fileData.size==undefined ? pre_size : fileData.size;
-
-            if (fileData.stamp && fileData.size) {
-                if (obj.stableText==obj.text) {
-                    obj.text = fileData.text;
-                }
-                obj.stableText = fileData.text;
-            } else {
-                obj.text = fileData.text;
-                if (pre_obj && pre_obj.stableText) {
-                    obj.stableText = pre_obj.stableText;
-                }
-            }
-
-            me.fileTree[path] = obj;
-            filesDb.save(obj);
-            console.debug("DONE",obj.path.replace(dayside.options.root,""));
-
-            me.parsingState[path]--;
-            if (me.parsingState[path]<=0) {
-                me.parsingCallbacks[path].forEach(function(cb){
-                    cb.bind(me)();
-                });
-                delete me.parsingCallbacks[path];
-                me.parsingState[path] = 0;
-            }
-
-            
-        });
+        me.parseWorker.postMessage(fileData);
     },
 
     closeFile: function (path) {

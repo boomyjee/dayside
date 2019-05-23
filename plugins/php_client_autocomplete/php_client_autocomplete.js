@@ -14581,7 +14581,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_shasum": "c2d0b7776911b86722c632c3c06c60f2f819939a",
   "_spec": "elliptic@^6.0.0",
-  "_where": "/var/www/uxcandy_vscode/data/.npm-packages/lib/node_modules/browserify/node_modules/browserify-sign",
+  "_where": "/var/www/uxcandy_boomyjee/data/.npm-packages/lib/node_modules/browserify/node_modules/browserify-sign",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -25678,11 +25678,11 @@ function extend() {
 },{}],173:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-const treeBuilder_1 = require("./hvy/treeBuilder");
 const suggestionBuilder_1 = require("./suggestionBuilder");
 const definition_1 = require("./providers/definition");
 const documentSymbol_1 = require("./providers/documentSymbol");
 const util = require('util');
+const work = require('webworkify');
 require("./plugin.ts");
 var filesDb = {
     initPromise: false,
@@ -25738,17 +25738,20 @@ var filesDb = {
     }
 };
 var server = {
-    treeBuilder: new treeBuilder_1.TreeBuilder(),
     fileTree: {},
     connected: false,
     diffTimeout: false,
     initPromise: false,
+    parseWorker: work(require('./parseWorker')),
     init: function () {
         var me = this;
         me.initPromise = new Promise(function (resolve, reject) {
             filesDb.init();
             filesDb.findAll().then(function (res) {
                 me.fileTree = res;
+                me.parseWorker.addEventListener('message', function (e) {
+                    me.parsingFinished(e);
+                });
                 resolve();
             });
         });
@@ -25807,45 +25810,49 @@ var server = {
     },
     parsingCallbacks: {},
     parsingState: {},
+    parsingFinished: function (e) {
+        var me = this;
+        var fileData = e.data;
+        var path = fileData.path;
+        var pre_obj = me.fileTree[path];
+        var pre_stamp = pre_obj && pre_obj.stamp ? pre_obj.stamp : 0;
+        var pre_size = pre_obj && pre_obj.size ? pre_obj.size : 0;
+        var obj = {};
+        obj.path = fileData.path;
+        obj.node = fileData.node;
+        obj.stamp = fileData.stamp == undefined ? pre_stamp : fileData.stamp;
+        obj.size = fileData.size == undefined ? pre_size : fileData.size;
+        if (fileData.stamp && fileData.size) {
+            if (obj.stableText == obj.text) {
+                obj.text = fileData.text;
+            }
+            obj.stableText = fileData.text;
+        }
+        else {
+            obj.text = fileData.text;
+            if (pre_obj && pre_obj.stableText) {
+                obj.stableText = pre_obj.stableText;
+            }
+        }
+        me.fileTree[path] = obj;
+        filesDb.save(obj);
+        console.debug("DONE", path.replace(dayside.options.root, ""));
+        me.parsingState[path]--;
+        if (me.parsingState[path] <= 0) {
+            me.parsingCallbacks[path].forEach(function (cb) {
+                cb.bind(me)();
+            });
+            delete me.parsingCallbacks[path];
+            me.parsingState[path] = 0;
+        }
+    },
     parseFile: function (fileData) {
         var me = this;
         var path = fileData.path;
         me.parsingState[path] = me.parsingState[path] ? me.parsingState[path] + 1 : 1;
         me.parsingCallbacks[path] = me.parsingCallbacks[path] || [];
         console.debug("PARSING", path.replace(dayside.options.root, ""));
-        this.treeBuilder.Parse(fileData.text, path).then(result => {
-            var pre_obj = me.fileTree[path];
-            var pre_stamp = pre_obj && pre_obj.stamp ? pre_obj.stamp : 0;
-            var pre_size = pre_obj && pre_obj.size ? pre_obj.size : 0;
-            var obj = {};
-            obj.path = fileData.path;
-            obj.node = result.tree;
-            obj.stamp = fileData.stamp == undefined ? pre_stamp : fileData.stamp;
-            obj.size = fileData.size == undefined ? pre_size : fileData.size;
-            if (fileData.stamp && fileData.size) {
-                if (obj.stableText == obj.text) {
-                    obj.text = fileData.text;
-                }
-                obj.stableText = fileData.text;
-            }
-            else {
-                obj.text = fileData.text;
-                if (pre_obj && pre_obj.stableText) {
-                    obj.stableText = pre_obj.stableText;
-                }
-            }
-            me.fileTree[path] = obj;
-            filesDb.save(obj);
-            console.debug("DONE", obj.path.replace(dayside.options.root, ""));
-            me.parsingState[path]--;
-            if (me.parsingState[path] <= 0) {
-                me.parsingCallbacks[path].forEach(function (cb) {
-                    cb.bind(me)();
-                });
-                delete me.parsingCallbacks[path];
-                me.parsingState[path] = 0;
-            }
-        });
+        me.parseWorker.postMessage(fileData);
     },
     closeFile: function (path) {
         var me = this;
@@ -25896,7 +25903,7 @@ var server = {
 server.init();
 dayside.plugins.php_client_autocomplete.registerServer(server);
 
-},{"./hvy/treeBuilder":175,"./plugin.ts":316,"./providers/definition":317,"./providers/documentSymbol":318,"./suggestionBuilder":319,"util":170}],174:[function(require,module,exports){
+},{"./parseWorker":317,"./plugin.ts":318,"./providers/definition":319,"./providers/documentSymbol":320,"./suggestionBuilder":321,"util":170,"webworkify":316}],174:[function(require,module,exports){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -26539,7 +26546,7 @@ class TreeBuilderV2 {
 }
 exports.TreeBuilderV2 = TreeBuilderV2;
 
-},{"../util/namespaces":322,"./nodes":174}],177:[function(require,module,exports){
+},{"../util/namespaces":324,"./nodes":174}],177:[function(require,module,exports){
 /*!
  * Copyright (C) 2017 Glayzzle (BSD3 License)
  * @authors https://github.com/glayzzle/php-parser/graphs/contributors
@@ -29541,8 +29548,8 @@ engine.prototype.tokenGetAll = function(buffer) {
 // exports the function
 module.exports = engine;
 
-}).call(this,{"isBuffer":require("../../../../../../../../../../../.npm-packages/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../../../../.npm-packages/lib/node_modules/browserify/node_modules/is-buffer/index.js":102,"./ast":177,"./lexer":267,"./parser":276,"./tokens":292}],267:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../.npm-packages/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../.npm-packages/lib/node_modules/browserify/node_modules/is-buffer/index.js":102,"./ast":177,"./lexer":267,"./parser":276,"./tokens":292}],267:[function(require,module,exports){
 /*!
  * Copyright (C) 2017 Glayzzle (BSD3 License)
  * @authors https://github.com/glayzzle/php-parser/graphs/contributors
@@ -40355,6 +40362,103 @@ exports.WorkspaceFoldersFeature = (Base) => {
 };
 
 },{"vscode-languageserver-protocol":303}],316:[function(require,module,exports){
+var bundleFn = arguments[3];
+var sources = arguments[4];
+var cache = arguments[5];
+
+var stringify = JSON.stringify;
+
+module.exports = function (fn, options) {
+    var wkey;
+    var cacheKeys = Object.keys(cache);
+
+    for (var i = 0, l = cacheKeys.length; i < l; i++) {
+        var key = cacheKeys[i];
+        var exp = cache[key].exports;
+        // Using babel as a transpiler to use esmodule, the export will always
+        // be an object with the default export as a property of it. To ensure
+        // the existing api and babel esmodule exports are both supported we
+        // check for both
+        if (exp === fn || exp && exp.default === fn) {
+            wkey = key;
+            break;
+        }
+    }
+
+    if (!wkey) {
+        wkey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
+        var wcache = {};
+        for (var i = 0, l = cacheKeys.length; i < l; i++) {
+            var key = cacheKeys[i];
+            wcache[key] = key;
+        }
+        sources[wkey] = [
+            'function(require,module,exports){' + fn + '(self); }',
+            wcache
+        ];
+    }
+    var skey = Math.floor(Math.pow(16, 8) * Math.random()).toString(16);
+
+    var scache = {}; scache[wkey] = wkey;
+    sources[skey] = [
+        'function(require,module,exports){' +
+            // try to call default if defined to also support babel esmodule exports
+            'var f = require(' + stringify(wkey) + ');' +
+            '(f.default ? f.default : f)(self);' +
+        '}',
+        scache
+    ];
+
+    var workerSources = {};
+    resolveSources(skey);
+
+    function resolveSources(key) {
+        workerSources[key] = true;
+
+        for (var depPath in sources[key][1]) {
+            var depKey = sources[key][1][depPath];
+            if (!workerSources[depKey]) {
+                resolveSources(depKey);
+            }
+        }
+    }
+
+    var src = '(' + bundleFn + ')({'
+        + Object.keys(workerSources).map(function (key) {
+            return stringify(key) + ':['
+                + sources[key][0]
+                + ',' + stringify(sources[key][1]) + ']'
+            ;
+        }).join(',')
+        + '},{},[' + stringify(skey) + '])'
+    ;
+
+    var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+    var blob = new Blob([src], { type: 'text/javascript' });
+    if (options && options.bare) { return blob; }
+    var workerUrl = URL.createObjectURL(blob);
+    var worker = new Worker(workerUrl);
+    worker.objectURL = workerUrl;
+    return worker;
+};
+
+},{}],317:[function(require,module,exports){
+'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+const treeBuilder_1 = require("./hvy/treeBuilder");
+var treeBuilder = new treeBuilder_1.TreeBuilder();
+module.exports = function (self) {
+    self.addEventListener('message', function (e) {
+        var fileData = e.data;
+        treeBuilder.Parse(fileData.text, fileData.path).then(result => {
+            fileData.node = result.tree;
+            self.postMessage(fileData);
+        });
+    });
+};
+
+},{"./hvy/treeBuilder":175}],318:[function(require,module,exports){
 (function ($, ui) {
     function monacoReady(cb) {
         if (window['monaco'])
@@ -40620,7 +40724,7 @@ exports.WorkspaceFoldersFeature = (Base) => {
     });
 })(teacss.jQuery, teacss.ui);
 
-},{}],317:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40773,7 +40877,7 @@ class DefinitionProvider {
 }
 exports.DefinitionProvider = DefinitionProvider;
 
-},{"../util/Files":321,"../util/namespaces":322,"fs":1}],318:[function(require,module,exports){
+},{"../util/Files":323,"../util/namespaces":324,"fs":1}],320:[function(require,module,exports){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40904,7 +41008,7 @@ class DocumentSymbolProvider {
 }
 exports.DocumentSymbolProvider = DocumentSymbolProvider;
 
-},{"../util/Files":321,"fs":1,"vscode-languageserver":312}],319:[function(require,module,exports){
+},{"../util/Files":323,"fs":1,"vscode-languageserver":312}],321:[function(require,module,exports){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -41743,7 +41847,7 @@ var ScopeLevel;
     ScopeLevel[ScopeLevel["Trait"] = 3] = "Trait";
 })(ScopeLevel || (ScopeLevel = {}));
 
-},{"./hvy/nodes":174,"./util/Debug":320,"./util/Files":321,"./util/namespaces":322,"fs":1,"vscode-languageserver":312}],320:[function(require,module,exports){
+},{"./hvy/nodes":174,"./util/Debug":322,"./util/Files":323,"./util/namespaces":324,"fs":1,"vscode-languageserver":312}],322:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var http = require('http');
@@ -41766,7 +41870,7 @@ class Debug {
 }
 exports.Debug = Debug;
 
-},{"http":159}],321:[function(require,module,exports){
+},{"http":159}],323:[function(require,module,exports){
 (function (process){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
@@ -41804,7 +41908,7 @@ class Files {
 exports.Files = Files;
 
 }).call(this,require('_process'))
-},{"_process":121}],322:[function(require,module,exports){
+},{"_process":121}],324:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 class Namespaces {
