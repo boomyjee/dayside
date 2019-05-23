@@ -109,6 +109,7 @@ var server = {
 
     getFilesDiff: function () {
         var me = this;
+        if (!me.initPromise) me.init();
         me.initPromise.then(function(){
             dayside.ready(function(){
                 var checkHash = {};
@@ -215,6 +216,7 @@ var server = {
         var me = this;
         var path = fileData.path;
 
+        if (!me.initPromise) me.init();
         me.initPromise.then(function(){
             me.parsingCount++;
 
@@ -277,6 +279,5 @@ var server = {
     }
 };
 
-server.init();
 dayside.plugins.php_client_autocomplete.registerServer(server);
 
