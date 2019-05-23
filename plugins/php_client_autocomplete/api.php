@@ -3,6 +3,9 @@
 require_once __DIR__."/../../server/api.php";
 
 FileApi::extend('get_files_diff',function($self){
+    
+    ini_set("memory_limit","256M");
+    
     $root_path = $self->_pathFromUrl(@$_REQUEST['path']);
     if (!$root_path) { echo "ERROR: Invalid folder path"; die(); }
 
