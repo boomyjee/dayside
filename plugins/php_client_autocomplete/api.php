@@ -9,17 +9,15 @@ FileApi::extend('get_files_diff',function($self){
     $root_path = $self->_pathFromUrl(@$_REQUEST['path']);
     if (!$root_path) { echo "ERROR: Invalid folder path"; die(); }
 
-    exec('find '.escapeshellarg($root_path).' -type f -name "*.php"',$php_files);
+    exec('find '.escapeshellarg($root_path).' -type f -name "*.php" -printf "%T@ %s %p\n"',$php_files);
 
     $checkHash = json_decode($_POST['checkHash'],true);
     $result = [];
     $path_present = [];
 
-    foreach ($php_files as $file) {
+    foreach ($php_files as $line) {
+        list($stamp,$size,$file) = explode(" ",$line,3);
         if (substr($file,0,strlen($root_path))==$root_path) {
-
-            $stamp = filemtime($file);
-            $size = filesize($file);
             $path = $_REQUEST['path'].str_replace("\\","/",substr($file,strlen($root_path)));
             $path_present[$path] = 1;
 
