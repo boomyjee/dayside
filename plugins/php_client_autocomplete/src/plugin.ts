@@ -111,6 +111,12 @@ declare var FileApi: any;
     
             dayside.core.bind("configUpdate",function(b,e){
                 me.connected = e.value.php_autocomplete_enable;
+                if (me.connected) {
+                    me.Class.server.connect();
+                    me.registerOpenTabs();
+                } else {
+                    me.Class.server.disconnect();
+                }
             });
     
             dayside.core.bind("configTabsCreated",function(b,e){
@@ -211,27 +217,14 @@ declare var FileApi: any;
                     });
                 }
 
-                function registerTab(tab) {
-                    tab.editor.model.codeTab = tab;
-                    me.Class.server.parseFile({
-                        path: tab.options.file,
-                        text: tab.editor.getValue()
-                    });
-                    tab.bind("close",function(b,event_close){
-                        if (!event_close.cancel) {
-                            if (tab.changeCallback) tab.changeCallback();
-                            me.Class.server.closeFile(tab.options.file);
-                        }
-                    });            
-                }
-    
-                ui.codeTab.tabs.forEach(function(tab){
-                    if (tab.editor) registerTab(tab);
-                });
+                me.registerOpenTabs();
+
                 dayside.editor.bind("editorCreated",function(b,e){
-                    registerTab(e.tab);
+                    if (!me.connected) return;
+                    me.registerTab(e.tab);
                 });
                 dayside.editor.bind("codeChanged",function(b,tab){
+                    if (!me.connected) return;
                     clearTimeout(tab.autocompleteDidChangeTimeout);
                     tab.changeCallback = function(){
                         tab.changeCallback = false;
@@ -244,6 +237,38 @@ declare var FileApi: any;
                     tab.autocompleteDidChangeTimeout = setTimeout(tab.changeCallback,2000);
                 });
             });
+        },
+        registerOpenTabs: function () {
+            var me = this;
+            if (!me.connected) return;
+            ui.codeTab.tabs.forEach(function(tab){
+                me.registerTab(tab);
+            });
+        },
+        registerTab: function (tab) {
+            var me = this;
+            
+            if (!tab.editor) return;
+            if (!me.connected) return;
+            
+            tab.editor.model.codeTab = tab;
+            me.Class.server.parseFile({
+                path: tab.options.file,
+                text: tab.editor.getValue()
+            });
+
+            if (!tab.php_autocomplete_closeBinded) {
+                tab.bind("close",function(b,event_close){
+                    if (!event_close.cancel) {
+                        if (tab.changeCallback) tab.changeCallback();
+                        if (me.connected) {
+                            me.Class.server.closeFile(tab.options.file);
+                        }
+                    }
+                });
+                tab.php_autocomplete_closeBinded = true;
+            }
+
         },
         getDaysideUri: function (uri) {
             return monaco.Uri.parse(uri.replace("file://","dayside://"));

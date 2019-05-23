@@ -73,14 +73,29 @@ var filesDb = {
 var server = {
     treeBuilder: new TreeBuilder(),
     fileTree: {},
+    connected: false,
+    diffTimeout: false,
+    initPromise: false,
 
     init: function () {
         var me = this;
-        filesDb.init();
-        filesDb.findAll().then(function(res){
-            me.fileTree = res;
-            me.getFilesDiff();
+        me.initPromise = new Promise(function(resolve,reject){
+            filesDb.init();
+            filesDb.findAll().then(function(res){
+                me.fileTree = res;
+                resolve();
+            });
         });
+    },
+
+    connect: function () {
+        this.connected = true;
+        this.getFilesDiff();
+    },
+
+    disconnect: function () {
+        clearTimeout(this.diffTimeout);
+        this.connected = false;
     },
 
     getWorkspaceTree: function () {
@@ -93,34 +108,38 @@ var server = {
 
     getFilesDiff: function () {
         var me = this;
-        dayside.ready(function(){
-            var checkHash = {};
-            for (var path in me.fileTree) {
-                checkHash[path] = {
-                    size: me.fileTree[path].size,
-                    stamp: me.fileTree[path].stamp
-                }
-            }
-            FileApi.request('get_files_diff',{path:dayside.options.root,checkHash:checkHash},true,function(ret){
-                console.debug("DIFF",ret.data);
-                for (var path in ret.data) {
-                    var file = ret.data[path];
-                    if (file) {
-                        server.parseFile({
-                            path: path,
-                            size: file.size,
-                            stamp: file.stamp,
-                            text: file.text
-                        });
-                    } else {
-                        filesDb.remove(path);
-                        delete me.fileTree[path];
+        me.initPromise.then(function(){
+            dayside.ready(function(){
+                var checkHash = {};
+                for (var path in me.fileTree) {
+                    checkHash[path] = {
+                        size: me.fileTree[path].size,
+                        stamp: me.fileTree[path].stamp
                     }
                 }
+                FileApi.request('get_files_diff',{path:dayside.options.root,checkHash:JSON.stringify(checkHash)},true,function(ret){
+                    console.debug("DIFF",ret.data);
+                    for (var path in ret.data) {
+                        var file = ret.data[path];
+                        if (file) {
+                            server.parseFile({
+                                path: path,
+                                size: file.size,
+                                stamp: file.stamp,
+                                text: file.text
+                            });
+                        } else {
+                            filesDb.remove(path);
+                            delete me.fileTree[path];
+                        }
+                    }
 
-                setTimeout(function(){
-                    me.getFilesDiff();
-                },5000);
+                    if (me.connected) {
+                        me.diffTimeout = setTimeout(function(){
+                            me.getFilesDiff();
+                        },5000);
+                    }
+                });
             });
         });
     },
@@ -144,14 +163,17 @@ var server = {
 
             var obj:any = {};
             obj.path = fileData.path;
-            obj.text = fileData.text;
             obj.node = result.tree;
             obj.stamp = fileData.stamp==undefined ? pre_stamp : fileData.stamp;
             obj.size = fileData.size==undefined ? pre_size : fileData.size;
 
             if (fileData.stamp && fileData.size) {
-                obj.stableText = obj.text;
+                if (obj.stableText==obj.text) {
+                    obj.text = fileData.text;
+                }
+                obj.stableText = fileData.text;
             } else {
+                obj.text = fileData.text;
                 if (pre_obj && pre_obj.stableText) {
                     obj.stableText = pre_obj.stableText;
                 }
@@ -181,32 +203,20 @@ var server = {
     },
 
     completion: function (params,callback) {
-        var toReturn = null;
         var me = this;
         var path = params.textDocument.uri;
 
         var doCompletion = function () {
-            try 
-            {
-                var suggestionBuilder = new SuggestionBuilder();
-                var doc = <TextDocument>{
-                    getText: function () {
-                        return me.fileTree[path].text;
-                    }
+            var suggestionBuilder = new SuggestionBuilder();
+            var doc = <TextDocument>{
+                getText: function () {
+                    return me.fileTree[path].text;
                 }
-                suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
-                toReturn = suggestionBuilder.build();
             }
-            catch (ex) 
-            {
-                let message = "";
-                if (ex.message) message = ex.message;
-                if (ex.stack) message += " :: STACK TRACE :: " + ex.stack;
-                Debug.error("Completion error: " + ex.message + "\n" + ex.stack);
-            }
+            suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
             callback({
                 result:{
-                    items: toReturn || []
+                    items: suggestionBuilder.build()
                 }
             })
         }
@@ -219,43 +229,20 @@ var server = {
     },
 
     definition: function (params,callback) {
-        var locations = null;
-
-        try 
-        {
-            let path = params.textDocument.uri;
-            let filenode = this.fileTree[path].node;
-            let definitionProvider = new DefinitionProvider(params, path, this.fileTree[path].text, filenode, this.getWorkspaceTree());
-            locations = definitionProvider.findDefinition();
-        }
-        catch (ex) {
-            let message = "";
-            if (ex.message) message = ex.message;
-            if (ex.stack) message += " :: STACK TRACE :: " + ex.stack;
-            if (message && message != "") Debug.sendErrorTelemetry(message);
-        }
-
+        let path = params.textDocument.uri;
+        let filenode = this.fileTree[path].node;
+        let definitionProvider = new DefinitionProvider(params, path, this.fileTree[path].text, filenode, this.getWorkspaceTree());
         callback({
-            result: locations
+            result: definitionProvider.findDefinition()
         });
     },
 
     documentSymbol: function (params,callback) {
-        var symbols = [];
-        try {
-            let path = params.textDocument.uri;
-            let filenode = this.fileTree[path].node;
-            let documentSymbolProvider = new DocumentSymbolProvider(filenode);
-            symbols = documentSymbolProvider.findSymbols();
-        }
-        catch (ex) {
-            let message = "";
-            if (ex.message) message = ex.message;
-            if (ex.stack) message += " :: STACK TRACE :: " + ex.stack;
-            if (message && message != "") Debug.sendErrorTelemetry(message);
-        }
+        let path = params.textDocument.uri;
+        let filenode = this.fileTree[path].node;
+        let documentSymbolProvider = new DocumentSymbolProvider(filenode);
         callback({
-            result: symbols
+            result: documentSymbolProvider.findSymbols()
         });
     }
 };
