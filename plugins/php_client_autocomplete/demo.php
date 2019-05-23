@@ -17,7 +17,7 @@ class PhpAutocompleteApi extends FileApi {
         
         if ($base=="" || strpos($url,$base)===0) {
             $rel = substr($url,strlen($base));
-            $path = realpath(__DIR__."/../../..").$rel;
+            $path = realpath(__DIR__."/../..").$rel;
             return $path;
         }
         return false;
