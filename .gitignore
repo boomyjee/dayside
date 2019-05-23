@@ -5,3 +5,5 @@ server/password.php
 plugins/xdebug/proxy/proxy.pid
 
 client/lib/monaco/min-maps/
+
+plugins/php_client_autocomplete/src/node_modules
