@@ -136,8 +136,17 @@ var server = {
                     }
 
                     if (me.connected) {
+
+                        function tryRunFileDiff() {
+                            if (me.parsingCount==0) {
+                                me.getFilesDiff();
+                            } else {
+                                console.debug('TRIED DIFF BUT PARSING');
+                                setTimeout(tryRunFileDiff,1000);
+                            }
+                        }
                         me.diffTimeout = setTimeout(function(){
-                            me.getFilesDiff();
+                            tryRunFileDiff();
                         },5000);
                     }
                 });
@@ -147,6 +156,9 @@ var server = {
 
     parsingCallbacks: {},
     parsingState: {},
+    
+    parsingCount: 0,
+    parsingProcessed: 0,
 
     parsingFinished: function (e) {
         var me = this;
@@ -188,18 +200,30 @@ var server = {
             delete me.parsingCallbacks[path];
             me.parsingState[path] = 0;
         }
-        
+        me.parsingProcessed++;
+        if (me.parsingProcessed>=me.parsingCount) {
+            me.parsingProcessed = 0;
+            me.parsingCount = 0;
+            dayside.editor.setStatus("parsing done");
+        }
+        else if (me.parsingCount) {
+            dayside.editor.setStatus("parsing: "+me.parsingProcessed+"/"+me.parsingCount);
+        }
     },
 
     parseFile: function (fileData) {
         var me = this;
         var path = fileData.path;
 
-        me.parsingState[path] = me.parsingState[path] ? me.parsingState[path]+1 : 1;
-        me.parsingCallbacks[path] = me.parsingCallbacks[path] || [];
+        me.initPromise.then(function(){
+            me.parsingCount++;
 
-        console.debug("PARSING",path.replace(dayside.options.root,""));
-        me.parseWorker.postMessage(fileData);
+            me.parsingState[path] = me.parsingState[path] ? me.parsingState[path]+1 : 1;
+            me.parsingCallbacks[path] = me.parsingCallbacks[path] || [];
+
+            console.debug("PARSING",path.replace(dayside.options.root,""));
+            me.parseWorker.postMessage(fileData);
+        });
     },
 
     closeFile: function (path) {
