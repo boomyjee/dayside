@@ -25681,7 +25681,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const treeBuilder_1 = require("./hvy/treeBuilder");
 const suggestionBuilder_1 = require("./suggestionBuilder");
 const definition_1 = require("./providers/definition");
-const Debug_1 = require("./util/Debug");
 const documentSymbol_1 = require("./providers/documentSymbol");
 const util = require('util');
 require("./plugin.ts");
@@ -25741,13 +25740,26 @@ var filesDb = {
 var server = {
     treeBuilder: new treeBuilder_1.TreeBuilder(),
     fileTree: {},
+    connected: false,
+    diffTimeout: false,
+    initPromise: false,
     init: function () {
         var me = this;
-        filesDb.init();
-        filesDb.findAll().then(function (res) {
-            me.fileTree = res;
-            me.getFilesDiff();
+        me.initPromise = new Promise(function (resolve, reject) {
+            filesDb.init();
+            filesDb.findAll().then(function (res) {
+                me.fileTree = res;
+                resolve();
+            });
         });
+    },
+    connect: function () {
+        this.connected = true;
+        this.getFilesDiff();
+    },
+    disconnect: function () {
+        clearTimeout(this.diffTimeout);
+        this.connected = false;
     },
     getWorkspaceTree: function () {
         var nodes = [];
@@ -25758,34 +25770,38 @@ var server = {
     },
     getFilesDiff: function () {
         var me = this;
-        dayside.ready(function () {
-            var checkHash = {};
-            for (var path in me.fileTree) {
-                checkHash[path] = {
-                    size: me.fileTree[path].size,
-                    stamp: me.fileTree[path].stamp
-                };
-            }
-            FileApi.request('get_files_diff', { path: dayside.options.root, checkHash: checkHash }, true, function (ret) {
-                console.debug("DIFF", ret.data);
-                for (var path in ret.data) {
-                    var file = ret.data[path];
-                    if (file) {
-                        server.parseFile({
-                            path: path,
-                            size: file.size,
-                            stamp: file.stamp,
-                            text: file.text
-                        });
-                    }
-                    else {
-                        filesDb.remove(path);
-                        delete me.fileTree[path];
-                    }
+        me.initPromise.then(function () {
+            dayside.ready(function () {
+                var checkHash = {};
+                for (var path in me.fileTree) {
+                    checkHash[path] = {
+                        size: me.fileTree[path].size,
+                        stamp: me.fileTree[path].stamp
+                    };
                 }
-                setTimeout(function () {
-                    me.getFilesDiff();
-                }, 5000);
+                FileApi.request('get_files_diff', { path: dayside.options.root, checkHash: JSON.stringify(checkHash) }, true, function (ret) {
+                    console.debug("DIFF", ret.data);
+                    for (var path in ret.data) {
+                        var file = ret.data[path];
+                        if (file) {
+                            server.parseFile({
+                                path: path,
+                                size: file.size,
+                                stamp: file.stamp,
+                                text: file.text
+                            });
+                        }
+                        else {
+                            filesDb.remove(path);
+                            delete me.fileTree[path];
+                        }
+                    }
+                    if (me.connected) {
+                        me.diffTimeout = setTimeout(function () {
+                            me.getFilesDiff();
+                        }, 5000);
+                    }
+                });
             });
         });
     },
@@ -25803,14 +25819,17 @@ var server = {
             var pre_size = pre_obj && pre_obj.size ? pre_obj.size : 0;
             var obj = {};
             obj.path = fileData.path;
-            obj.text = fileData.text;
             obj.node = result.tree;
             obj.stamp = fileData.stamp == undefined ? pre_stamp : fileData.stamp;
             obj.size = fileData.size == undefined ? pre_size : fileData.size;
             if (fileData.stamp && fileData.size) {
-                obj.stableText = obj.text;
+                if (obj.stableText == obj.text) {
+                    obj.text = fileData.text;
+                }
+                obj.stableText = fileData.text;
             }
             else {
+                obj.text = fileData.text;
                 if (pre_obj && pre_obj.stableText) {
                     obj.stableText = pre_obj.stableText;
                 }
@@ -25834,31 +25853,19 @@ var server = {
         me.parseFile(me.fileTree[path]);
     },
     completion: function (params, callback) {
-        var toReturn = null;
         var me = this;
         var path = params.textDocument.uri;
         var doCompletion = function () {
-            try {
-                var suggestionBuilder = new suggestionBuilder_1.SuggestionBuilder();
-                var doc = {
-                    getText: function () {
-                        return me.fileTree[path].text;
-                    }
-                };
-                suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
-                toReturn = suggestionBuilder.build();
-            }
-            catch (ex) {
-                let message = "";
-                if (ex.message)
-                    message = ex.message;
-                if (ex.stack)
-                    message += " :: STACK TRACE :: " + ex.stack;
-                Debug_1.Debug.error("Completion error: " + ex.message + "\n" + ex.stack);
-            }
+            var suggestionBuilder = new suggestionBuilder_1.SuggestionBuilder();
+            var doc = {
+                getText: function () {
+                    return me.fileTree[path].text;
+                }
+            };
+            suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
             callback({
                 result: {
-                    items: toReturn || []
+                    items: suggestionBuilder.build()
                 }
             });
         };
@@ -25870,52 +25877,26 @@ var server = {
         }
     },
     definition: function (params, callback) {
-        var locations = null;
-        try {
-            let path = params.textDocument.uri;
-            let filenode = this.fileTree[path].node;
-            let definitionProvider = new definition_1.DefinitionProvider(params, path, this.fileTree[path].text, filenode, this.getWorkspaceTree());
-            locations = definitionProvider.findDefinition();
-        }
-        catch (ex) {
-            let message = "";
-            if (ex.message)
-                message = ex.message;
-            if (ex.stack)
-                message += " :: STACK TRACE :: " + ex.stack;
-            if (message && message != "")
-                Debug_1.Debug.sendErrorTelemetry(message);
-        }
+        let path = params.textDocument.uri;
+        let filenode = this.fileTree[path].node;
+        let definitionProvider = new definition_1.DefinitionProvider(params, path, this.fileTree[path].text, filenode, this.getWorkspaceTree());
         callback({
-            result: locations
+            result: definitionProvider.findDefinition()
         });
     },
     documentSymbol: function (params, callback) {
-        var symbols = [];
-        try {
-            let path = params.textDocument.uri;
-            let filenode = this.fileTree[path].node;
-            let documentSymbolProvider = new documentSymbol_1.DocumentSymbolProvider(filenode);
-            symbols = documentSymbolProvider.findSymbols();
-        }
-        catch (ex) {
-            let message = "";
-            if (ex.message)
-                message = ex.message;
-            if (ex.stack)
-                message += " :: STACK TRACE :: " + ex.stack;
-            if (message && message != "")
-                Debug_1.Debug.sendErrorTelemetry(message);
-        }
+        let path = params.textDocument.uri;
+        let filenode = this.fileTree[path].node;
+        let documentSymbolProvider = new documentSymbol_1.DocumentSymbolProvider(filenode);
         callback({
-            result: symbols
+            result: documentSymbolProvider.findSymbols()
         });
     }
 };
 server.init();
 dayside.plugins.php_client_autocomplete.registerServer(server);
 
-},{"./hvy/treeBuilder":175,"./plugin.ts":316,"./providers/definition":317,"./providers/documentSymbol":318,"./suggestionBuilder":319,"./util/Debug":320,"util":170}],174:[function(require,module,exports){
+},{"./hvy/treeBuilder":175,"./plugin.ts":316,"./providers/definition":317,"./providers/documentSymbol":318,"./suggestionBuilder":319,"util":170}],174:[function(require,module,exports){
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Hvy Industries. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -40476,6 +40457,13 @@ exports.WorkspaceFoldersFeature = (Base) => {
             });
             dayside.core.bind("configUpdate", function (b, e) {
                 me.connected = e.value.php_autocomplete_enable;
+                if (me.connected) {
+                    me.Class.server.connect();
+                    me.registerOpenTabs();
+                }
+                else {
+                    me.Class.server.disconnect();
+                }
             });
             dayside.core.bind("configTabsCreated", function (b, e) {
                 var configTab = teacss.ui.panel({
@@ -40572,28 +40560,15 @@ exports.WorkspaceFoldersFeature = (Base) => {
                         }
                     });
                 }
-                function registerTab(tab) {
-                    tab.editor.model.codeTab = tab;
-                    me.Class.server.parseFile({
-                        path: tab.options.file,
-                        text: tab.editor.getValue()
-                    });
-                    tab.bind("close", function (b, event_close) {
-                        if (!event_close.cancel) {
-                            if (tab.changeCallback)
-                                tab.changeCallback();
-                            me.Class.server.closeFile(tab.options.file);
-                        }
-                    });
-                }
-                ui.codeTab.tabs.forEach(function (tab) {
-                    if (tab.editor)
-                        registerTab(tab);
-                });
+                me.registerOpenTabs();
                 dayside.editor.bind("editorCreated", function (b, e) {
-                    registerTab(e.tab);
+                    if (!me.connected)
+                        return;
+                    me.registerTab(e.tab);
                 });
                 dayside.editor.bind("codeChanged", function (b, tab) {
+                    if (!me.connected)
+                        return;
                     clearTimeout(tab.autocompleteDidChangeTimeout);
                     tab.changeCallback = function () {
                         tab.changeCallback = false;
@@ -40606,6 +40581,38 @@ exports.WorkspaceFoldersFeature = (Base) => {
                     tab.autocompleteDidChangeTimeout = setTimeout(tab.changeCallback, 2000);
                 });
             });
+        },
+        registerOpenTabs: function () {
+            var me = this;
+            if (!me.connected)
+                return;
+            ui.codeTab.tabs.forEach(function (tab) {
+                me.registerTab(tab);
+            });
+        },
+        registerTab: function (tab) {
+            var me = this;
+            if (!tab.editor)
+                return;
+            if (!me.connected)
+                return;
+            tab.editor.model.codeTab = tab;
+            me.Class.server.parseFile({
+                path: tab.options.file,
+                text: tab.editor.getValue()
+            });
+            if (!tab.php_autocomplete_closeBinded) {
+                tab.bind("close", function (b, event_close) {
+                    if (!event_close.cancel) {
+                        if (tab.changeCallback)
+                            tab.changeCallback();
+                        if (me.connected) {
+                            me.Class.server.closeFile(tab.options.file);
+                        }
+                    }
+                });
+                tab.php_autocomplete_closeBinded = true;
+            }
         },
         getDaysideUri: function (uri) {
             return monaco.Uri.parse(uri.replace("file://", "dayside://"));

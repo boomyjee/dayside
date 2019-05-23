@@ -8,7 +8,7 @@ FileApi::extend('get_files_diff',function($self){
 
     exec('find '.escapeshellarg($root_path).' -type f -name "*.php"',$php_files);
 
-    $checkHash = empty($_POST["checkHash"]) ? [] : $_POST["checkHash"];
+    $checkHash = json_decode($_POST['checkHash'],true);
     $result = [];
     $path_present = [];
 
