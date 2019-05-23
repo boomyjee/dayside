@@ -25773,6 +25773,8 @@ var server = {
     },
     getFilesDiff: function () {
         var me = this;
+        if (!me.initPromise)
+            me.init();
         me.initPromise.then(function () {
             dayside.ready(function () {
                 var checkHash = {};
@@ -25869,6 +25871,8 @@ var server = {
     parseFile: function (fileData) {
         var me = this;
         var path = fileData.path;
+        if (!me.initPromise)
+            me.init();
         me.initPromise.then(function () {
             me.parsingCount++;
             me.parsingState[path] = me.parsingState[path] ? me.parsingState[path] + 1 : 1;
@@ -25923,7 +25927,6 @@ var server = {
         });
     }
 };
-server.init();
 dayside.plugins.php_client_autocomplete.registerServer(server);
 
 },{"./parseWorker":317,"./plugin.ts":318,"./providers/definition":319,"./providers/documentSymbol":320,"./suggestionBuilder":321,"util":170,"webworkify":316}],174:[function(require,module,exports){
