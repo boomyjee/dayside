@@ -1,4 +1,15 @@
 teacss.ui.codeTab = (function($){
+    $(window).on('beforeunload',function(e) {
+        var changed = false;
+        teacss.ui.codeTab.tabs.forEach(function (tab){
+            if (tab.changed) changed = true;
+        });
+        if (changed) {
+            e.returnValue = "You have unsaved changes. Sure to exit?";
+            return e.returnValue;
+        }
+    });
+
     return teacss.ui.Panel.extend("teacss.ui.codeTab",{
         tabs: [],
         serialize: function (tab) {
