@@ -6594,8 +6594,7 @@ teacss.ui.codeTab = (function($){
                 this.restoreState();
             } else {
                 me.editorElement.append("<div style='padding:10px'>Loading...</div>");
-                FileApi.file(file,function (answer){
-                    var data = answer.error || answer.data;
+                FileApi.file(file,function(){
                     me.createEditor();
                 });
             }
@@ -6752,7 +6751,7 @@ teacss.ui.codeTab = (function($){
                 tab.addClass("changed");
             this.editorPanel.trigger("codeChanged",this);
         },
-        saveFile: function(cb) {
+        saveFile: function(cb,timestamp_mismatch_force) {
             var me = this;
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
@@ -6762,20 +6761,26 @@ teacss.ui.codeTab = (function($){
             this.trigger("saving",saving_event);
             if (saving_event.cancel) return;
 
-            FileApi.save(this.options.file,text,function(answer){
-                var data = answer.error || answer.data;
-                if (data=="ok") {
+            FileApi.save(this.options.file,text,timestamp_mismatch_force,function(answer){
+                if (answer.data && answer.data.timestamp_mismatch && !timestamp_mismatch_force) {
+                    if (confirm("Someone changed file after open. Sure to rewrite?")) {
+                        me.saveFile(cb,true);
+                    }
+                    return;
+                }
+
+                if (answer.error || !answer.data || !answer.data.timestamp) {
+                    if (cb) 
+                        cb(false);
+                    else
+                        alert(data.toString());
+                } else {
                     me.changed = false;
                     tab.removeClass("changed");
                     me.editorPanel.trigger("codeSaved",me);
                     me.trigger("codeSaved");
                     if (me.callback) me.callback();
                     if (cb) cb(true);
-                } else {
-                    if (cb) 
-                        cb(false);
-                    else
-                        alert(data);
                 }
             });
         },
@@ -7994,7 +7999,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 }
                 try {
                     if (json) {
-                        var hash = eval('('+answer+')');
+                        var hash = JSON.parse(answer);
                         res = {data:hash};
                     }
                 } catch (e) {
@@ -8012,21 +8017,33 @@ var FileApi = window.FileApi = window.FileApi || function () {
     }
         
     FileApi.cache = {};
+    FileApi.cache_timestamps = {};
         
     FileApi.dir = function (path,callback) {
         FileApi.request('dir',{path:path},true,callback);
     }
         
     FileApi.file = function (path,callback) {
-        FileApi.request('file',{path:path},false,function(answer){
-            if (!answer.error) FileApi.cache[path] = answer.data;
-            if (callback) callback(answer);
+        FileApi.request('file',{path:path},true,function(answer){
+            if (!answer.error && answer.data) {
+                FileApi.cache[path] = answer.data.text;
+                FileApi.cache_timestamps[path] = answer.data.timestamp;
+            }
+            if (callback) callback(answer.data);
         });
     }
         
-    FileApi.save = function (path,text,callback) {
-        FileApi.request('save',{path:path,text:text},false,function(answer){
-            if (!answer.error && answer.data=="ok") FileApi.cache[path] = text;
+    FileApi.save = function (path,text,force,callback) {
+        FileApi.request('save',{
+            path: path,
+            text: text,
+            timestamp: FileApi.cache_timestamps[path]||0,
+            force: force
+        },true,function(answer){
+            if (!answer.error && answer.data.timestamp) {
+                FileApi.cache[path] = text;
+                FileApi.cache_timestamps[path] = answer.data.timestamp
+            }
             if (callback) callback(answer);
         });
     }
@@ -8051,7 +8068,9 @@ var FileApi = window.FileApi = window.FileApi || function () {
                 new_path = new_path.join("/");
                 if (new_path!=path) {
                     FileApi.cache[new_path] = FileApi.cache[path];
+                    FileApi.cache_timestamps[new_path] = FileApi.cache_timestamps[path];
                     delete FileApi.cache[path];
+                    delete FileApi.cache_timestamps[path];
                     
                     if (FileApi.events) 
                         FileApi.events.trigger("rename",{path:path,new_path:new_path});
@@ -8066,6 +8085,7 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (!answer.error && answer.data=="ok") {
                 for (var i=0;i<pathes.length;i++) {
                     delete FileApi.cache[pathes[i]];
+                    delete FileApi.cache_timestamps[pathes[i]];
                     if (FileApi.events) 
                         FileApi.events.trigger("remove",{path:pathes[i]});
                 }
@@ -8096,7 +8116,11 @@ var FileApi = window.FileApi = window.FileApi || function () {
                     
                     if (new_path!=path) {
                         FileApi.cache[new_path] = FileApi.cache[path];
-                        if (!is_copy) delete FileApi.cache[path];
+                        FileApi.cache_timestamps[new_path] = FileApi.cache_timestamps[path];
+                        if (!is_copy) {
+                            delete FileApi.cache[path];
+                            delete FileApi.cache_timestamps[path];
+                        }
                         if (FileApi.events) 
                             FileApi.events.trigger(type,{path:path,new_path:new_path});
                     }
@@ -8119,8 +8143,10 @@ var FileApi = window.FileApi = window.FileApi || function () {
             if (!answer.error) {
                 for (var path in answer.data) {
                     var info = answer.data[path];
-                    if (!info.directory)
+                    if (!info.directory) {
                         FileApi.cache[path] = info.content;
+                        FileApi.cache_timestamps[path] = info.timestamp;
+                    }
                 }
             }
             if (callback) callback(answer);
