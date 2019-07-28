@@ -127,7 +127,8 @@ teacss.ui.codeTab = (function($){
                 theme:'vs',
                 fontFamily: 'monospace',
                 automaticLayout: true,
-                autoClosingBrackets: false
+                autoClosingBrackets: false,
+                folding: true
             };
             
             var args = {options:editorOptions,tab:me};
