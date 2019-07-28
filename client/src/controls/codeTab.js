@@ -82,8 +82,7 @@ teacss.ui.codeTab = (function($){
                 this.restoreState();
             } else {
                 me.editorElement.append("<div style='padding:10px'>Loading...</div>");
-                FileApi.file(file,function (answer){
-                    var data = answer.error || answer.data;
+                FileApi.file(file,function(){
                     me.createEditor();
                 });
             }
@@ -240,7 +239,7 @@ teacss.ui.codeTab = (function($){
                 tab.addClass("changed");
             this.editorPanel.trigger("codeChanged",this);
         },
-        saveFile: function(cb) {
+        saveFile: function(cb,timestamp_mismatch_force) {
             var me = this;
             var tabs = this.element.parent().parent();
             var tab = tabs.find("a[href=#"+this.options.id+"]").parent();
@@ -250,20 +249,26 @@ teacss.ui.codeTab = (function($){
             this.trigger("saving",saving_event);
             if (saving_event.cancel) return;
 
-            FileApi.save(this.options.file,text,function(answer){
-                var data = answer.error || answer.data;
-                if (data=="ok") {
+            FileApi.save(this.options.file,text,timestamp_mismatch_force,function(answer){
+                if (answer.data && answer.data.timestamp_mismatch && !timestamp_mismatch_force) {
+                    if (confirm("Someone changed file after open. Sure to rewrite?")) {
+                        me.saveFile(cb,true);
+                    }
+                    return;
+                }
+
+                if (answer.error || !answer.data || !answer.data.timestamp) {
+                    if (cb) 
+                        cb(false);
+                    else
+                        alert(data.toString());
+                } else {
                     me.changed = false;
                     tab.removeClass("changed");
                     me.editorPanel.trigger("codeSaved",me);
                     me.trigger("codeSaved");
                     if (me.callback) me.callback();
                     if (cb) cb(true);
-                } else {
-                    if (cb) 
-                        cb(false);
-                    else
-                        alert(data);
                 }
             });
         },

@@ -106,22 +106,39 @@ class FileApi {
     function file() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         if (!$path || !is_file($path)) { echo "ERROR: Invalid file path"; die(); }
-        readfile($path);
+        echo json_encode([
+            'text' => file_get_contents($path),
+            'timestamp' => filemtime($path)
+        ]);
     }
     
     function save() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         $text = @$_REQUEST['text'] ?:"";
-        
+        $timestamp = $_REQUEST['timestamp'] ?? null;
+        $force = $_REQUEST['force'] ?? null;
+
+        if (!$timestamp) { echo "ERROR: Timestamp not sent"; die(); }
         if (!$path) { echo "ERROR: Invalid file save path"; die(); }
+
+        $timestamp_mismatch = file_exists($path) && (int)$timestamp!=filemtime($path);
      
         $mark = "data:image/png;base64,";
         if (strpos($text,$mark)===0)
             $text = base64_decode(substr($text,strlen($mark)));
-        
+
+        if ($timestamp_mismatch && !$force) {
+            echo json_encode(['timestamp_mismatch'=>true,'timestamp' => filemtime($path)]);
+            return;
+        }
+
         $res = file_put_contents($path,$text);
-        if ($res===false) { echo "ERROR: Can't save file"; die(); }
-        echo "ok";
+        if ($res===false) { 
+            echo json_encode(['error' => "Can't save file"]);
+            return;
+        }
+        clearstatcache();        
+        echo json_encode(['timestamp' => filemtime($path)]);
     }
     
     function createFile() {
@@ -425,7 +442,7 @@ class FileApi {
             if ($sub->isDir()) {
                 $res[$sub_url] = array('directory'=>true);
             } else {
-                $res[$sub_url] = array('content'=>file_get_contents($sub_path));
+                $res[$sub_url] = array('content'=>file_get_contents($sub_path),'timestamp'=>filemtime($sub_path));
             }
         }
         echo json_encode($res);
