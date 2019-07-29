@@ -235,7 +235,7 @@ class Git {
         $content = $this->run_command(array_merge(['blame', '-l', '-n', '--date=iso8601'], $commit_sha ? [$commit_sha] : [], ['--', $file])); 
         $blame_lines = []; 
         foreach (explode("\n", $content) as $line_str) { 
-            if (preg_match('#^([^\s]+)\s+(?:[^\s]+\s+?)?(\d+)\s+\((.+)\s+(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) \+\d{4}\s+(\d+)\) (.*)#', $line_str, $matches)) { 
+            if (preg_match('#^([^\s]+)\s+(?:[^\s]+\s+?)?(\d+)\s+\((.+)\s+(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}) [\+|-]\d{4}\s+(\d+)\) (.*)#', $line_str, $matches)) {
                 $blame_lines[] = [ 
                     'author' => trim($matches[3]), 
                     'date' => $matches[4], 
