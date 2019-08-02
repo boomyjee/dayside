@@ -26,6 +26,16 @@ dayside.plugins.git_commit = ui.Control.extend({
                 }                 
             }); 
 
+            monaco_require(['vs/editor/common/config/editorOptions'],function (editorOptions){
+                var old_validate = editorOptions.EditorOptionsValidator.validate;
+                editorOptions.EditorOptionsValidator.validate = function (options) {
+                    var res = old_validate.apply(this,arguments);
+                    if (options.lineNumbersMinChars) res.lineNumbersMinChars = options.lineNumbersMinChars;
+                    return res;
+                }
+                
+            });
+
             dayside.editor.bind("editorCreated",function(b,e){
                 var tab = e.tab; 
                 var path = tab.options.file; 
