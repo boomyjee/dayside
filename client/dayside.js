@@ -7890,7 +7890,7 @@ teacss.ui.searchDialog = teacss.ui.dialog.extend({
                 
                 if (text) {
                     function editorCreated() {
-                        monaco_require(['vs/editor/contrib/find/common/findController'],function(fc){
+                        monaco_require(['vs/editor/contrib/find/findController'],function(fc){
                             var efc = fc.CommonFindController.get(tab.editor);
                             efc.setSearchString(text);
                             if (!efc.getState().matchCase) efc.toggleCaseSensitive();
