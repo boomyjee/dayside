@@ -25891,11 +25891,7 @@ var server = {
         var path = params.textDocument.uri;
         var doCompletion = function () {
             var suggestionBuilder = new suggestionBuilder_1.SuggestionBuilder();
-            var doc = {
-                getText: function () {
-                    return me.fileTree[path].text;
-                }
-            };
+            var doc = params.textDocument;
             suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
             callback({
                 result: {
@@ -40503,73 +40499,73 @@ module.exports = function (self) {
         };
     }
     dayside.ready(function () {
-        dayside.editor.bind("editorOptions", function (b, e) {
-            e.options.overrideOptions = e.options.overrideOptions || {};
-            e.options.overrideOptions.textModelResolverService = {
-                createModelReference: function (uri) {
-                    return new monaco.Promise(function (complete) {
-                        monaco_require(['vs/base/common/lifecycle'], function (lc) {
-                            if (uri.scheme != "dayside")
-                                console.debug('Wrong uri 1', uri);
-                            var file = uri.authority + uri.path;
-                            FileApi.file(file, function (answer) {
-                                var text = answer.error || answer.data;
-                                var model = monaco.editor.createModel(text, ui.codeTab.languageFromFilename(file));
-                                complete(new lc.ImmortalReference({
-                                    textEditorModel: model
-                                }));
+        monaco_require(['vs/editor/standalone/browser/standaloneServices'], function (standaloneServices) {
+            dayside.editor.bind("editorOptions", function (b, e) {
+                e.options.overrideOptions = e.options.overrideOptions || {};
+                e.options.overrideOptions.textModelResolverService = {
+                    createModelReference: function (uri) {
+                        return new Promise(function (complete) {
+                            monaco_require(['vs/base/common/lifecycle'], function (lc) {
+                                if (uri.scheme != "dayside")
+                                    console.debug('Wrong uri 1', uri);
+                                var file = uri.authority + uri.path;
+                                FileApi.file(file, function (answer) {
+                                    var text = answer.error || answer.data;
+                                    var model = monaco.editor.createModel(text, ui.codeTab.languageFromFilename(file));
+                                    complete(new lc.ImmortalReference({
+                                        textEditorModel: model
+                                    }));
+                                });
                             });
                         });
-                    });
-                },
-                registerTextModelContentProvider: function (scheme, provider) {
-                    return {
-                        dispose: function () { }
-                    };
-                }
-            },
-                e.options.overrideOptions.editorService = {
-                    openEditor: function (e) {
-                        return new monaco.Promise(function (complete, error) {
-                            var uri = e.resource;
-                            if (uri.scheme != "dayside")
-                                console.debug('Wrong uri 2', uri);
-                            var url = uri.authority + uri.path;
-                            var selection = e.options.selection;
-                            var tab = dayside.editor.selectFile(url);
-                            function positionCursor() {
-                                var editor = tab.editor;
-                                if (selection) {
-                                    if (typeof selection.endLineNumber === 'number' && typeof selection.endColumn === 'number') {
-                                        editor.setSelection(selection);
-                                        editor.revealRangeInCenter(selection);
-                                    }
-                                    else {
-                                        var pos = {
-                                            lineNumber: selection.startLineNumber,
-                                            column: selection.startColumn
-                                        };
-                                        editor.setPosition(pos);
-                                        editor.revealPositionInCenter(pos);
-                                    }
-                                }
-                                if (!editor.getControl) {
-                                    editor.getControl = function () {
-                                        return this;
-                                    };
-                                }
-                                tab.saveState();
-                                complete(editor);
-                            }
-                            if (tab.editor) {
-                                positionCursor();
-                            }
-                            else {
-                                tab.bind("editorCreated", positionCursor);
-                            }
-                        });
+                    },
+                    registerTextModelContentProvider: function (scheme, provider) {
+                        return {
+                            dispose: function () { }
+                        };
                     }
                 };
+                standaloneServices.StaticServices.codeEditorService.get().openCodeEditor = function (e) {
+                    return new Promise(function (complete, error) {
+                        var uri = e.resource;
+                        if (uri.scheme != "dayside")
+                            console.debug('Wrong uri 2', uri);
+                        var url = uri.authority + uri.path;
+                        var selection = e.options.selection;
+                        var tab = dayside.editor.selectFile(url);
+                        function positionCursor() {
+                            var editor = tab.editor;
+                            if (selection) {
+                                if (typeof selection.endLineNumber === 'number' && typeof selection.endColumn === 'number') {
+                                    editor.setSelection(selection);
+                                    editor.revealRangeInCenter(selection);
+                                }
+                                else {
+                                    var pos = {
+                                        lineNumber: selection.startLineNumber,
+                                        column: selection.startColumn
+                                    };
+                                    editor.setPosition(pos);
+                                    editor.revealPositionInCenter(pos);
+                                }
+                            }
+                            if (!editor.getControl) {
+                                editor.getControl = function () {
+                                    return this;
+                                };
+                            }
+                            tab.saveState();
+                            complete(editor);
+                        }
+                        if (tab.editor) {
+                            positionCursor();
+                        }
+                        else {
+                            tab.bind("editorCreated", positionCursor);
+                        }
+                    });
+                };
+            });
         });
     });
     dayside.plugins.php_client_autocomplete = $.Class.extend({
@@ -40616,7 +40612,7 @@ module.exports = function (self) {
                         provideCompletionItems: function (model, position) {
                             if (!me.connected)
                                 return [];
-                            return new monaco.Promise(function (complete) {
+                            return new Promise(function (complete) {
                                 if (model.codeTab.changeCallback)
                                     model.codeTab.changeCallback();
                                 me.Class.server.completion({
@@ -40625,7 +40621,10 @@ module.exports = function (self) {
                                         character: position.column - 1
                                     },
                                     textDocument: {
-                                        uri: model.codeTab.options.file
+                                        uri: model.codeTab.options.file,
+                                        getText: function () {
+                                            return model.codeTab.editor.getValue();
+                                        }
                                     }
                                 }, function (msg) {
                                     console.debug("completion", msg);
@@ -40633,7 +40632,9 @@ module.exports = function (self) {
                                         if (item.insertText == null)
                                             delete item['insertText'];
                                     });
-                                    complete(msg.result);
+                                    complete({
+                                        suggestions: msg.result.items
+                                    });
                                 });
                             });
                         }
@@ -40644,7 +40645,7 @@ module.exports = function (self) {
                         provideDefinition: function (model, position) {
                             if (!me.connected)
                                 return [];
-                            return new monaco.Promise(function (complete) {
+                            return new Promise(function (complete) {
                                 if (model.codeTab.changeCallback)
                                     model.codeTab.changeCallback();
                                 me.Class.server.definition({
@@ -40675,7 +40676,7 @@ module.exports = function (self) {
                         provideDocumentSymbols: function (model) {
                             if (!me.connected)
                                 return [];
-                            return new monaco.Promise(function (complete) {
+                            return new Promise(function (complete) {
                                 me.Class.server.documentSymbol({
                                     textDocument: {
                                         uri: model.codeTab.options.file
@@ -40726,7 +40727,7 @@ module.exports = function (self) {
                 return;
             if (!me.connected)
                 return;
-            tab.editor.model.codeTab = tab;
+            tab.editor.getModel().codeTab = tab;
             me.Class.server.parseFile({
                 path: tab.options.file,
                 text: tab.editor.getValue()

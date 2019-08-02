@@ -67,11 +67,15 @@ window.dayside = window.dayside || (function(){
             FileApi.auth_error = options.auth_error;
             
             dayside.loaded = false;
-            var editor = new teacss.ui.editorPanel({
-                jupload: options.jupload_url
+
+            monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/dev/vs' }});
+            monaco_require(['vs/editor/editor.main'], function() {            
+                var editor = new teacss.ui.editorPanel({
+                    jupload: options.jupload_url
+                });
+                dayside.loaded = true;
+                onLoaded();
             });
-            dayside.loaded = true;
-            onLoaded();
         });        
     }
     

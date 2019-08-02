@@ -151,29 +151,26 @@ teacss.ui.codeTab = (function($){
                 var tab = tabs.find("a[href=#"+me.options.id+"]").parent();
                 tab.attr("title",me.options.file);
                 
-                monaco_require.config({ paths: { 'vs': dayside.url + '/client/lib/monaco/dev/vs' }});
-                monaco_require(['vs/editor/editor.main'], function() {
-                    editorOptions.language = me.Class.languageFromFilename(file);
+                editorOptions.language = me.Class.languageFromFilename(file);
 
-                    me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
-                    me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
-                        if (me.changed) {
-                            setTimeout(function(){
-                                me.saveFile();
-                            },100);
-                        }
-                    });                    
+                me.editor = monaco.editor.create(me.editorElement[0], editorOptions, editorOptions.overrideOptions);
+                me.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, function() {
+                    if (me.changed) {
+                        setTimeout(function(){
+                            me.saveFile();
+                        },100);
+                    }
+                });                    
 
-                    var model = me.editor.getModel();
-                    model.setEOL('\n');
-                    model.setValue(data);
-                    model.onDidChangeContent(function(){ me.editorChange(); });
-                    if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
-                    me.restoreState();
-                    
-                    dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
-                    me.trigger("editorCreated",{editor:me.editor,tab:me});
-                });            
+                var model = me.editor.getModel();
+                model.setEOL('\n');
+                model.setValue(data);
+                model.onDidChangeContent(function(){ me.editorChange(); });
+                if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
+                me.restoreState();
+                
+                dayside.editor.trigger("editorCreated",{editor:me.editor,tab:me});
+                me.trigger("editorCreated",{editor:me.editor,tab:me});
             }
             
             if (this.editorElement.is(":visible") || me.options.invisibleEditorCreate) {

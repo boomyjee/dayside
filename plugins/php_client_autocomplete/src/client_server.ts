@@ -240,11 +240,7 @@ var server = {
 
         var doCompletion = function () {
             var suggestionBuilder = new SuggestionBuilder();
-            var doc = <TextDocument>{
-                getText: function () {
-                    return me.fileTree[path].text;
-                }
-            }
+            var doc = <TextDocument>params.textDocument;
             suggestionBuilder.prepare(params, doc, me.getWorkspaceTree());
             callback({
                 result:{
