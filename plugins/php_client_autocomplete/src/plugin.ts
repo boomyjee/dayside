@@ -23,34 +23,34 @@ declare var FileApi: any;
     }
     
     dayside.ready(function(){
-        dayside.editor.bind("editorOptions",function(b,e){
-            e.options.overrideOptions = e.options.overrideOptions || {};
-            e.options.overrideOptions.textModelResolverService = {
-                createModelReference: function(uri) {
-                    return new monaco.Promise(function(complete){
-                        monaco_require(['vs/base/common/lifecycle'],function(lc){
-                            if (uri.scheme!="dayside") console.debug('Wrong uri 1',uri);
-                            var file = uri.authority + uri.path;
-    
-                            FileApi.file(file,function (answer){
-                                var text = answer.error || answer.data;
-                                var model = monaco.editor.createModel(text,ui.codeTab.languageFromFilename(file));
-                                complete(new lc.ImmortalReference({
-                                    textEditorModel: model
-                                }));                            
+        monaco_require(['vs/editor/standalone/browser/standaloneServices'],function(standaloneServices){
+            dayside.editor.bind("editorOptions",function(b,e){
+                e.options.overrideOptions = e.options.overrideOptions || {};
+                e.options.overrideOptions.textModelResolverService = {
+                    createModelReference: function(uri) {
+                        return new Promise(function(complete){
+                            monaco_require(['vs/base/common/lifecycle'],function(lc){
+                                if (uri.scheme!="dayside") console.debug('Wrong uri 1',uri);
+                                var file = uri.authority + uri.path;
+        
+                                FileApi.file(file,function (answer){
+                                    var text = answer.error || answer.data;
+                                    var model = monaco.editor.createModel(text,ui.codeTab.languageFromFilename(file));
+                                    complete(new lc.ImmortalReference({
+                                        textEditorModel: model
+                                    }));                            
+                                });
                             });
                         });
-                    });
-                },
-                registerTextModelContentProvider: function (scheme, provider) {
-                    return {
-                        dispose: function () { /* no op */ }
-                    };
-                }                    
-            },
-            e.options.overrideOptions.editorService = {
-                openEditor: function (e) {
-                    return new monaco.Promise(function(complete,error){
+                    },
+                    registerTextModelContentProvider: function (scheme, provider) {
+                        return {
+                            dispose: function () { }
+                        };
+                    }                    
+                }
+                standaloneServices.StaticServices.codeEditorService.get().openCodeEditor = function (e) {
+                    return new Promise(function(complete,error){
                         var uri = e.resource;
                         if (uri.scheme!="dayside") console.debug('Wrong uri 2',uri);
                         var url = uri.authority + uri.path;
@@ -90,7 +90,7 @@ declare var FileApi: any;
                         }
                     });
                 }
-            }
+            });
         });
     });
     
@@ -143,7 +143,7 @@ declare var FileApi: any;
                         triggerCharacters: serverCapabilities.completionProvider.triggerCharacters,
                         provideCompletionItems: function(model, position) {
                             if (!me.connected) return [];
-                            return new monaco.Promise(function(complete){
+                            return new Promise(function(complete){
                                 if (model.codeTab.changeCallback) model.codeTab.changeCallback();
 
                                 me.Class.server.completion({
@@ -152,14 +152,19 @@ declare var FileApi: any;
                                         character: position.column - 1
                                     },
                                     textDocument: {
-                                        uri: model.codeTab.options.file
+                                        uri: model.codeTab.options.file,
+                                        getText: function () {
+                                            return model.codeTab.editor.getValue();
+                                        }
                                     }
                                 },function(msg){
                                     console.debug("completion",msg);
                                     msg.result.items.forEach(function(item){
                                         if (item.insertText==null) delete item['insertText'];
                                     });
-                                    complete(msg.result);
+                                    complete({
+                                        suggestions: msg.result.items
+                                    });
                                 });                        
                             });
                         }
@@ -170,7 +175,7 @@ declare var FileApi: any;
                     monaco.languages.registerDefinitionProvider('php',{
                         provideDefinition: function(model,position) {
                             if (!me.connected) return [];
-                            return new monaco.Promise(function(complete){
+                            return new Promise(function(complete){
                                 if (model.codeTab.changeCallback) model.codeTab.changeCallback();
 
                                 me.Class.server.definition({
@@ -201,7 +206,7 @@ declare var FileApi: any;
                     monaco.languages.registerDocumentSymbolProvider('php',{
                         provideDocumentSymbols: function(model) {
                             if (!me.connected) return [];
-                            return new monaco.Promise(function(complete){
+                            return new Promise(function(complete){
                                 me.Class.server.documentSymbol({
                                     textDocument: {
                                         uri: model.codeTab.options.file
@@ -251,7 +256,7 @@ declare var FileApi: any;
             if (!tab.editor) return;
             if (!me.connected) return;
             
-            tab.editor.model.codeTab = tab;
+            tab.editor.getModel().codeTab = tab;
             me.Class.server.parseFile({
                 path: tab.options.file,
                 text: tab.editor.getValue()
