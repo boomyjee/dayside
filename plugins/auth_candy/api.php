@@ -37,5 +37,5 @@ FileApi::extend('get_auth_token', function($self) {
     $_SESSION['auth_key_expiration_timestamp'] = time() + 60;
     
     openssl_public_encrypt($auth_key, $auth_token, $self::$auth_public_key);
-    echo bin2hex($auth_token);
+    echo base64_encode($auth_token);
 });
