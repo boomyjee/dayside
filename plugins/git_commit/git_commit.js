@@ -97,6 +97,13 @@ dayside.plugins.git_commit = ui.Control.extend({
                     var path = tab.options.file;
                     if (tab.options.file.indexOf('git_commit://')==0) {
                         path = decodeURIComponent(parts[2])+"/"+parts.slice(5).join("/");
+
+                        data.items.openWorkingTreeFile = {
+                            label: "Open current",
+                            action: function () {
+                                dayside.editor.selectFile(path); 
+                            }
+                        }                        
                     }
 
                     var base_path = false;
