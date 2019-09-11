@@ -4,8 +4,15 @@
 .dark-ui .jstree-default a { color: #e0e0e0; }
 .dark-ui .jstree-default .jstree-clicked { background: #293F48; border-color: transparent; }
 .dark-ui .jstree-default .jstree-hovered { background: #555; border-color: transparent; }
-.dark-ui .jstree-default ins {
+
+.dark-ui .jstree-default ins,
+.dark-ui .jstree-default li
+{
     background-image: url("../jstree/themes/default/d-dark.png");
+}
+
+.dark-ui .jstree-default li.jstree-last {
+    background: transparent;
 }
 
 .dark-ui .jstree li.hidden > a, 
