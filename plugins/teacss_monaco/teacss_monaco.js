@@ -4,137 +4,125 @@ const language = {
 	defaultToken: '',
 	tokenPostfix: '.tea',
 
-	ws: '[ \t\n\r\f]*', // whitespaces (referenced in several rules)
 	identifier: '-?-?([a-zA-Z]|(\\\\(([0-9a-fA-F]{1,6}\\s?)|[^[0-9a-fA-F])))([\\w\\-]|(\\\\(([0-9a-fA-F]{1,6}\\s?)|[^[0-9a-fA-F])))*',
+	identifierPlus: '-?-?([a-zA-Z:.]|(\\\\(([0-9a-fA-F]{1,6}\\s?)|[^[0-9a-fA-F])))([\\w\\-:.]|(\\\\(([0-9a-fA-F]{1,6}\\s?)|[^[0-9a-fA-F])))*',
+
+    ws: '[ \t\n\r\f]*', 
 
 	brackets: [
-		{ open: '{', close: '}', token: 'delimiter.bracket' },
+		{ open: '{', close: '}', token: 'delimiter.curly' },
 		{ open: '[', close: ']', token: 'delimiter.bracket' },
 		{ open: '(', close: ')', token: 'delimiter.parenthesis' },
-		{ open: '<', close: '>', token: 'delimiter.angle' },
-		{ open: '@{', close: '}', token: 'delimiter.bracket_js' },
-	],
+		{ open: '<', close: '>', token: 'delimiter.angle' }
+	],    
 
 	tokenizer: {
-		root: [
-			{ include: '@selector' },
-		],
+		root:[
+			{ include: '@inlineJSBegin' },
+            { include: '@nestedJSBegin' },
 
-		selector: [
+			['[ \\t\\r\\n]+', ''],
+
 			{ include: '@comments' },
-			{ include: '@import' },
 			{ include: '@strings' },
-            //{ include: '@js' },
-			['[@](keyframes|-webkit-keyframes|-moz-keyframes|-o-keyframes)', { token: 'keyword', next: '@keyframedeclaration' }],
-			['[@](page|content|font-face|-moz-document)', { token: 'keyword' }],
-			['[@](charset|namespace)', { token: 'keyword', next: '@declarationbody' }],
-			['(url-prefix)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-			['(url)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-			{ include: '@selectorname' },
-			['[\\*]', 'tag'], // selector symbols
-			['[>\\+,]', 'delimiter'], // selector operators
-			['\\[', { token: 'delimiter.bracket', next: '@selectorattribute' }],
-			['{', { token: 'delimiter.bracket', next: '@selectorbody' }]
-		],
-
-        js: [
-            ['@{', { token: 'keyword', next: '@scriptEmbedded.0', nextEmbedded123: 'text/javascript' }],
-            ['@ ', { token: 'keyword', next: '@scriptInline', nextEmbedded123: 'text/javascript' }]
-        ],
-
-        scriptInline: [
-            [".*?$", { token: '', next: '@pop', nextEmbedded123: '@pop' }]
-        ],
-
-        scriptEmbedded: [
-            ["{","","@scriptEmbeddedInside"],
-            ["}","keyword","@pop"],
-        ],
-
-        scriptEmbeddedInside: [
-            ["{","","@scriptEmbeddedInside"],
-            ["}","","@pop"],
-        ],
-
-		selectorbody: [
-			{ include: '@comments' },
-			['[*_]?@identifier@ws:(?=(\\s|\\d|[^{;}]*[;}]))', 'attribute.name', '@rulevalue'], // rule definition: to distinguish from a nested selector check for whitespace, number or a semicolon
-			{ include: '@selector' },
-            ['}', { token: 'delimiter.bracket', next: '@pop' }],
-		],
-
-		selectorname: [
-			['(\\.|#(?=[^{])|%|(@identifier)|:)+', 'tag'], // selector (.foo, div, ...)
-		],
-
-		selectorattribute: [
-			{ include: '@term' },
-			[']', { token: 'delimiter.bracket', next: '@pop' }],
-		],
-
-		term: [
-			{ include: '@comments' },
-			['(url-prefix)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-			['(url)(\\()', ['attribute.value', { token: 'delimiter.parenthesis', next: '@urldeclaration' }]],
-			{ include: '@functioninvocation' },
 			{ include: '@numbers' },
-			{ include: '@name' },
-			['([<>=\\+\\-\\*\\/\\^\\|\\~,])', 'delimiter'],
-			[',', 'delimiter']
+			['[*_]?[a-zA-Z\\-\\s]+(?=:.*(;|(\\\\$)))', 'attribute.name', '@attribute'],
+
+			['url(\\-prefix)?\\(', { token: 'tag', next: '@urldeclaration' }],
+
+			['[{}()\\[\\]]', '@brackets'],
+			['[,:;]', 'delimiter'],
+
+			['#@identifierPlus', 'tag.id'],
+			['&', 'tag'],
+
+			['\\.@identifierPlus(?=\\()', 'tag.class', '@attribute'],
+			['\\.@identifierPlus', 'tag.class'],
+
+			['@identifierPlus', 'tag'],
+
+			['@(@identifier(?=[:,\\)]))', 'variable', '@attribute'],
+			['@(@identifier)', 'variable'],
+			['@', 'key', '@atRules']
 		],
 
-		rulevalue: [
-			{ include: '@comments' },
-			{ include: '@strings' },
-			{ include: '@term' },
-            //['@{', { token: '', next: '@scriptEmbedded.0', nextEmbedded123: 'text/javascript' }],
-			['!important', 'keyword'],
-			[';', 'delimiter', '@pop'],
-			['(?=})', { token: '', next: '@pop' }] // missing semicolon
+        inlineJSBegin: [
+            ['@ws@ ', { token: 'keyword', next: '@inlineJSEnd', nextEmbedded: 'text/javascript' }]
+        ],
+
+        inlineJSEnd: [
+            [".*?$", { token:"js",next: '@pop', nextEmbedded: '@pop' }]
+        ],
+
+		nestedJSBegin: [
+			['@{', { token: 'attribute.name', next: '@nestedJS', nextEmbedded: 'text/javascript' }],
 		],
 
-		warndebug: [
-			['[@](warn|debug)', { token: 'keyword', next: '@declarationbody' }]
-		],
+        nestedJS: [
+            ["@{", {token:"keyword",next:"@nestedTea",nextEmbedded:"@pop"}],
+            ["}", {token:"attribute.name",next:"@pop",nextEmbedded:"@pop"}],
+            ["{","js","@nestedJSInside"],
+            [".","js"]
+        ],
 
-		import: [
-			['[@](import)', { token: 'keyword', next: '@declarationbody' }]
-		],
+        nestedJSInside: [
+            ["{","js","@nestedJSInside"],
+            ["}","js","@pop"],
+            ["@{", {token:"keyword",next:"@nestedTea",nextEmbedded:"@pop"}],
+            ["js","number"]
+        ],
+
+        nestedTea: [
+            ["}", {token:"keyword",next:"@pop", nextEmbedded: 'text/javascript'}],
+            ["{", {token:"@brackets",next:"@nestedTeaInside"}],
+            { include: "@root" }
+        ],
+
+        nestedTeaInside: [
+            ["{", {token:"@brackets",next:"@nestedTeaInside"}],
+            ["}", {token:"@brackets",next:"@pop"}],
+            { include: "@root" }
+        ],
 
 		urldeclaration: [
 			{ include: '@strings' },
 			['[^)\r\n]+', 'string'],
-			['\\)', { token: 'delimiter.parenthesis', next: '@pop' }]
+			['\\)', { token: 'tag', next: '@pop' }],
 		],
 
-		parenthizedterm: [
-			{ include: '@term' },
-			['\\)', { token: 'delimiter.parenthesis', next: '@pop' }]
-		],
+		attribute:[
+			{ include: '@nestedJSBegin' },
+			{ include: '@comments' },
+			{ include: '@strings' },
+			{ include: '@numbers' },
 
-		declarationbody: [
-			{ include: '@term' },
-			[';', 'delimiter', '@pop'],
-			['(?=})', { token: '', next: '@pop' }] // missing semicolon
+			['[a-zA-Z\\-]+(?=\\()', 'attribute.value', '@attribute'],
+			['>', 'operator', '@pop'],
+			['@identifier', 'attribute.value'],
+			['@(@identifier)', 'variable'],
+
+			['[)\\}]', '@brackets', '@pop'],
+			['[{}()\\[\\]>]', '@brackets'],
+
+			['[;]', 'delimiter', '@pop'],
+			['[,=:]', 'delimiter'],
+
+			['\\s', ''],
+			['.', 'attribute.value']
 		],
 
 		comments: [
 			['\\/\\*', 'comment', '@comment'],
-			['\\/\\/+.*', 'comment']
+			['\\/\\/+.*', 'comment'],
 		],
 
 		comment: [
 			['\\*\\/', 'comment', '@pop'],
-			[/[^*/]+/, 'comment'],
-			[/./, 'comment'],
-		],
-
-		name: [
-			['@identifier', 'attribute.value']
+			['.', 'comment'],
 		],
 
 		numbers: [
-			['-?(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?', { token: 'attribute.value.number', next: '@units' }],
+			['(\\d*\\.)?\\d+([eE][\\-+]?\\d+)?', { token: 'attribute.value.number', next: '@units' }],
 			['#[0-9a-fA-F_]+(?!\\w)', 'attribute.value.hex']
 		],
 
@@ -142,47 +130,31 @@ const language = {
 			['(em|ex|ch|rem|vmin|vmax|vw|vh|vm|cm|mm|in|px|pt|pc|deg|grad|rad|turn|s|ms|Hz|kHz|%)?', 'attribute.value.unit', '@pop']
 		],
 
-		keyframedeclaration: [
-			['@identifier', 'attribute.value'],
-			['{', { token: 'delimiter.bracket', switchTo: '@keyframebody' }],
-		],
-
-		keyframebody: [
-			{ include: '@term' },
-			['{', { token: 'delimiter.bracket', next: '@selectorbody' }],
-			['}', { token: 'delimiter.bracket', next: '@pop' }],
-		],
-
-		functioninvocation: [
-			['@identifier\\(', { token: 'attribute.value', next: '@functionarguments' }],
-		],
-
-		functionarguments: [
-			['\\$@identifier@ws:', 'attribute.name'],
-			['[,]', 'delimiter'],
-			{ include: '@term' },
-			['\\)', { token: 'attribute.value', next: '@pop' }],
-		],
-
 		strings: [
-			['~?"', { token: 'string', next: '@stringenddoublequote' }],
-			['~?\'', { token: 'string', next: '@stringendquote' }]
+			['~?"', { token: 'string.delimiter', next: '@stringsEndDoubleQuote' }],
+			['~?\'', { token: 'string.delimiter', next: '@stringsEndQuote' }]
 		],
 
-		stringenddoublequote: [
-			['\\\\.', 'string'],
-			['"', { token: 'string', next: '@pop' }],
-			[/[^\\"]+/, 'string'],
+		stringsEndDoubleQuote: [
+			['\\\\"', 'string'],
+			['"', { token: 'string.delimiter', next: '@popall' }],
 			['.', 'string']
 		],
 
-		stringendquote: [
-			['\\\\.', 'string'],
-			['\'', { token: 'string', next: '@pop' }],
-			[/[^\\']+/, 'string'],
+		stringsEndQuote: [
+			['\\\\\'', 'string'],
+			['\'', { token: 'string.delimiter', next: '@popall' }],
 			['.', 'string']
+		],
+
+		atRules:[
+			{ include: '@comments' },
+			{ include: '@strings' },
+			['[()]', 'delimiter'],
+			['[\\{;]', 'delimiter', '@pop'],
+			['.', 'key']
 		]
-	}
+	},    
 };
 
 
@@ -190,6 +162,39 @@ dayside.plugins.teacss_monaco = () => {
     dayside.ready(()=>{
         monaco.languages.register({id:"teacss",extensions:[".tea"]});
         monaco.languages.setMonarchTokensProvider('teacss',language);
+
+        // monkey patch tokenizer due to bug https://github.com/microsoft/monaco-editor/issues/1877
+        dayside.editor.bind("editorCreated",(b,e)=>{
+            var model = e.editor.getModel();
+            var tokenizer = model._tokens.tokenizationSupport;
+
+            if (tokenizer._modeId=="teacss") {
+                let tc;
+                tokenizer._nestedTokenize = function (line,lineState,offsetDelta,tokensCollector) {
+                    var popOffset = -1;
+
+                    tc = tc || new tokensCollector.__proto__.constructor(tokensCollector._modeService,tokensCollector._theme);
+                    tc.emit = (offset,type)=>{
+                        if (type!="js.tea" && popOffset==-1) {
+                            popOffset = offset - offsetDelta;
+                        }
+                    }
+                    var res = this._myTokenize(line,lineState,offsetDelta,tc);
+
+                    if (popOffset === -1) {
+                        tokensCollector.nestedModeTokenize(line, lineState.embeddedModeData, offsetDelta);
+                    } else {
+                        let nestedModeLine = line.substring(0, popOffset);
+                        if (nestedModeLine.length > 0) {
+                            tokensCollector.nestedModeTokenize(nestedModeLine, lineState.embeddedModeData, offsetDelta);
+                        }
+                        let restOfTheLine = line.substring(popOffset);
+                        this._myTokenize(restOfTheLine, lineState, offsetDelta + popOffset, tokensCollector);
+                    }
+                    return res;
+                }
+            }
+        });
     });
 }
 
