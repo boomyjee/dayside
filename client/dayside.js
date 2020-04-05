@@ -6675,7 +6675,7 @@ teacss.ui.codeTab = (function($){
                 });                    
 
                 var model = me.editor.getModel();
-                model.setEOL('\n');
+                model.setEOL(0);
                 model.setValue(data);
                 model.onDidChangeContent(function(){ me.editorChange(); });
                 if (editorOptions.modelOptions) model.updateOptions(editorOptions.modelOptions);
