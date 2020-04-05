@@ -168,7 +168,7 @@ dayside.plugins.teacss_monaco = () => {
             var model = e.editor.getModel();
             var tokenizer = model._tokens.tokenizationSupport;
 
-            if (tokenizer._modeId=="teacss") {
+            if (tokenizer && tokenizer._modeId=="teacss") {
                 let tc;
                 tokenizer._nestedTokenize = function (line,lineState,offsetDelta,tokensCollector) {
                     var popOffset = -1;
