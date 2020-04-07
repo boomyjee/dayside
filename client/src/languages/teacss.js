@@ -157,45 +157,42 @@ const language = {
 	},    
 };
 
+dayside.ready(()=>{
+    monaco.languages.register({id:"teacss",extensions:[".tea"]});
+    monaco.languages.setMonarchTokensProvider('teacss',language);
 
-dayside.plugins.teacss_monaco = () => {
-    dayside.ready(()=>{
-        monaco.languages.register({id:"teacss",extensions:[".tea"]});
-        monaco.languages.setMonarchTokensProvider('teacss',language);
+    // monkey patch tokenizer due to bug https://github.com/microsoft/monaco-editor/issues/1877
+    dayside.editor.bind("editorCreated",(b,e)=>{
+        var model = e.editor.getModel();
+        var tokenizer = model._tokens.tokenizationSupport;
 
-        // monkey patch tokenizer due to bug https://github.com/microsoft/monaco-editor/issues/1877
-        dayside.editor.bind("editorCreated",(b,e)=>{
-            var model = e.editor.getModel();
-            var tokenizer = model._tokens.tokenizationSupport;
+        if (tokenizer && tokenizer._modeId=="teacss") {
+            let tc;
+            tokenizer._nestedTokenize = function (line,lineState,offsetDelta,tokensCollector) {
+                var popOffset = -1;
 
-            if (tokenizer && tokenizer._modeId=="teacss") {
-                let tc;
-                tokenizer._nestedTokenize = function (line,lineState,offsetDelta,tokensCollector) {
-                    var popOffset = -1;
-
-                    tc = tc || new tokensCollector.__proto__.constructor(tokensCollector._modeService,tokensCollector._theme);
-                    tc.emit = (offset,type)=>{
-                        if (type!="js.tea" && popOffset==-1) {
-                            popOffset = offset - offsetDelta;
-                        }
+                tc = tc || new tokensCollector.__proto__.constructor(tokensCollector._modeService,tokensCollector._theme);
+                tc.emit = (offset,type)=>{
+                    if (type!="js.tea" && popOffset==-1) {
+                        popOffset = offset - offsetDelta;
                     }
-                    var res = this._myTokenize(line,lineState,offsetDelta,tc);
-
-                    if (popOffset === -1) {
-                        tokensCollector.nestedModeTokenize(line, lineState.embeddedModeData, offsetDelta);
-                    } else {
-                        let nestedModeLine = line.substring(0, popOffset);
-                        if (nestedModeLine.length > 0) {
-                            tokensCollector.nestedModeTokenize(nestedModeLine, lineState.embeddedModeData, offsetDelta);
-                        }
-                        let restOfTheLine = line.substring(popOffset);
-                        this._myTokenize(restOfTheLine, lineState, offsetDelta + popOffset, tokensCollector);
-                    }
-                    return res;
                 }
+                var res = this._myTokenize(line,lineState,offsetDelta,tc);
+
+                if (popOffset === -1) {
+                    tokensCollector.nestedModeTokenize(line, lineState.embeddedModeData, offsetDelta);
+                } else {
+                    let nestedModeLine = line.substring(0, popOffset);
+                    if (nestedModeLine.length > 0) {
+                        tokensCollector.nestedModeTokenize(nestedModeLine, lineState.embeddedModeData, offsetDelta);
+                    }
+                    let restOfTheLine = line.substring(popOffset);
+                    this._myTokenize(restOfTheLine, lineState, offsetDelta + popOffset, tokensCollector);
+                }
+                return res;
             }
-        });
+        }
     });
-}
+});
 
 })();
