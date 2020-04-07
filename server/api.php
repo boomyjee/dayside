@@ -465,94 +465,9 @@ class FileApi {
         echo "ok";
     }
     
-    function pixlr_frame() {
-        
-        $url = @$_REQUEST['path'];
-        $path = false;
-        
-        if ($url) $path = $this->_pathFromUrl($url);
-        
-        if ($path) {
-            if (@$_REQUEST['preload']) {
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, array('image' => '@'.$path));
-                curl_setopt($ch, CURLOPT_URL, 'http://pixlr.com/store/');
-                $res = curl_exec($ch);
-                curl_close($ch);            
-
-                if ($res && substr($res,0,4)=='http') {
-                    $url = $res;
-                } else {
-                    echo "ERROR: Error preloading file"; die();
-                }
-            }
-            $title = basename($path);
-            $params = '&image='.urlencode($url)."&title=".urlencode($title);
-        } else {
-            $params = '';
-        }
-        
-        $params .= "&target=".urlencode($_REQUEST['target']);
-        $red = 'https://pixlr.com/editor/?s=c&locktarget=true&referrer=dayside'.$params;
-        header("Location:$red");
-    }
-    
-    function pixlr() {
-        if (isset($_REQUEST['image'])) {
-            $url = $_REQUEST['image'];
-            $path = $this->_pathFromUrl($_REQUEST['dir']."/".$_REQUEST['title'].".".$_REQUEST['type']);
-            if (!$path) {
-                echo "ERROR: invalid path";
-                die();
-            }
-            $file = fopen ($url, "rb");
-            if ($file) {
-                $newf = fopen($path, "wb");
-                if ($newf) while(!feof($file)) {
-                    fwrite($newf, fread($file, 1024 * 8 ), 1024 * 8 );
-                }
-            }
-            if ($file) fclose($file);
-            if ($newf) fclose($newf);
-            echo "ok";
-        }
-    }  
-    
-    function xdebug() {
-        $sock = socket_create(AF_INET, SOCK_STREAM, 0);
-        if (!@socket_connect($sock, "localhost", 9001)) {
-            // start daemon
-            $proxy_path = realpath(__DIR__."/../plugins/xdebug/proxy/proxy.php");
-            shell_exec(PHP_BINDIR."/php ".$proxy_path." start");
-            
-            echo "error";
-            return;
-        }
-
-        $key = $_REQUEST['key'];
-        $data = @$_REQUEST['data'] ?:'none';
-        
-        $json = json_encode(array(
-            'key' => $key,
-            'data' => $data,
-            'apiPath' => $this->apiPath ?:false
-        ));
-
-        socket_write($sock,$json);
-
-        $retdata = socket_read($sock,100000);
-        echo $retdata;
-    }
-    
     function real_path() {
         $path = $this->_pathFromUrl(@$_REQUEST['path']);
         echo json_encode(array('path'=>$path));
-    }    
-    
-    function xdebug_path() {
-        $this->real_path();
     }    
     
     function console($commands=false,$theme=false) {
@@ -579,47 +494,6 @@ class FileApi {
         $test = @$cookies['editor_auth'];
         return $test==$fileapi_hash;
     }
-    
-    function realtime_start() {
-        $server_path = realpath(__DIR__."/../plugins/realtime/server/server.php"); 
-        $params = @$this->realtimeParams ?: array(
-            'authInclude' =>  __FILE__,
-            'authFunction' => array('\FileApi','remote_auth')
-        );
-        $params['ip'] = $_SERVER['SERVER_ADDR'];
-        $params = escapeshellarg(json_encode($params));
-        echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
-    }
-    
-    function codeintel_start() {
-        $server_path = realpath(__DIR__."/../../daysideCodeintel/server/server.py"); 
-        $params = @$this->codeintelParams ?: array(
-            'authInclude' =>  __FILE__,
-            'authFunction' => array('\FileApi','remote_auth')
-        );
-        $params = array_merge($params,array(
-            'port' => (int)(@$_REQUEST['port'] ?:8000)
-        ));
-        $params = escapeshellarg(json_encode($params));
-        echo shell_exec("python ".$server_path." restart ".$params." 2>&1");
-    }
-
-    function php_server_start() {
-        $server_path = realpath(__DIR__."/../../daysidePHPServer/server/server.php"); 
-        if (!$server_path) {
-            echo "Can't find server/server.php";
-            return;
-        }
-        $params = @$this->phpServerParams ?: array(
-            'authInclude' =>  __FILE__,
-            'authFunction' => array('\FileApi','remote_auth')
-        );
-        $params = array_merge($params,array(
-            'port' => (int)(@$_REQUEST['port'] ?:8000)
-        ));
-        $params = escapeshellarg(json_encode($params));
-        echo shell_exec(PHP_BINDIR."/php ".$server_path." start ".$params);
-    }    
 }
 
 FileApi::extend('auth', function($self) {
