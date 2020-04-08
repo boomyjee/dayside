@@ -1,9 +1,4 @@
 # do not track password
 server/password.php
-
-# temp pid file for xdebug
-plugins/xdebug/proxy/proxy.pid
-
 client/lib/monaco/min-maps/
-
-plugins/php_client_autocomplete/src/node_modules
+plugins/xterm/cache

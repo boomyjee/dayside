@@ -4,8 +4,7 @@ require_once __DIR__."/../../server/api.php";
 
 FileApi::extend('auth', function($self) {
     if (empty($self::$auth_public_key)) {
-        echo "ERROR: Auth public key is not defined";
-        exit;
+        return "ERROR: Auth public key is not defined";
     }
 
     session_start();
@@ -16,8 +15,7 @@ FileApi::extend('auth', function($self) {
         if (!empty($_SESSION['auth_key']) && !empty($_SESSION['auth_key_expiration_timestamp'])) {
             $authorized = $_SESSION['auth_key_expiration_timestamp'] >= time() && $_POST['auth_key'] == $_SESSION['auth_key'];
             if (!$authorized) {
-                echo "ERROR: Invalid auth key";
-                exit;
+                return "ERROR: Invalid auth key";
             }
 
             $_SESSION['auth_expiration_timestamp'] = time() + 60 * 60;
@@ -27,7 +25,7 @@ FileApi::extend('auth', function($self) {
     }
 
     if (!$authorized) {
-        echo "auth_error"; exit();
+        return "auth_error";
     }
 });
 

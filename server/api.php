@@ -29,10 +29,10 @@ class FileApi {
             if (isset($_POST['password'])) {
                 $fileapi_hash = sha1($_POST['password']);
                 if (!file_put_contents($password_path,'<?php $fileapi_hash="'.$fileapi_hash.'";')) {
-                    echo "ERROR: Can't write password file"; die();
+                    return "ERROR: Can't write password file";
                 }
             } else {
-                echo "auth_empty"; die(); 
+                return "auth_empty";
             }
         }
         
@@ -43,15 +43,20 @@ class FileApi {
         else
             $test = @$_COOKIE['editor_auth'];
         
-        if ($test!=$fileapi_hash) { echo "auth_error"; die(); } 
+        if ($test!=$fileapi_hash) { return "auth_error"; } 
     }
-    
+
+    static $instance = null;    
+
     function __construct($_type=false) {
-        $this->auth();
-        $this->csrfRequired();
-        
-        $_type = $_type ? : $_REQUEST['_type'];
-        $this->{$_type}();
+        self::$instance = $this;
+        if (php_sapi_name()!='cli') {
+            $auth_error = $this->auth();
+            if ($auth_error) { echo $auth_error; die(); }
+            $this->csrfRequired();
+            $_type = $_type ? : ($_REQUEST['_type'] ?? false);
+            if ($_type) $this->{$_type}();
+        }
     }
     
     function csrfRequired() {
@@ -497,5 +502,5 @@ class FileApi {
 }
 
 FileApi::extend('auth', function($self) {
-    $self->default_auth();
+    return $self->default_auth();
 });
