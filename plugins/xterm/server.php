@@ -96,11 +96,14 @@ END;
                     $connection->auth = true;
                 }
 
+                $current_user_home = posix_getpwuid(posix_getuid())['dir'];
+
                 unset($_SERVER['argv']);
                 $env = array_merge([
                     'COLUMNS'=>$initial['cols'],
                     'LINES'=>$initial['rows'],
-                    'TERM'=>'xterm'
+                    'TERM'=>'xterm',
+                    'HOME'=>$current_user_home
                 ],$_SERVER);
                 $connection->process = proc_open('bash', [['pty'],['pty'],['pty']], $pipes, $initial['path'], $env);
                 $connection->pipes = $pipes;
