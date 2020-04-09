@@ -3,20 +3,25 @@
 require_once __DIR__."/../../server/api.php";
 
 FileApi::extend('xterm_open',function($self) {
+
     $path = $self->_pathFromUrl(@$_REQUEST['path']);
     if (!$path) { echo "ERROR: Invalid path"; die(); }
 
     $reflection = new \ReflectionClass(get_class($self));
     $apiFile = $reflection->getFileName();
-    exec("/usr/bin/php ".__DIR__."/server.php ".escapeshellarg($apiFile));
-    $port = file_get_contents(__DIR__."/cache/".get_current_user().".port");
+    $serverStartOutput = shell_exec("/usr/bin/php ".__DIR__."/server.php ".escapeshellarg($apiFile));
+    
+    $current_user = posix_getpwuid(posix_getuid())['name'];
+    $port = file_get_contents(__DIR__."/cache/".$current_user.".port");
+
+    $plugin_root = !empty($_REQUEST['dayside_url']) ? $_REQUEST['dayside_url']."/plugins/xterm/" : "";
     
     ?>
         <!doctype html>
         <html>
         <head>
-            <link rel="stylesheet" href="assets/xterm.css" />
-            <script src="assets/xterm.js"></script>
+            <link rel="stylesheet" href="<?=$plugin_root?>assets/xterm.css" />
+            <script src="<?=$plugin_root?>assets/xterm.js"></script>
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
                 html, body, #terminal { width: 100%; height: 100%; background: #000; }
@@ -26,6 +31,8 @@ FileApi::extend('xterm_open',function($self) {
         <body>
             <div id="terminal" />
             <script>
+                console.debug(<?=json_encode($serverStartOutput)?>);
+
                 var terminal = new Terminal({cols:130,rows:50});
                 var terminalEl = document.getElementById('terminal');
                 terminal.open(terminalEl);

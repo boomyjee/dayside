@@ -133,6 +133,7 @@ END;
                 $connection->process = null;
 
                 if (count($worker->connections)==1) {
+                    echo "dying since last...\n";
                     \posix_kill(\file_get_contents(static::$pidFile), \SIGINT);
                 }
             }
@@ -147,8 +148,9 @@ END;
     }
 }
 
-Worker::$pidFile = __DIR__."/cache/".get_current_user().".pid";
-Worker::$portFile = __DIR__."/cache/".get_current_user().".port";
-Worker::$logFile = __DIR__."/cache/".get_current_user().".log";
+$current_user = posix_getpwuid(posix_getuid())['name'];
+Worker::$pidFile = __DIR__."/cache/".$current_user.".pid";
+Worker::$portFile = __DIR__."/cache/".$current_user.".port";
+Worker::$logFile = __DIR__."/cache/".$current_user.".log";
 Worker::createWorker();
 Worker::runAll();

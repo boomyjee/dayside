@@ -25,7 +25,7 @@ dayside.plugins.xterm = () => dayside.ready(()=>{
         consoleTab.tabPanel.selectTab(consoleTab);
 
         frame[0].path = path;
-        FileApi.request('xterm_open', {_type:"xterm_open",path:path}, false, function(answer) {
+        FileApi.request('xterm_open', {_type:"xterm_open",path:path,dayside_url:dayside.url}, false, function(answer) {
             frame[0].contentDocument.open();
             frame[0].contentDocument.write(answer.data);
             frame[0].contentDocument.close();
