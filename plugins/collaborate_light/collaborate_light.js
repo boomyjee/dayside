@@ -301,23 +301,18 @@ dayside.plugins.collaborate_light = teacss.ui.Control.extend({
         if (track.type=='change') {
             var tab = dayside.editor.selectFile(track.file);
             tab.editorReady(function(){
-                var edit = {
-                    identifier: {major:me.edit_id++,minor:1},
-                    range: track.range,
-                    text: track.text
-                };
-
                 tab.editor.getModel().pushEditOperations(
                     tab.editor.getSelections(),
-                    [edit],
+                    track.changes,
                     function () {
                         setTimeout(function(){
+                            var lastChange = track.changes[track.changes.length-1];
                             var position = {
-                                column: track.range.startColumn,
-                                lineNumber: track.range.startLineNumber
+                                column: lastChange.range.startColumn,
+                                lineNumber: lastChange.range.startLineNumber
                             };
-                            if (track.range.startLineNumber==track.range.endLineNumber) {
-                                position.column += track.text.length;
+                            if (lastChange.range.startLineNumber==lastChange.range.endLineNumber) {
+                                position.column += lastChange.text.length;
                             }
 
                             tab.editor.revealPositionInCenterIfOutsideViewport(position);
