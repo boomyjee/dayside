@@ -42,7 +42,7 @@ class Worker extends \Workerman\Worker {
             $errno = null;
             $errstr = null;
 
-            $connection = @fsockopen($host, $port, $errno, $errstr);
+            $connection = @fsockopen($host, $port, $errno, $errstr,0.1);
 
             if (is_resource($connection)) {
                 fclose($connection);
@@ -71,7 +71,6 @@ END;
     }
 
     static function createWorker() {
-
         $context = get_class(FileApi::$instance)::$xterm_context ?? [];
         self::$freePort = self::findFreePort();
 
@@ -105,7 +104,16 @@ END;
                     'TERM'=>'xterm',
                     'HOME'=>$current_user_home
                 ],$_SERVER);
-                $connection->process = proc_open('bash', [['pty'],['pty'],['pty']], $pipes, $initial['path'], $env);
+
+                $cmd = "bash";
+                if (!file_exists(__DIR__.'/pt')) {
+                    system('cc -o pt pt.c -lutil 2>&1', $retval);
+                    if ($retval) echo("Cannot compile pseudotty helper\n");
+                }
+                if (file_exists(__DIR__.'/pt')) { 
+                    $cmd = __DIR__.'/pt $LINES $COLUMNS '.$cmd;
+                }
+                $connection->process = proc_open($cmd, [['pty'],['pty'],['pty']], $pipes, $initial['path'], $env);
                 $connection->pipes = $pipes;
                 stream_set_blocking($pipes[0], 0);
                 $connection->process_stdout = new \Workerman\Connection\TcpConnection($pipes[1]);
@@ -113,13 +121,12 @@ END;
                     $connection->send(self::cleanText($data));
                 };
                 $connection->process_stdout->onClose = function($process_connection)use($connection) {
-                    $connection->close();   //Close WebSocket connection on process exit.
+                    $connection->close();
                 };
                 $connection->process_stdin = new \Workerman\Connection\TcpConnection($pipes[2]);
                 $connection->process_stdin->onMessage = function($process_connection, $data)use($connection) {
                     $connection->send(self::cleanText($data));
                 };                
-
             } else {
                 fwrite($connection->pipes[0], $data);
             }

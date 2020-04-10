@@ -36,29 +36,39 @@ FileApi::extend('xterm_open',function($self) {
                 var terminal = new Terminal({cols:130,rows:50});
                 var terminalEl = document.getElementById('terminal');
                 terminal.open(terminalEl);
+                
+                var socket;
 
-                var cols = Math.max(2, Math.floor((terminalEl.clientWidth-4)  / terminal._core._renderService.dimensions.actualCellWidth));
-                var rows = Math.max(1, Math.floor((terminalEl.clientHeight-4) / terminal._core._renderService.dimensions.actualCellHeight));                    
-                terminal.resize(cols,rows);
-
-                var socket = new WebSocket((location.protocol=='https:' ? "wss:":"ws:")+"//"+location.host+":<?=$port?>");
-                var firstMessage = true;
-                socket.onopen = () => {
-                    socket.send(JSON.stringify({cookie:<?=json_encode($_COOKIE)?>,rows,cols,path:<?=json_encode($path)?>}));
-                    socket.onmessage = ({data}) => {
-                        if (firstMessage && data.indexOf("@")==-1) { 
-                            firstMessage = false; 
-                            return; 
+                function resize() {
+                    var cols = Math.max(2, Math.floor((terminalEl.clientWidth-4)  / terminal._core._renderService.dimensions.actualCellWidth));
+                    var rows = Math.max(1, Math.floor((terminalEl.clientHeight-4) / terminal._core._renderService.dimensions.actualCellHeight));                    
+                    if (terminal.rows!=rows || terminal.cols!=cols) {
+                        terminal.resize(cols,rows);
+                        if (socket && socket.readyState==1) {
+                            socket.send(
+                                String.fromCharCode(7)
+                                +String.fromCharCode(Math.min(100,Math.floor(rows/100)))+String.fromCharCode(rows % 100)
+                                +String.fromCharCode(Math.min(100,Math.floor(cols/100)))+String.fromCharCode(cols % 100)
+                            );
                         }
+                    }
+                }
+                resize();
+                window.addEventListener("resize",resize);
+
+                socket = new WebSocket((location.protocol=='https:' ? "wss:":"ws:")+"//"+location.host+":<?=$port?>");
+                socket.onopen = () => {
+                    socket.send(JSON.stringify({cookie:<?=json_encode($_COOKIE)?>,rows:terminal.rows,cols:terminal.cols,path:<?=json_encode($path)?>}));
+                    socket.onmessage = ({data}) => {
                         terminal.write(typeof data === 'string' ? data : new Uint8Array(data));
                     }
                     socket.onclose = () => terminal.write("\nDisconnected...");
                     terminal.onData(data => socket.readyState==1 && socket.send(data));
                     terminal.onBinary(data => {
-                        if (this._socket.readyState !== 1) return;
+                        if (socket.readyState !== 1) return;
                         const buffer = new Uint8Array(data.length);
                         for (let i = 0; i < data.length; ++i) buffer[i] = data.charCodeAt(i) & 255;
-                        this._socket.send(buffer);                
+                        socket.send(buffer);                
                     });    
                 }
             </script>
