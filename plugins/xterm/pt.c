@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
 
                     ioctl(pttyno, TIOCSWINSZ, &winp);
 
-                    write(pttyno, buf, i);
+                    if (i>0) write(pttyno, buf, i);
                     write(pttyno, buf+i+5, n-i-5);
                     sendAsIs = 0;
                     break;
