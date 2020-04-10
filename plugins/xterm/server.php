@@ -47,7 +47,7 @@ class Worker extends \Workerman\Worker {
             if (is_resource($connection)) {
                 fclose($connection);
             } else {
-                return $port;
+                if (!in_array($errno,[110])) return $port;
             }
             $port++;
         }
@@ -77,6 +77,7 @@ END;
         $worker = new Worker("Websocket://0.0.0.0:".self::$freePort,$context);
         $worker->name = 'xterm_ws';
         $worker->transport = 'ssl';
+        $worker->reusePort = false;
 
         $worker->onConnect = function ($connection) {
             $connection->auth = false;
