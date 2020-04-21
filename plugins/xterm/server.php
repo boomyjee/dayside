@@ -1,5 +1,8 @@
 <?php
 
+ini_set('session.use_cookies', 0);
+session_cache_limiter("");
+
 require $argv[1];
 require __DIR__."/lib/workerman/Autoloader.php";
 
@@ -76,7 +79,7 @@ END;
 
         $worker = new Worker("Websocket://0.0.0.0:".self::$freePort,$context);
         $worker->name = 'xterm_ws';
-        $worker->transport = 'ssl';
+        if (!empty($context)) $worker->transport = 'ssl';
         $worker->reusePort = false;
 
         $worker->onConnect = function ($connection) {

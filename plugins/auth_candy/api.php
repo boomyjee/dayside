@@ -7,14 +7,17 @@ FileApi::extend('auth', function($self) {
         return "ERROR: Auth public key is not defined";
     }
 
-    session_start();
     if (isset($_REQUEST['_type']) && $_REQUEST['_type'] == 'get_auth_token') return;
+
+    session_id($_COOKIE[session_name()]);
+    session_start();
 
     $authorized = false;
     if (!empty($_POST['auth_key'])) {
         if (!empty($_SESSION['auth_key']) && !empty($_SESSION['auth_key_expiration_timestamp'])) {
             $authorized = $_SESSION['auth_key_expiration_timestamp'] >= time() && $_POST['auth_key'] == $_SESSION['auth_key'];
             if (!$authorized) {
+                session_write_close();
                 return "ERROR: Invalid auth key";
             }
 
@@ -24,6 +27,7 @@ FileApi::extend('auth', function($self) {
         $authorized = !empty($_SESSION['auth_expiration_timestamp']) && $_SESSION['auth_expiration_timestamp'] >= time();
     }
 
+    session_write_close();
     if (!$authorized) {
         return "auth_error";
     }
