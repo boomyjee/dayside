@@ -7,10 +7,10 @@ FileApi::extend('auth', function($self) {
         return "ERROR: Auth public key is not defined";
     }
 
-    if (isset($_REQUEST['_type']) && $_REQUEST['_type'] == 'get_auth_token') return;
-
     session_id($_COOKIE[session_name()]);
     session_start();
+
+    if (isset($_REQUEST['_type']) && $_REQUEST['_type'] == 'get_auth_token') return;
 
     $authorized = false;
     if (!empty($_POST['auth_key'])) {
@@ -40,4 +40,5 @@ FileApi::extend('get_auth_token', function($self) {
     
     openssl_public_encrypt($auth_key, $auth_token, $self::$auth_public_key);
     echo base64_encode($auth_token);
+    session_write_close();
 });
