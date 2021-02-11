@@ -21,17 +21,18 @@
                                 data: {token: answer.data},
                                 crossDomain: true,
                                 success: function (response) {
-                                    if (response === 'not_logged_in') {
+                                    try {
+                                        var obj = $.parseJSON(response);
+                                    } catch {
                                         authFail = true;
-                                        alert('Please login to ' + options.host);
-                                    } else if (response === 'host_forbidden') {
-                                        authFail = true;
-                                        alert('This host is forbidden for you');
-                                    } else if (response === '') {
-                                        authFail = true;
-                                        alert('Error. Try again later...');
-                                    } else {
-                                        data.auth_key = response;
+                                        alert("Invalid json in response");
+                                        return;
+                                    }
+
+                                    if (obj.message) alert(obj.message);
+                                    if (obj.token) {
+                                        authFail = false;
+                                        data.auth_key = obj.token;
                                         FileApi.request(type, data, json, function (answer) {
                                             for (var i = 0; i < authWait.length; i++) {
                                                 var it = authWait[i];
@@ -40,6 +41,8 @@
                                             authWait = false;
                                             if (callback) callback(answer);
                                         });
+                                    } else {
+                                        authFail = true;
                                     }
                                 },
                                 error: function () {

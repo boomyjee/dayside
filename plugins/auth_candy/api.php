@@ -7,7 +7,8 @@ FileApi::extend('auth', function($self) {
         return "ERROR: Auth public key is not defined";
     }
 
-    session_id($_COOKIE[session_name()]);
+    $session_id = $_COOKIE[session_name()] ?? null;
+    if ($session_id) session_id($session_id);
     session_start();
 
     if (isset($_REQUEST['_type']) && $_REQUEST['_type'] == 'get_auth_token') return;
