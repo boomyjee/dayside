@@ -110,7 +110,7 @@ class Git {
     function last_commits($name_branch, $count, $skip=false) { 
         $git_output = $this->run_command(array_merge(
             ['log', '--max-count='.$count], $skip ? ['--skip='.$skip] : [],
-            ['--pretty=format:%h>%H>%cd>%s', '--date=iso8601', $name_branch]
+            ['--pretty=format:%h>%H>%cd>%s>%an', '--date=iso8601', $name_branch]
         ));
         return $this->parse_commits($git_output);
     }
@@ -125,7 +125,7 @@ class Git {
         $result = array();        
         foreach($arr_commits as $commit){
             $arr = explode(">",$commit);
-            $result[$arr[1]] = array("sha_short"=>$arr[0],"sha_full"=>$arr[1],"date"=>$arr[2],"message"=>$arr[3]);
+            $result[$arr[1]] = array("sha_short"=>$arr[0],"sha_full"=>$arr[1],"date"=>$arr[2],"message"=>$arr[3],"author"=>$arr[4]);
         }
         return $result;
     }
